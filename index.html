@@ -1105,6 +1105,7 @@ function facade(x0, z0, x1, z1, yb, H, ops, o) {
   for (let j = 0; j < vq.length - 1; j++) { const v0 = vq[j], v1 = vq[j + 1], vm = (v0 + v1) / 2, bl = o.band && vm < o.band, c0 = shade(v0, bl), c1 = shade(v1, bl), low = o.split && vm < o.split, g = B(low ? o.matLow : (o.mat || 'plaster')); let run = -1;
     for (let i = 0; i < uq.length; i++) { let solid = false; if (i < uq.length - 1) { const um = (uq[i] + uq[i + 1]) / 2; solid = true; for (const p of ops) if (um > p.u && um < p.u + p.w && vm > p.v && vm < p.v + p.h) { solid = false; break; } }
       if (solid && run < 0) run = i; if (!solid && run >= 0) { quad(g, P(uq[run], v0, 0, c0), P(uq[i], v0, 0, c0), P(uq[i], v1, 0, c1), P(uq[run], v1, 0, c1), low ? 2.4 : (o.uvs || 3)); run = -1; } } }
+  for (let i = 2 * (ops.sh0 !== undefined ? ops.sh0 : ops.filter(p => p.kind === 'win' && p.sh).length); i > 0; i--) R.r(0.1, 0.55);      // panjur açıları eskiden buradan çekiliyordu: dizi aynı kalsın
   for (const p of ops) { const u0 = p.u, u1 = p.u + p.w, v0 = p.v, v1 = p.v + p.h, um = (u0 + u1) / 2, low = o.split && v0 < o.split, g = B(low ? o.matLow : (o.mat || 'plaster')), rc = [wc[0] * 0.8, wc[1] * 0.8, wc[2] * 0.8], sc = low ? 2.4 : 3, dd = p.kind === 'shop' || p.kind === 'sdoor' ? 0.3 : D;
     quad(g, P(u0, v0, 0), P(u0, v0, dd), P(u0, v1, dd), P(u0, v1, 0), sc, rc); quad(g, P(u1, v0, dd), P(u1, v0, 0), P(u1, v1, 0), P(u1, v1, dd), sc, rc); quad(g, P(u0, v1, dd), P(u1, v1, dd), P(u1, v1, 0), P(u0, v1, 0), sc, rc);
     if (v0 > 0.05) quad(g, P(u0, v0, 0), P(u1, v0, 0), P(u1, v0, dd), P(u0, v0, dd), sc, rc);
@@ -1112,7 +1113,7 @@ function facade(x0, z0, x1, z1, yb, H, ops, o) {
     if (p.kind === 'win') { const k = o.wk || 0; quad(B('window'), P(u0, v0, D - 0.03), P(u1, v0, D - 0.03), P(u1, v1, D - 0.03), P(u0, v1, D - 0.03), p.small ? [0.252, 0.004, 0.373, 0.246] : [k / 4 + 0.002, 0.252, (k + 1) / 4 - 0.002, 0.998]);
       if (!p.small) { const s = P(um, v0 - 0.035, -0.045); box(B('generic'), s[0], s[1], s[2], p.w + 0.18, 0.07, 0.13, wr, col('#e6e1d6'), { ex: GX.stone, skip: 'N' }); }
       if (!p.small && o.frame) { const fw = 0.075, e = -0.012, gq = B('generic'), fc = o.frame; quad(gq, P(u0 - fw, v0, e), P(u0, v0, e), P(u0, v1 + fw, e), P(u0 - fw, v1 + fw, e), undefined, fc, GX.paint); quad(gq, P(u1, v0, e), P(u1 + fw, v0, e), P(u1 + fw, v1 + fw, e), P(u1, v1 + fw, e), undefined, fc, GX.paint); quad(gq, P(u0, v1, e), P(u1, v1, e), P(u1, v1 + fw, e), P(u0, v1 + fw, e), undefined, fc, GX.paint); }
-      if (p.sh) for (const sd of [-1, 1]) { const lw = p.w / 2, an = R.r(0.1, 0.55), hu = sd < 0 ? u0 : u1, fu = hu + sd * lw * cos(an), fd = -0.03 - lw * sin(an), Hb = P(hu, v0, -0.03), Ht = P(hu, v1, -0.03), Fb = P(fu, v0, fd), Ft = P(fu, v1, fd);
+      if (p.sh) for (const sd of [-1, 1]) { const lw = p.w / 2, an = 0.15 + 0.08 * ih(floor(u0 * 9.1) + 3 + sd, floor(v0 * 3.3) + 7), hu = sd < 0 ? u0 : u1, fu = hu + sd * lw * cos(an), fd = -0.03 - lw * sin(an), Hb = P(hu, v0, -0.03), Ht = P(hu, v1, -0.03), Fb = P(fu, v0, fd), Ft = P(fu, v1, fd);
         if (sd < 0) quad(B('wood'), Fb, Hb, Ht, Ft, [0.004, 0.004, 0.246, 0.996], o.shc); else quad(B('wood'), Hb, Fb, Ft, Ht, [0.004, 0.004, 0.246, 0.996], o.shc); } }
     else if (p.kind === 'door') { const dk = p.w > 1.25 ? 3 : (o.dk || 1); quad(B('wood'), P(u0, v0, D - 0.03), P(u1, v0, D - 0.03), P(u1, v1, D - 0.03), P(u0, v1, D - 0.03), [dk / 4 + 0.004, 0.004, (dk + 1) / 4 - 0.004, 0.996], o.doorc || o.shc);
       if (v0 < 0.05) { const s = P(um, 0.06, -0.2); box(B('generic'), s[0], s[1], s[2], p.w + 0.4, 0.12, 0.42, wr, col('#cfc7b6'), { ex: GX.stone, skip: 'BN' }); } }
@@ -1128,23 +1129,27 @@ function facade(x0, z0, x1, z1, yb, H, ops, o) {
   if (o.aoStrip !== false) quad(B('ao'), [x1, yb + 0.015, z1], [x0, yb + 0.015, z0], [x0 + nx * 0.6, yb + 0.015, z0 + nz * 0.6], [x1 + nx * 0.6, yb + 0.015, z1 + nz * 0.6], [0, 0, 1, 1]);
 }
 function openings(L, fl, front, o) {
-  const R = HR, ops = []; let du = -9;
-  if (front && o.shop) { const nb = max(1, Math.round((L - 0.8) / 3.5)), bw = (L - 0.8) / nb, dk = R.i(0, nb - 1); for (let k = 0; k < nb; k++) ops.push({ u: 0.4 + k * bw + 0.2, v: 0.1, w: bw - 0.4, h: 2.5, kind: k === dk ? 'sdoor' : 'shop', awn: o.awn }); o.doorU = 0.4 + (dk + 0.5) * bw; }
+  // Dükkânlı ön cephede üst kat pencereleri dükkân gözlerinin tam ortasına oturur (balkon orta gözde); panjur evin tamamında ya var ya yok (o.nsh).
+  // Ortak rastgele dizi (HR) eskisiyle aynı sayıda ve sırada tüketilir → kasabanın geri kalanı (ev ölçüleri, sarmaşıklar, saksılar) kaymaz.
+  const R = HR, ops = [], shop = front && o.shop, win = (uc, f) => ops.push({ u: uc - 0.475, v: f * FH + 0.95, w: 0.95, h: 1.25, kind: 'win', sh: !o.nsh }), bdoor = (uc, f) => { o.balcU = uc; ops.push({ u: uc - 0.5, v: f * FH, w: 1.0, h: 2.15, kind: 'door' }); }; let du = -9, nb = 0, bw = 0, c0 = 0, b0 = false;
+  if (shop) { nb = max(1, Math.round((L - 0.8) / 3.5)); bw = (L - 0.8) / nb; const dk = R.i(0, nb - 1); for (let k = 0; k < nb; k++) ops.push({ u: 0.4 + k * bw + 0.2, v: 0.1, w: bw - 0.4, h: 2.5, kind: k === dk ? 'sdoor' : 'shop', awn: o.awn }); o.doorU = 0.4 + (dk + 0.5) * bw; }
   else if (front) { du = R.r(0.8, max(0.9, L - 2.0)); const dw = L > 9 && R.chance(0.3) ? 1.4 : 1.0; ops.push({ u: du, v: 0, w: dw, h: 2.15, kind: 'door' }); o.doorU = du + dw / 2; du += dw / 2; }
   const n = max(1, floor((L - 0.6) / 2.75));
-  for (let f = front && o.shop ? 1 : 0; f < fl; f++) for (let k = 0; k < n; k++) { const uc = L * (k + 0.5) / n; if (f === 0 && abs(uc - du) < 1.3) continue; if (!front && R.chance(0.25)) continue;
-    if (f === 1 && front && o.balc && !o.balcU && (o.shop ? k === floor(n / 2) : abs(uc - du) < L / n * 0.51)) { o.balcU = uc; ops.push({ u: uc - 0.5, v: f * FH, w: 1.0, h: 2.15, kind: 'door' }); continue; }
-    ops.push({ u: uc - 0.475, v: f * FH + 0.95, w: 0.95, h: 1.25, kind: 'win', sh: R.chance(0.88) }); }
-  return ops;
+  for (let f = shop ? 1 : 0; f < fl; f++) for (let k = 0; k < n; k++) { const uc = L * (k + 0.5) / n; if (f === 0 && abs(uc - du) < 1.3) continue; if (!front && R.chance(0.25)) continue;
+    if (f === 1 && front && o.balc && !b0 && (o.shop ? k === floor(n / 2) : abs(uc - du) < L / n * 0.51)) { b0 = true; if (!shop) bdoor(uc, f); continue; }
+    if (R.chance(0.88)) c0++; if (!shop) win(uc, f); }
+  if (shop) for (let f = 1; f < fl; f++) for (let k = 0; k < nb; k++) { const uc = 0.4 + (k + 0.5) * bw; if (f === 1 && o.balc && !o.balcU && k === floor(nb / 2)) bdoor(uc, f); else win(uc, f); }
+  ops.sh0 = c0; return ops;      // sh0: eski düzende panjurlu pencere sayısı (cephe, kanat açıları için o kadar rastgele sayı tüketir)
 }
 /* ---------- ev ---------- */
 // (cx, cz) merkez, w × d taban, rot: ön cephe yönü (yerel +z). o: { floors, lane: {E,N,W}, hide: {…}, yard }
 function house(cx, cz, w, d, rot, o) {
-  const R = HR, c = cos(rot), s = sin(rot), Wp = (lx, lz) => [cx + lx * c + lz * s, cz - lx * s + lz * c], y0 = o.y0 || PL, fl = o.floors, par = R.r(0.35, 0.7), H = fl * FH, yr = y0 + H, t = 0.26;
+  const R = HR, c = cos(rot), s = sin(rot), Wp = (lx, lz) => [cx + lx * c + lz * s, cz - lx * s + lz * c], y0 = o.y0 || PL, fl = o.floors, par0 = R.r(0.35, 0.7), par = o.hill ? par0 : 0.5, H = fl * FH, yr = y0 + H, t = 0.26;
   anchor(cx, cz); HOUSES.push({ x: cx, z: cz, hw: w / 2, hd: d / 2, rot, h: H + par });
   const k = R.r(0.95, 1.0), wc = [k, k * R.r(0.985, 1), k * R.r(0.955, 0.99)], shc = col(R.pick(SHUT)), wk = R.i(0, 3), band = R.chance(0.3) ? R.r(0.45, 0.8) : 0, bandc = band ? col(R.pick(['#2f5fa3', '#3a6fb5', '#c9b48a', '#9aa3ab', '#d6cdb9'])) : null, stoneLow = !band && R.chance(0.17);
   o.balc = fl > 1 && R.chance(0.42); o.balcU = 0; const lane = o.lane || {}, hide = o.hide || {};
   const hsh = ih(floor(cx * 7.3) + 911, floor(cz * 3.7) + 577);      // eve özgü sabit rastgele (ortak rastgele diziyi kaydırmamak için)
+  o.nsh = ih(floor(cx * 5.1) + 131, floor(cz * 2.9) + 71) < 0.1;      // on evden biri panjursuz — ama evin bütün pencereleri aynı (yarım yamalak panjur yok)
   const sides = { S: [-w / 2, d / 2, w / 2, d / 2, w], E: [w / 2, d / 2, w / 2, -d / 2, d], N: [w / 2, -d / 2, -w / 2, -d / 2, w], W: [-w / 2, -d / 2, -w / 2, d / 2, d] };
   for (const sd of 'SENW') { if (hide[sd]) continue; const q = sides[sd], a = Wp(q[0], q[1]), b = Wp(q[2], q[3]), L = q[4], vis = sd === 'S' || lane[sd];
     const ops = vis ? openings(L, fl, sd === 'S', o) : (L > 5 && R.chance(0.6) ? [{ u: L * R.r(0.25, 0.7), v: 1.45 + (fl > 1 ? FH : 0), w: 0.62, h: 0.62, kind: 'win', small: true }] : []);
@@ -1175,7 +1180,7 @@ function house(cx, cz, w, d, rot, o) {
   const nrm = [s, c], dp = Wp(-w / 2 + (o.doorU || w / 2), d / 2);
   if (!o.hill && R.chance(0.7)) for (const e of R.chance(0.5) ? [-0.95] : [-0.95, 0.95]) { const p = Wp(-w / 2 + (o.doorU || w / 2) + e, d / 2 + 0.3); pot(p[0], p[1], y0, R, R.chance(0.35)); }
   if (!o.shop) { const p = Wp(-w / 2 + (o.doorU || w / 2) + 0.85, d / 2 + 0.12); box(B('generic'), p[0], y0 + 2.25, p[1], 0.16, 0.26, 0.16, rot, col('#1d2125'), { ex: GX.lamp, skip: 'N' }); }
-  if (R.chance(0.46)) { const kind = R.chance(0.78) ? 'boug' : 'bougP', u0 = clamp((o.doorU || w / 2) + (R.chance(0.5) ? -0.9 : 0.9), 0.3, w - 0.3), top = H + par * 0.4, dir = u0 < w / 2 ? 1 : -1, len = R.r(2.2, min(6, w * 0.6)), pts = [];
+  if (R.chance(0.46)) { const kind = R.chance(0.78) ? 'boug' : 'bougP', u0 = clamp((o.doorU || w / 2) + (R.chance(0.5) ? -0.9 : 0.9), 0.3, w - 0.3), top = H + par0 * 0.4, dir = u0 < w / 2 ? 1 : -1, len = R.r(2.2, min(6, w * 0.6)), pts = [];
     const Q = (u, v, wgt) => { const p = Wp(-w / 2 + u, d / 2 + 0.02); return [p[0], y0 + v, p[1], wgt]; };
     pts.push(Q(u0, 0.1, 0.1), Q(u0 + dir * 0.1, 1.2, 0.35), Q(u0, 2.3, 1), Q(u0 + dir * 0.3, min(top, 3.4), 1)); if (fl > 1 && R.chance(0.6)) pts.push(Q(u0 + dir * 0.5, top, 1)); const ly = pts[pts.length - 1][1] - y0;
     pts.push(Q(clamp(u0 + dir * len * 0.5, 0.2, w - 0.2), ly + R.r(-0.25, 0.1), 1), Q(clamp(u0 + dir * len, 0.2, w - 0.2), ly - R.r(0.1, 0.5), 0.8)); vine(pts, nrm, kind, 0.95, R); }
@@ -1196,7 +1201,7 @@ const PR = RNG(777);
 let VEGX = null;      // yerleşim sırasında dikilen ağaç/çalı/kaya konumları (yol kenarı parkları bunlardan kaçınır)
 function tree(x, z, kind, sc, R) { if (VEGX) VEGX.push([x, z]);
   R = R || PR; sc = sc || 1; const y = groundH(x, z); anchor(x, z); const gb = B('bark@m'), gf = B('foliage');
-  if (kind === 'palm') { const h = R.r(6.2, 8.4) * sc, lx = R.r(-0.5, 0.5), lz = R.r(-0.5, 0.5), rings = []; for (let i = 0; i <= 6; i++) { const t = i / 6; rings.push({ y: y + h * t, x: x + lx * t * t, z: z + lz * t * t, rx: lerp(0.3, 0.2, t) * (i === 0 ? 1.25 : 1), c: col('#8c7c64', 0.8 + 0.25 * t) }); }
+  if (kind === 'palm') { const h = (6.75 + 0.45 * (R.r(6.2, 8.4) - 6.2)) * sc, lx = R.r(-0.5, 0.5) * 0.55, lz = R.r(-0.5, 0.5) * 0.55, rings = [];      /* boy 6.75–7.75 m, hafif eğim: sıra derli toplu */ for (let i = 0; i <= 6; i++) { const t = i / 6; rings.push({ y: y + h * t, x: x + lx * t * t, z: z + lz * t * t, rx: lerp(0.3, 0.2, t) * (i === 0 ? 1.25 : 1), c: col('#8c7c64', 0.8 + 0.25 * t) }); }
     tube(gb, rings, 8, { uv: (i, j) => [j / 8 * 2, i * 1.3] }); const tx = x + lx, tz = z + lz, ty = y + h; cyl(gb, tx, ty - 0.1, tz, 0.26, 0.4, 0.55, 8, col('#6f6a4a'), { cap: false });
     const uv = FOL.frond, vm = (uv[1] + uv[3]) / 2;
     for (let f = 0; f < 25; f++) { const dead = f >= 20, a = f / (dead ? 5 : 20) * TAU + R() * 0.3, el = dead ? R.r(-1.25, -0.9) : R.r(-0.25, 0.95), len = (dead ? R.r(1.8, 2.4) : R.r(2.8, 3.7)) * sc, dx = cos(a), dz = sin(a), sx = -dz, sz = dx, wd = 0.5 * sc, i0 = gf.n, br = R.r(0.8, 1.1), cl = dead ? [0.9 * br, 0.7 * br, 0.42 * br] : [br * 0.95, br, br * 0.9];
@@ -1440,7 +1445,7 @@ function buildTown() { VEGX = [];
   for (let x = -188; x < 104; x += 19) { if ((x > -66 && x < -10) || LX.some(l => abs(x - l) < 3.5)) continue; anchor(x, 12); const gm = B('generic@m'), cs = col('#f3eee0'), y = PL + R.r(5.0, 5.6), sag = 0.5, hw = R.r(2.6, 3.4);
     gridSurf(gm, 5, 5, (i, j) => { const u = i / 4 - 0.5, v = j / 4 - 0.5; return [x + u * 2 * hw, y - sag * (1 - 4 * u * u) * (1 - 4 * v * v) + abs(u) * 0.3, 12 + v * 5.4]; }, { col: cs, ex: GX.cloth }); gridSurf(gm, 5, 5, (i, j) => { const u = i / 4 - 0.5, v = j / 4 - 0.5; return [x + u * 2 * hw, y - 0.01 - sag * (1 - 4 * u * u) * (1 - 4 * v * v) + abs(u) * 0.3, 12 + v * 5.4]; }, { col: [cs[0] * 0.72, cs[1] * 0.72, cs[2] * 0.72], ex: GX.cloth, flip: true }); }
   /* --- kordon: palmiyeler, lambalar, banklar, kahve terasları, yazıt --- */
-  for (let x = -252; x <= 112; x += 14.5) { tree(x, zr(x) + 6.5, 'palm', 1, R); const lx = x + 7.2; if (lx < 114) lampPost(lx, zr(lx) + 6.3, 0); }
+  for (let x = -252; x <= 112; x += 14.5) { tree(x, zr(x) + 6.5, 'palm', 1, R); const lx = x + 7.25; if (lx < 114) lampPost(lx, zr(lx) + 6.5, 0); }      // lamba iki palmiyenin tam ortasında ve aynı hizada
   for (let x = -116; x <= 110; x += 27) bench(x + 3, coastZ(x + 3) - 3.0, 0);
   const terr = (xa, xb, pc) => { for (let x = xa; x <= xb; x += 3.3) for (const o of [9.4, 12.3]) cafeSet(x + R.r(-0.3, 0.3), zr(x) + o, R, o < 10 || R.chance(0.6) ? pc : null); for (const x of [xa - 1.6, xb + 1.6]) { anchor(x, zr(x) + 10.8); pot(x, zr(x) + 9.2, PL, R, true); pot(x, zr(x) + 12.4, PL, R, true); } };
   terr(-51, -30, col('#efe6d2')); terr(18, 42, col('#2f62a6')); terr(74, 96, col('#b3261e'));
@@ -1947,7 +1952,7 @@ function humanGeo(o) {
   const g = new HGeo(), f = FACE[FACEI[o.face] || 0], male = !!o.male, TB = male ? TORSO.m : TORSO.f, bw = o.build || 1, wf = o.waist || 1, fu = f.full || 0, s = o.H / 1.8, hs = (1 + (s - 1) * 0.45) / s * (o.headK || 1);
   const cS = col(o.skin || f.skin), cSh = col(o.shirt), cP = col(o.pants), cF = col(o.shoes), cH = col(f.hair), cHi = f.hi ? col(f.hi) : null, hairC = j => cHi ? mixc(cH, cHi, 0.62 * ih(j * 7 + 3, 11)) : cH, cSole = col('#1c1a18'), cGold = col('#d9ad4f'), GOLD = [0.28, 1, 0], SK = [0.58, 0, 0.12], CL = [0.86, 0, 1], LE = [0.5, 0, 0.25], HR = [0.5, 0, 0.9], N = o.lo ? 10 : 14, NL = o.lo ? 8 : 12;
   const ering = (cx, y, cz, rx, rz, n, cl, ex, e) => { const out = []; for (let j = 0; j <= n; j++) { const a = j / n * TAU, c = cos(a), sn = sin(a), pe = e || 1; out.push([cx + rx * Math.sign(c) * Math.pow(abs(c), pe), y, cz + rz * Math.sign(sn) * Math.pow(abs(sn), pe), cl, ex]); } return out; };
-  const tubeUV = (n, r) => (i, j, p) => [j / n * r * 12.6, p[1] * 2], part = (wf_, build, face) => { const n0 = g.n; build(); for (let i = n0; i < g.n; i++) { const w = wf_(g.P[i * 3], g.P[i * 3 + 1], g.P[i * 3 + 2]); g.SI.push(w[0], w[1], 0, 0); g.SW.push(w[2], 1 - w[2], 0, 0); if (face) g.DU.push(g.U[i * 2] * 8, g.U[i * 2 + 1] * 8); else { g.DU.push(g.U[i * 2], g.U[i * 2 + 1]); g.U[i * 2] = 0.875; g.U[i * 2 + 1] = 0.25; } } };
+  const tubeUV = (n, r) => (i, j, p) => [j / n * r * 12.6, p[1] * 2], part = (wf_, build, face) => { const n0 = g.n; build(); for (let i = n0; i < g.n; i++) { const w = wf_(g.P[i * 3], g.P[i * 3 + 1], g.P[i * 3 + 2]); g.SI.push(w[0], w[1], w[3] || 0, 0); g.SW.push(w[2], 1 - w[2] - (w[4] || 0), w[4] || 0, 0); if (face) g.DU.push(g.U[i * 2] * 8, g.U[i * 2 + 1] * 8); else { g.DU.push(g.U[i * 2], g.U[i * 2 + 1]); g.U[i * 2] = 0.875; g.U[i * 2 + 1] = 0.25; } } };
   const bl = (y, y0, y1) => clamp((y - y0) / (y1 - y0), 0, 1), wT = (x, y) => y < 1.0 ? [0, 1, 1] : y < 1.14 ? [0, 1, 1 - bl(y, 1.0, 1.14)] : y < 1.17 ? [1, 2, 1] : y < 1.31 ? [1, 2, 1 - bl(y, 1.17, 1.31)] : y < 1.49 ? [2, 3, 1] : y < 1.55 ? [2, 3, 1 - bl(y, 1.49, 1.55)] : y < 1.585 ? [3, 4, 1] : [3, 4, 1 - bl(y, 1.585, 1.635)];
   const metal = (n0, ex) => { for (let i = n0; i < g.n; i++) { g.X[i * 3] = ex[0]; g.X[i * 3 + 1] = ex[1]; g.X[i * 3 + 2] = ex[2]; } };
   // gövde kesiti çarpanları: göğüs (build) ve bel (waist)
@@ -1958,20 +1963,27 @@ function humanGeo(o) {
   // gövdenin üst halkaları öne eğik: boyun dibi önde (köprücük çukuru) alçak, ensede yüksek — boyun önden daha uzun ve doğal görünür
   const slant = (y, z, zc) => y > 1.445 ? 0.026 * bl(y, 1.445, 1.548) * clamp((z - zc) / (pl3(sh, y, 2) * kRZ(y)), 0, 1) : 0, TS = (x, y, off) => { const z = torsoZ(x, y, 1); return [x, y - slant(y, z, pl3(sh, y, 3) + kZO(y)), z + (off || 0)]; };
   const NS = o.lo ? N : 24;      // ayrıntılı gövdede dilim sayısı (pantolon beli ile üst aynı sayıda olmalı, yoksa iç içe geçer)
-  part(wT, () => loftGrid(g, pel.map(r => ering(0, r[0], r[3], r[1] * kP(r[0]), r[2] * kP(r[0]), NS, cP, CL, 0.9)), { wrap: true, flip: true, uv: tubeUV(NS, 0.15) }));
+  const yoke = o.legs !== 'short' && !o.lo;      // ayrıntılı gövdede uzun pantolon: ayrı leğen yok; bel–kalça–paçaları tek yüzeyle saran 'roba' aşağıda (bacaklarla birlikte) kurulur
+  if (!yoke) part(wT, () => loftGrid(g, pel.map(r => ering(0, r[0], r[3], r[1] * kP(r[0]), r[2] * kP(r[0]), NS, cP, CL, 0.9)), { wrap: true, flip: true, uv: tubeUV(NS, 0.15) }));
   const ys = []; for (let i = 0; i < sh.length; i++) { ys.push(sh[i][0]); if (i < sh.length - 1 && sh[i + 1][0] - sh[i][0] > 0.06) ys.push((sh[i][0] + sh[i + 1][0]) / 2); }
   if (o.scoop) { ys.push(1.492); ys.sort((a, b) => a - b); }
   const neckSkin = o.scoop ? (x, y, z) => y > 1.497 || (z < 0 && y > 1.43) : (x, y, z) => z > 0.02 && y > 1.5 && abs(x) < 0.04;      // köşeli köşe rengi yalnız en üstte; yaka açıklığının temiz kenarı aşağıdaki 'göğüs paneli' ile çizilir
   // ayrıntılı gövde: 24 dilim, belde kumaş kıvrımları (çukurlar biraz koyu), içe sokulmamış gömlekte hafif açılan dalgalı etek ucu
   if (!o.lo) { for (let y = 0.99; y < 1.3; y += 0.03) if (!ys.some(q => abs(q - y) < 0.012)) ys.push(+y.toFixed(3)); ys.sort((a, b) => a - b); }
   const armhole = o.sleeve === 'none';      // kolsuz üst: kol oyuğu çevresi ten (askı, yaka açıklığı ile kol oyuğu arasında kalır)
-  const wrk = (a, y, x, fr) => o.lo ? 0 : ((0.0052 * sin(y * 92 + 1.6 * sin(a * 2 + 0.7)) + 0.003 * sin(a * 5 + y * 41)) * (o.tuck ? 0.7 * sstep(1.08, 1.14, y) : sstep(0.97, 1.05, y)) * (1 - sstep(1.2, 1.3, y)) + (o.tuck ? 0 : 0.0035 * sin(a * 7 + 1) * (1 - sstep(0.96, 1.08, y)))) * (1 - (fr ? 0.9 * GS(x / 0.04) : 0)) + (o.tuck ? 0 : 0.015 * (1 - sstep(0.96, 1.05, y)));
+  const wrk = (a, y, x, fr) => o.lo ? 0 : ((0.0052 * sin(y * 92 + 1.6 * sin(a * 2 + 0.7)) + 0.003 * sin(a * 5 + y * 41)) * (o.tuck ? 0.7 * sstep(1.08, 1.14, y) : sstep(0.97, 1.05, y)) * (1 - sstep(1.2, 1.3, y)) + (o.tuck ? 0 : 0.0035 * sin(a * 7 + 1) * (1 - sstep(0.96, 1.08, y)))) * (1 - (fr ? 0.9 * GS(x / 0.04) : 0)) + (o.tuck ? 0 : 0.009 * (1 - sstep(0.96, 1.05, y)));
+  const tn0 = g.n;
   part(wT, () => loftGrid(g, ys.map(y => { const zc = pl3(sh, y, 3) + kZO(y); return ering(0, y, zc, pl3(sh, y, 1) * kRX(y), pl3(sh, y, 2) * kRZ(y), NS, cSh, CL, 0.88).map(p => { const w = wrk(Math.atan2(p[2] - zc, p[0]), y, p[0], p[2] > zc);
-    if (w) { const k = 1 + w / max(0.04, hyp(p[0], p[2] - zc)), q = 0.9 + 0.1 * clamp(0.5 + w * 80, 0.1, 1.1); p[0] *= k; p[2] = zc + (p[2] - zc) * k; p[3] = [cSh[0] * q, cSh[1] * q, cSh[2] * q]; }
+    if (w) { const k = 1 + w / max(0.04, hyp(p[0], p[2] - zc)), q = (0.9 + 0.1 * clamp(0.5 + w * 80, 0.1, 1.1)) * (!o.tuck && y < ys[0] + 0.005 ? 0.9 : 1); p[0] *= k; p[2] = zc + (p[2] - zc) * k; p[3] = [cSh[0] * q, cSh[1] * q, cSh[2] * q]; }
     if (neckSkin(p[0], y, p[2]) || (armhole && y > 1.37 && abs(p[0]) > TB.xs - 0.03)) { p[3] = cS; p[4] = SK; } p[1] -= slant(y, p[2], zc); return p; }); }), { wrap: true, flip: true, uv: tubeUV(NS, 0.16) }));
+  const tn1 = g.n;
   // yaka açıklığı: kumaşın hemen üstünde, kenarı düzgün bir ten paneli (kadında U yaka, erkekte V) — köşe renginin basamaklı kenarı yerine temiz çizgi
   part(wT, () => { if (o.scoop) gridSurf(g, 13, 6, (i, j) => { const u = i / 6 - 1, x = 0.073 * u, yb = 1.41 + 0.068 * Math.pow(abs(u), 2.4); return TS(x, lerp(yb, 1.506, j / 5), 0.0028); }, { col: cS, ex: SK, uv: () => [0, 0], flip: true });
     else gridSurf(g, 5, 5, (i, j) => { const v = j / 4; return TS((i / 2 - 1) * (0.004 + 0.034 * v), lerp(1.434, 1.514, v), 0.0026); }, { col: cS, ex: SK, uv: () => [0, 0], flip: true }); });
+  // içe sokulmuş üstte bel: ince deri kemer + altın toka — üst ile pantolonun üst üste bindiği halkayı kapatır (titreşen çizgi kalmaz)
+  if (tk && !male && !o.lo) part(wT, () => { const yb = 1.102, rx = max(pl3(sh, yb, 1) * kRX(yb), pl3(pel, yb, 1) * kP(yb)) + 0.0045, rz = max(pl3(sh, yb, 2) * kRZ(yb), pl3(pel, yb, 2) * kP(yb)) + 0.0045, zc = pl3(sh, yb, 3) + kZO(yb), cB = col('#7d5430');
+    loftGrid(g, [[yb - 0.0135, -0.0025], [yb - 0.0105, 0.0012], [yb + 0.0105, 0.0012], [yb + 0.0135, -0.0025]].map(([y, d]) => ering(0, y, zc, rx + d, rz + d, NS, cB, LE, 0.88)), { wrap: true, flip: true, uv: tubeUV(NS, 0.16) });
+    const n0 = g.n; box(g, 0, yb, zc + rz + 0.003, 0.03, 0.027, 0.006, 0, cGold); metal(n0, GOLD); });
   // altın kolye: iki sıra zincir + uç
   if (o.necklace) part(wT, () => { const n0 = g.n; for (const [drop, hwd, pend] of [[0.052, 0.05, 0], [0.108, 0.058, 1]]) { let pv = null; for (let k = 0; k <= 10; k++) { const u = k / 10 * 2 - 1, x = u * hwd, y = 1.497 - drop * (1 - u * u), p = TS(x, y, 0.0052); if (pv) hcylDir(g, pv[0], pv[1], pv[2], p[0], p[1], p[2], 0.0018, cGold); pv = p; }
       if (pend) { const q = TS(0, 1.497 - drop - 0.011, 0.0072); box(g, 0, q[1], q[2], 0.013, 0.02, 0.005, 0, cGold); } } metal(n0, GOLD); });
@@ -2024,12 +2036,13 @@ function humanGeo(o) {
         g.v(hc[0] + (C[0] + R1 * e0[0] + r1 * nn[0]) * hs, hc[1] + (C[1] + R1 * e0[1] + r1 * nn[1]) * hs, hc[2] + (C[2] + R1 * e0[2] + r1 * nn[2]) * hs, nn[0], nn[1], nn[2], 0, 0, cGold, GOLD); }
       for (let a = 0; a < NA; a++) for (let b = 0; b < NB; b++) { const p = i0 + a * (NB + 1) + b, q = p + NB + 1; g.tri(p, q, q + 1); g.tri(p, q + 1, p + 1); g.tri(p, q + 1, q); g.tri(p, p + 1, q + 1); } } });
   // --- kollar ve eller ---
-  const slv = o.sleeve === 'short' ? 1.31 : o.sleeve === 'long' ? 0.9 : o.sleeve === 'none' ? 9 : 1.115, ak = TB.arm * (0.85 + 0.15 * bw) * (male ? bw : 1);
+  const slv = o.sleeve === 'short' ? 1.31 : o.sleeve === 'long' ? 0.9 : o.sleeve === 'none' ? 9 : 1.115, ak = TB.arm * (0.85 + 0.15 * bw) * (male ? bw : 1), cap = slv <= 1.42, AR = [];
   for (const sd of [1, -1]) { const xs = sd * TB.xs * (1 + 0.62 * (bw - 1)), B0 = sd > 0 ? 5 : 8, wA = (x, y) => y > 1.37 ? [2, B0, 0.6 * bl(y, 1.37, 1.49)] : y > 1.21 ? [B0, B0, 1] : y > 1.07 ? [B0, B0 + 1, bl(y, 1.07, 1.21)] : y > 0.905 ? [B0 + 1, B0 + 1, 1] : y > 0.865 ? [B0 + 1, B0 + 2, bl(y, 0.865, 0.905)] : [B0 + 2, B0 + 2, 1];
-    const ya = [0.885, 0.93, 0.98, 1.04, 1.085, 1.115, 1.14, 1.165, 1.195, 1.24, 1.3, 1.36, 1.41, 1.45, 1.478, 1.49], rows = [];
-    for (const y0 of ya) { const r = pl3(ARMP, y0, 1) * ak, y = y0 > 1.41 ? 1.41 + (y0 - 1.41) * 0.7 : y0, cloth = y0 >= slv - 1e-6; if (cloth && rows.length && !rows.cl) { rows.push(ering(xs, y, 0, r + 0.013, r + 0.013, NL, cSh, CL)); rows.cl = 1; } rows.push(ering(xs, y + (cloth && rows.cl === 1 ? 0.016 : 0), 0, r + (cloth ? 0.007 : 0), r + (cloth ? 0.007 : 0), NL, cloth ? cSh : cS, cloth ? CL : SK)); if (cloth) rows.cl = 2; }
-    part(wA, () => loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(NL, 0.05) }));
-    if (!o.lo) part((x, y) => [B0, 2, clamp(0.25 + (sd * x - abs(xs) + 0.03) / 0.07, 0.15, 0.85)], () => { const cl = slv <= 1.42, cx = xs - sd * 0.006, rx = 0.054 * ak + (cl ? 0.0075 : 0), rz = 0.06 * ak + (cl ? 0.0075 : 0);
+    // kumaşla örtülü omuz (cap): kol tepesi omuz eğimine teğet, yumuşak bir kubbe — ayrı 'top/apolet' çıkıntısı yok; çıplak omuzda eski kesit + deltoid
+    const ya = cap ? [0.885, 0.93, 0.98, 1.04, 1.085, 1.115, 1.14, 1.165, 1.195, 1.24, 1.3, 1.36, 1.385, 1.41, 1.432, 1.448, 1.458, 1.4635, 1.465] : [0.885, 0.93, 0.98, 1.04, 1.085, 1.115, 1.14, 1.165, 1.195, 1.24, 1.3, 1.36, 1.41, 1.45, 1.478, 1.49], rows = [], RT = pl3(ARMP, 1.385, 1) * ak + 0.007;
+    for (const y0 of ya) { const dome = cap && y0 > 1.37, q = (y0 - 1.385) / 0.08, r = dome ? RT * sqrt(max(0, 1 - q * q)) - 0.007 : pl3(ARMP, y0, 1) * ak, y = dome ? y0 : y0 > 1.41 ? 1.41 + (y0 - 1.41) * 0.7 : y0, xo = dome ? sd * 0.011 * sstep(1.385, 1.46, y0) : 0, cloth = y0 >= slv - 1e-6; if (cloth && rows.length && !rows.cl) { rows.push(ering(xs, y, 0, r + 0.013, r + 0.013, NL, cSh, CL)); rows.cl = 1; } rows.push(ering(xs + xo, y + (cloth && rows.cl === 1 ? 0.016 : 0), 0, r + (cloth ? 0.007 : 0), r + (cloth ? 0.007 : 0), NL, cloth ? cSh : cS, cloth ? CL : SK)); if (cloth) rows.cl = 2; }
+    const an0 = g.n; part(wA, () => loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(NL, 0.05) })); AR.push([an0, g.n, abs(xs)]);
+    if (!o.lo && !cap) part((x, y) => [B0, 2, clamp(0.25 + (sd * x - abs(xs) + 0.03) / 0.07, 0.15, 0.85)], () => { const cl = slv <= 1.42, cx = xs - sd * 0.006, rx = 0.054 * ak + (cl ? 0.0075 : 0), rz = 0.06 * ak + (cl ? 0.0075 : 0);
       gridSurf(g, 8, 13, (i, j) => { const v = (0.04 + 0.92 * i / 7) * PI, u = j / 12 * TAU; return [cx + sin(v) * cos(u) * rx, 1.402 + cos(v) * 0.076, sin(v) * sin(u) * rz]; }, { col: cl ? cSh : cS, ex: cl ? CL : SK }); });
     part(() => [B0 + 2, B0 + 2, 1], () => { loftGrid(g, [[0.705, 0.005, 0.012, 0.024], [0.718, 0.011, 0.03, 0.019], [0.75, 0.014, 0.040, 0.01], [0.80, 0.019, 0.046, 0.003], [0.85, 0.02, 0.043, 0], [0.89, 0.026, 0.028, 0]].map(r => ering(xs - sd * r[3], r[0], 0.008 + r[3] * 0.35, r[1] * ak, r[2] * (0.9 + 0.1 * ak), 8, cS, SK)), { wrap: true, flip: true, uv: tubeUV(8, 0.03) }); hcylDir(g, xs, 0.852, 0.036, xs - sd * 0.006, 0.782, 0.064, 0.0115 * ak, cS); });
     // çelik kol saati: kordon + kasa + lacivert kadran (bileğin dış yüzünde)
@@ -2039,15 +2052,41 @@ function humanGeo(o) {
       const iA = ring(xw - 0.005, RO, cSt, ST, 1), iB = ring(xw + 0.007, RO, cSt, ST, 1), iC = ring(xw + 0.007, RO, cSt, ST), iD = ring(xw + 0.0072, rd, col('#16306b'), [0.2, 0.7, 0]), cc = g.v(xw + 0.0072, yw, 0, 1, 0, 0, 0, 0, col('#1f4a9a'), [0.18, 0.7, 0]);
       for (let k = 0; k < 12; k++) { g.tri(iA + k, iA + k + 1, iB + k + 1); g.tri(iA + k, iB + k + 1, iB + k); g.tri(iC + k, iC + k + 1, iD + k + 1); g.tri(iC + k, iD + k + 1, iD + k); g.tri(cc, iD + k, iD + k + 1); } });
   }
+  // omuz birleşimi: gövdenin yan kenarı ile kolun iç yarısının normalleri ortak bir yumuşak yöne (omuz kuşağının 'alan normali') yaklaştırılır →
+  // kol ile gövdenin kesiştiği çizgi gölgelenmede kaybolur, gömlek sırttan kola tek parça gibi akar (geometri ve iskelet aynı)
+  if (cap && !o.lo) { const mixN = (i, w) => { if (w < 0.01) return; const x = g.P[i * 3], y = g.P[i * 3 + 1], z = g.P[i * 3 + 2], fx = x / 0.09, fy = (y - 1.3) / 0.09, fz = z / 0.0132, fl = hyp(fx, fy, fz) || 1, nx = lerp(g.N[i * 3], fx / fl, w), ny = lerp(g.N[i * 3 + 1], fy / fl, w), nz = lerp(g.N[i * 3 + 2], fz / fl, w), l = hyp(nx, ny, nz) || 1; g.N[i * 3] = nx / l; g.N[i * 3 + 1] = ny / l; g.N[i * 3 + 2] = nz / l; };
+    for (let i = tn0; i < tn1; i++) { const x = g.P[i * 3], y = g.P[i * 3 + 1]; if (y > 1.26 && y < 1.5) mixN(i, sstep(0.62, 0.86, abs(x) / (pl3(sh, y, 1) * kRX(y))) * sstep(1.26, 1.35, y) * (1 - sstep(1.465, 1.5, y))); }
+    for (const [a, b, xa] of AR) for (let i = a; i < b; i++) { const y = g.P[i * 3 + 1]; if (y > 1.26) mixN(i, (1 - sstep(-0.45, 0.4, (abs(g.P[i * 3]) - xa) / 0.07)) * sstep(1.26, 1.35, y)); } }
   // --- bacaklar ve ayakkabılar ---
   const lk = (male ? 0.94 + 0.06 * bw : 0.93) * (1 + (wf - 1) * 0.5) * (o.legK || 1), shorts = o.legs === 'short', wide = o.legs === 'wide', hem = shorts ? 0.535 : 0.105;
+  // bacak kesitleri [y, yarı genişlik, yarı derinlik, kumaş mı]; pantolon oturağı: bacak tepesi leğen derinliğine yaklaşır (kalça–bacak geçişi kesintisiz)
+  const YK = 0.78, LT = [0.105, 0.16, 0.24, 0.32, 0.38, 0.43, 0.465, 0.5, 0.535, 0.57, 0.63, 0.7, 0.78, 0.86, 0.92, 0.955, 0.968].map(y => { const rx = pl3(LEGP, y, 1) * lk, rz = pl3(LEGP, y, 2) * lk, cloth = y >= hem - 1e-6, tp = wide ? lerp(0.088, 0.1, sstep(0.1, 0.9, y)) : lerp(0.064, 0.097, sstep(0.1, 0.9, y)) * (o.legK || 1), cx = cloth && !shorts ? max(rx + 0.009, y < 0.9 ? tp : 0) : rx + (cloth ? 0.012 : 0),
+    seat = cloth && !yoke && y > 0.72 && y < 0.96 ? pl3(pel, y, 2) * kP(y) * (y > 0.93 ? 0.8 : 0.9) * sstep(0.72, 0.86, y) : 0, cz = max(seat, cloth && !shorts ? max(rz + 0.009, y < 0.9 ? tp * 1.04 : 0) : rz + (cloth ? 0.012 : 0)); return [y, cx, cz, cloth]; });
+  // geniş paçalı pantolonun 'robası': YK yüksekliğinde iki paçanın halkalarına köşe köşe oturur (24 köşe = 2 × 11 paça köşesi + ön/arka ağ noktası), yukarı doğru kalça halkasına açılır.
+  // Alt sıralar bacak kemiklerine, üst sıralar kalçaya bağlı → kumaş yürürken bacakla gider; kalça–bacak birleşiminde ayrı parça, kırık çizgi ya da 'bez' görünümü kalmaz.
+  const wY = (x, y) => { if (y >= 0.985) return wT(x, y); const wh = bl(y, 0.88, 0.985); return [0, 11, wh, 14, (1 - wh) * (x > 1e-5 ? 0 : x < -1e-5 ? 1 : 0.5)]; }, YR = [];
+  if (yoke) part(wY, () => {
+    const xh = TB.xh, RH = pel.reduce((a, r) => r[1] > a[1] ? r : a), ring = y => { const cx = pl3(LT, y, 1), cz = pl3(LT, y, 2), lp = (sd, k) => [sd * xh + cx * cos(k / NL * TAU), cz * sin(k / NL * TAU)], q5 = lp(1, 5), q6 = lp(1, 6), sg = clamp(q5[0] / max(1e-6, q5[0] - q6[0]), 0, 1), zg = q5[1] * (1 - sg), out = [];      // zg: iki paça çokgeninin ortada kesiştiği derinlik
+      for (let j = 0; j < 24; j++) out.push(j === 6 ? [0, zg] : j === 18 ? [0, -zg] : j < 6 ? lp(1, j) : j < 18 ? lp(-1, j - 6) : lp(1, j - 12)); out.push(out[0]); return out; };
+    const L0 = ring(YK), Lg = ring(0.7), kq = kP(RH[0]), E = []; for (let j = 0; j <= 24; j++) { const a = j / 24 * TAU, c = cos(a), sn = sin(a); E.push([RH[1] * kq * Math.sign(c) * Math.pow(abs(c), 0.9), RH[3] + RH[2] * kq * Math.sign(sn) * Math.pow(abs(sn), 0.9)]); }
+    const rows = [Lg.map(p => [p[0], 0.7, p[1], cP, CL])];
+    for (const y of [YK, 0.8, 0.82, 0.84, 0.86, 0.88, 0.9, 0.92]) { const t = sstep(YK, 0.92, y); rows.push(L0.map((p, j) => [lerp(p[0], E[j][0], t), y, lerp(p[1], E[j][1], t), cP, CL])); }
+    for (const r of pel) if (r[0] > 0.95) rows.push(ering(0, r[0], r[3], r[1] * kP(r[0]), r[2] * kP(r[0]), 24, cP, CL, 0.9));
+    YR.base = g.n; loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(24, 0.15), skip: i => i < 1 }); for (const r of rows) YR.push(r); });
+  // arka cepler: robanın kendi yüzeyinden 3 mm dışarıda, hafif açık tonda iki yama (dikiş izi gibi) — yüzeyle birlikte hareket eder
+  if (yoke && male) part(wY, () => { const cp2 = [cP[0] * 1.16 + 0.004, cP[1] * 1.16 + 0.004, cP[2] * 1.16 + 0.004], at = (i, j) => { const a = YR[i], b = YR[i + 1], f = i - floor(i), k = floor(j), u = j - k, p = (r, q) => lerp(r[k][q], r[k + 1][q], u); return f > 1e-6 ? [0, 1, 2].map(q => lerp(p(YR[floor(i)], q), p(YR[floor(i) + 1], q), f)) : [0, 1, 2].map(q => p(a, q)); };
+    for (const [j0, j1] of [[19.75, 21.6], [14.4, 16.25]]) gridSurf(g, 4, 4, (i, j) => { const q = at(lerp(4.7, 9, i / 3), lerp(j0, j1, j / 3)), l = hyp(q[0], q[2]) || 1, d = 0.0034 - (i === 0 ? 0 : 0); return [q[0] + q[0] / l * d, q[1] - (i === 0 ? 0.01 * (1 - abs(j / 1.5 - 1)) : 0), q[2] + q[2] / l * d]; }, { col: cp2, ex: CL, uv: () => [0, 0] }); });
   for (const sd of [1, -1]) { const xh = sd * TB.xh, B0 = sd > 0 ? 11 : 14, wL = (x, y) => y > 0.9 ? [0, B0, 0.5 * bl(y, 0.9, 0.97)] : y > 0.57 ? [B0, B0, 1] : y > 0.43 ? [B0, B0 + 1, bl(y, 0.43, 0.57)] : y > 0.11 ? [B0 + 1, B0 + 1, 1] : [B0 + 1, B0 + 2, bl(y, 0.06, 0.11)];
-    const yl = [0.105, 0.16, 0.24, 0.32, 0.38, 0.43, 0.465, 0.5, 0.535, 0.57, 0.63, 0.7, 0.78, 0.86, 0.92, 0.955, 0.968], rows = []; let st = 0;
-    for (const y of yl) { const rx = pl3(LEGP, y, 1) * lk, rz = pl3(LEGP, y, 2) * lk, zo = pl3(LEGP, y, 3), cloth = y >= hem - 1e-6, tp = wide ? lerp(0.088, 0.1, sstep(0.1, 0.9, y)) : lerp(0.064, 0.097, sstep(0.1, 0.9, y)) * (o.legK || 1), cx = cloth && !shorts ? max(rx + 0.009, y < 0.9 ? tp : 0) : rx + (cloth ? 0.012 : 0), cz = cloth && !shorts ? max(rz + 0.009, y < 0.9 ? tp * 1.04 : 0) : rz + (cloth ? 0.012 : 0);
+    const rows = []; let st = 0;
+    for (const [y, cx, cz, cloth] of LT) { if (yoke && y > YK + 0.09) break; const zo = pl3(LEGP, y, 3);
       if (cloth && !st && rows.length) { rows.push(ering(xh, y, zo, cx + 0.004, cz + 0.004, NL, cP, CL)); st = 1; } rows.push(ering(xh, y + (st === 1 ? 0.012 : 0), cloth ? zo * 0.5 : zo, cx, cz, NL, cloth ? cP : cS, cloth ? CL : SK)); if (cloth) st = 2; }
     if (shorts) rows.unshift(ering(xh, 0.085, 0, 0.034, 0.038, NL, cS, SK));
-    part(wL, () => loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(NL, 0.07) }));
-    if (!o.lo) part(() => [0, B0, 0.7], () => gridSurf(g, 7, 11, (i, j) => { const v = (0.06 + 0.9 * i / 6) * PI, u = j / 10 * TAU; return [xh * 0.92 + sin(v) * cos(u) * 0.068 * lk, 0.925 + cos(v) * 0.095, -0.058 + sin(v) * sin(u) * 0.07 * lk]; }, { col: cP, ex: CL }));
+    const lb = g.n + (rows.length - 2) * (NL + 1); part(wL, () => loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(NL, 0.07), skip: yoke ? i => i >= rows.length - 2 : null }));      // robalı pantolonda paça YK'de biter (üstündeki sıra yalnız normal hesabı için)
+    if (yoke && NL === 12) for (let j = 0; j <= 24; j++) { const k = sd > 0 ? (j < 6 ? j : j > 18 ? j - 12 : -1) : (j > 6 && j < 18 ? j - 6 : -1); if (k < 0) continue; for (let q = 0; q < 3; q++) g.N[(YR.base + 25 + j) * 3 + q] = g.N[(lb + k) * 3 + q]; }      // roba ile paçanın ortak halkasında normaller aynı: birleşim çizgisi görünmez
+    if (yoke) part(() => [B0, B0, 1], () => { const cx = pl3(LT, YK, 1), cz = pl3(LT, YK, 2); loftGrid(g, [[YK, 1], [YK + 0.05, 0.5], [YK + 0.07, 0.01]].map(([y, k]) => ering(xh, y, 0, cx * k, cz * k, NL, cP, CL)), { wrap: true, flip: true }); });      // paça ağzı tıkacı (roba içinde; bacaklar açılınca aralıktan iç görünmesin)
+    if (!o.lo && !yoke) part(() => [0, B0, 0.7], () => gridSurf(g, 7, 11, (i, j) => { const v = (0.06 + 0.9 * i / 6) * PI, u = j / 10 * TAU; return [xh * 0.95 + sin(v) * cos(u) * 0.078 * lk, 0.915 + cos(v) * 0.088, -0.066 + sin(v) * sin(u) * 0.052 * lk]; }, { col: cP, ex: CL }));
+    if (!o.lo && male && !shorts && !yoke) part(wL, () => { const cp2 = [cP[0] * 1.16 + 0.004, cP[1] * 1.16 + 0.004, cP[2] * 1.16 + 0.004], sz = (x, y) => { const rz = max(pl3(pel, y, 2) * kP(y) * (y > 0.93 ? 0.8 : 0.9), pl3(LEGP, y, 2) * lk + 0.009), cx = max(pl3(LEGP, y, 1) * lk + 0.009, 0.06); return -rz * sqrt(max(0.05, 1 - Math.pow((x - xh) / (cx * 1.25), 2))) - 0.0125; };
+      gridSurf(g, 4, 4, (i, j) => { const x = xh * 0.98 + (j / 3 - 0.5) * 0.118, y = lerp(0.842, 0.948, i / 3) - (i === 0 ? 0.012 * (1 - abs(j / 1.5 - 1)) : 0); return [x, y, sz(x, y)]; }, { col: cp2, ex: CL, uv: () => [0, 0] }); });      // arka cep (dikiş izi gibi hafif açık ton)
     if (o.boots) part(wL, () => loftGrid(g, [[0.055, 0.047, 0.052], [0.1, 0.045, 0.05], [0.16, 0.047, 0.052], [0.205, 0.05, 0.055], [0.212, 0.044, 0.048]].map(r => ering(xh, r[0], -0.004, r[1] * lk, r[2] * lk, NL, cF, LE)), { wrap: true, flip: true, uv: tubeUV(NL, 0.05) }));
     part(() => [B0 + 2, B0 + 2, 1], () => loftGrid(g, [[-0.082, 0.05, 0.012, 0.03], [-0.066, 0.055, 0.037, 0.055], [0, 0.062, 0.045, 0.062], [0.06, 0.05, 0.048, 0.05], [0.12, 0.038, 0.051, 0.038], [0.18, 0.031, 0.045, 0.031], [0.215, 0.026, 0.022, 0.022], [0.222, 0.024, 0.004, 0.006]].map(r => { const row = []; for (let j = 0; j <= 10; j++) { const a = j / 10 * TAU, c = cos(a), sn = sin(a), bt = o.boots ? 1 : 0, y = r[1] * (1 + 0.16 * bt) + r[3] * (1 + 0.2 * bt) * Math.sign(sn) * Math.pow(abs(sn), 0.7); row.push([xh + r[2] * (1 + 0.1 * bt) * lk * Math.sign(c) * Math.pow(abs(c), 0.8), max(0.004, y), r[0] + 0.012, y < (bt ? 0.03 : 0.02) ? cSole : cF, LE]); } return row; }), { wrap: true, uv: (i, j) => [j / 10 * 2, i * 0.3] }));
   }
@@ -2157,9 +2196,9 @@ let HERO = null, WIFE = null, BOSS = null; const NPCS = [], GUARDS = [], COMP = 
 const footY = (x, z, y) => max(groundH(x, z), supportY(x, z, y, 0.5));
 function makePeople() {
   // Yavuz: iri yapılı, koyu kahve dalgalı saç, kır sakal, siyah dikdörtgen güneş gözlüğü, çelik saat, beyaz keten gömlek (+ isteğe bağlı siyah şapka)
-  HERO = makeHuman({ H: 2.01, male: 1, build: 1.13, waist: 1.04, collar: 1, face: 'hero', shirt: '#efeae0', pants: '#27364a', shoes: '#4d3523', boots: 1, sleeve: 'roll', hair: 'wavy', glasses: 'on', gstyle: 'rect', gframe: '#0e0e10', watch: 1, cap: 1, headK: 1.0, legK: 1.1 });
+  HERO = makeHuman({ H: 2.01, male: 1, build: 1.13, waist: 1.04, collar: 1, face: 'hero', shirt: '#e9e2d3', pants: '#263347', shoes: '#4d3523', boots: 1, sleeve: 'roll', hair: 'wavy', glasses: 'on', gstyle: 'rect', gframe: '#0e0e10', watch: 1, cap: 1, headK: 1.0, legK: 1.1 });
   // Bircan: ince uzun, ortadan ayrık uzun düz kumral–bal rengi saç, siyah üst + beyaz keten pantolon, yeşil çerçeveli gözlük (başta), altın halka küpe ve kolyeler
-  WIFE = makeHuman({ H: 1.76, male: 0, face: 'wife', shirt: '#17171a', pants: '#eeece6', shoes: '#f0efea', sleeve: 'none', scoop: 1, legs: 'wide', tuck: 1, hair: 'long', glasses: 'up', gstyle: 'rect', gframe: '#8ea58a', necklace: 1, earrings: 1, headK: 0.97 });
+  WIFE = makeHuman({ H: 1.76, male: 0, face: 'wife', shirt: '#1e1f23', pants: '#e9e5db', shoes: '#ece9e1', sleeve: 'none', scoop: 1, legs: 'wide', tuck: 1, hair: 'long', glasses: 'up', gstyle: 'rect', gframe: '#8ea58a', necklace: 1, earrings: 1, headK: 0.97 });
   const R = RNG(909), SH = ['#d9534f', '#2f62a6', '#f1eee6', '#2a8a7a', '#e8b23a', '#3a3f45', '#c98a5a', '#7a8f5a', '#f4f0e6', '#b5507a'], PA = ['#27364a', '#3a3f45', '#c9bfa6', '#5a4a3a', '#e9e6df', '#40526b'];
   for (let k = 0; k < QUAL[2].npc; k++) { const male = k % 2 === 0, face = male ? R.pick(['m1', 'm2', 'm1', 'guard']) : R.pick(['f1', 'f2']), old = face === 'm2';
     const h = makeHuman({ H: male ? R.r(1.7, 1.86) : R.r(1.58, 1.72), male, build: R.r(0.96, 1.06), face, shirt: R.pick(SH), pants: R.pick(PA), shoes: R.pick(['#f0efea', '#3a2e26', '#22262b']), sleeve: R.chance(0.7) ? 'short' : 'roll', legs: !old && R.chance(0.45) ? 'short' : 'long', tuck: !male && R.chance(0.5), hair: male ? 'short' : R.pick(['pony', 'bob', 'bob']), glasses: R.chance(0.35) ? (R.chance(0.6) ? 'on' : 'up') : null, lo: true });
@@ -2171,14 +2210,15 @@ function makePeople() {
   for (const n of NPCS) { if (n.sit) { const s = seats[min(seats.length - 1, si)]; si += 5; n.seat = s; const h = n.h; h.x = s.x; h.z = s.z; h.h = s.rot; h.g.position.set(s.x, s.y + 0.1 * h.s - h.hipY, s.z); h.g.rotation.y = s.rot; } else npcSpawn(n, POI.start.x, POI.start.z, true); }
 }
 function routePos(n, out) { const P = SPOTS.routes[n.route], a = P[n.i], b = P[(n.i + 1) % P.length]; out.x = lerp(a[0], b[0], n.t); out.z = lerp(a[1], b[1], n.t); out.l = hyp(b[0] - a[0], b[1] - a[1]) || 1; out.hx = b[0] - a[0]; out.hz = b[1] - a[1]; return out; }
-function npcSpawn(n, px, pz, first) { const R = n.R, o = {}; for (let k = 0; k < 10; k++) { n.route = R.i(0, SPOTS.routes.length - 1); n.i = R.i(0, SPOTS.routes[n.route].length - 1); n.t = R(); routePos(n, o); const d = hyp(o.x - px, o.z - pz); if (first ? d > 9 : d > 45 && d < 115) break; }
-  const h = n.h; h.x = o.x; h.z = o.z; h.y = footY(o.x, o.z, 9); h.h = Math.atan2(o.hx, o.hz); n.off = R.r(-0.5, 0.5); }
+// yayaların doğduğu yer: oyuncudan 45–115 m ötede ve başka bir yayadan en az 7 m uzakta; uygun yer yoksa (oyuncu yollardan uzakta) yaya gizli bekler — tek noktada kalabalık birikmez
+function npcSpawn(n, px, pz, first) { const R = n.R, o = {}; let ok = false; for (let k = 0; k < 10 && !ok; k++) { n.route = R.i(0, SPOTS.routes.length - 1); n.i = R.i(0, SPOTS.routes[n.route].length - 1); n.t = R(); routePos(n, o); const d = hyp(o.x - px, o.z - pz); ok = (first ? d > 9 : d > 45 && d < 115) && !NPCS.some(m => m !== n && !m.sit && !m.far && hyp(m.h.x - o.x, m.h.z - o.z) < 7); }
+  const h = n.h; h.x = o.x; h.z = o.z; h.y = footY(o.x, o.z, 9); h.h = Math.atan2(o.hx, o.hz); n.off = R.r(-0.5, 0.5); n.far = !ok && !first; }
 function updateNPCs(dt, px, pz, pcar) {
   const cx = camera.position.x, cz = camera.position.z, o = {}; let k = 0;
   for (const n of NPCS) { const h = n.h, act = k++ < Q.npc; if (!act) { if (h.g.visible) h.g.visible = false; continue; }
     const dc = hyp(h.x - cx, h.z - cz), vis = dc < 105 * Q.det; if (h.g.visible !== vis) h.g.visible = vis;
     if (n.sit) { if (vis && dc < 60) humanAnim(h, dt, { mode: 'cafe', talk: (floor(h.t * 0.25) + k) % 2 === 0 }); continue; }
-    if (dc > 135) { npcSpawn(n, px, pz); continue; }
+    if (n.far || dc > 135) { if (h.g.visible) h.g.visible = false; if ((n.cool = (n.cool || 0) - dt) < 0) { n.cool = n.far ? 1.2 : 0; npcSpawn(n, px, pz); } continue; }
     let v = n.sp; if (n.pause > 0) { n.pause -= dt; v = 0; } else if (n.R() < dt * 0.02) n.pause = n.R.r(2, 5);
     const dp = hyp(h.x - px, h.z - pz); if (dp < 1.0 && !pcar) v = 0;
     routePos(n, o); n.t += v * dt / o.l; if (n.t >= 1) { n.t = 0; n.i = (n.i + 1) % SPOTS.routes[n.route].length; }
@@ -2191,11 +2231,17 @@ function updateNPCs(dt, px, pz, pcar) {
 function wifeWarp(x, z, h) { const w = WIFE; w.x = x; w.z = z; w.h = h === undefined ? w.h : h; w.y = footY(x, z, groundH(x, z) + 0.4); COMP.stuck = 0; humanPlace(w); }
 function updateWife(dt, pl) {
   const w = WIFE; if (COMP.mode === 'seat') return; if (COMP.mode === 'script') { humanAnim(w, dt, { v: 0, mode: COMP.pose || 'foot', talk: COMP.talk > 0, look: COMP.look }); COMP.talk -= dt; humanPlace(w); return; }
-  let tx, tz, v = 0; if (COMP.mode === 'wait') { tx = COMP.tx; tz = COMP.tz; } else { const sh = sin(pl.h), ch = cos(pl.h); tx = pl.x - sh * 0.9 - ch * 1.15 * COMP.side; tz = pl.z - ch * 0.9 + sh * 1.15 * COMP.side; }
+  // eş: kahramanın yanında (kameranın karşı omzu tarafında), yarım adım geride — kadrajda yan yana görünürler; yan taraf kapalıysa (duvar, direk) arkasına geçer
+  let tx, tz, v = 0, pv = 0; if (COMP.mode === 'wait') { tx = COMP.tx; tz = COMP.tz; } else { const sh = sin(pl.h), ch = cos(pl.h), T = COMP.trail || (COMP.trail = []); tx = pl.x - sh * 0.45 - ch * 1.05 * COMP.side; tz = pl.z - ch * 0.45 + sh * 1.05 * COMP.side; pv = pl.v;
+    const dT = T.length ? hyp(pl.x - T[0][0], pl.z - T[0][1]) : 9; if (dT > 3) T.length = 0; if (dT > 0.35) { T.unshift([pl.x, pl.z]); if (T.length > 5) T.pop(); }      // kahramanın izi (≈35 cm aralıklı son adımlar): yanı kapalıysa eş bu izden, arkasından gelir
+    if (pointBlocked(tx, pl.y + 0.9, tz, 0.12) || pointBlocked(tx, pl.y + 0.35, tz, 0.12) || (pv > 0.4 && pointBlocked((tx + w.x) / 2, pl.y + 0.35, (tz + w.z) / 2, 0.25))) COMP.bk = max(COMP.bk || 0, 0.5);
+    COMP.tr = COMP.bk > 0; if (COMP.tr) { COMP.bk -= dt; const q = T[min(T.length - 1, 3)]; if (hyp(q[0] - pl.x, q[1] - pl.z) > 0.8) { tx = q[0]; tz = q[1]; } else { tx = pl.x - sh * 1.1; tz = pl.z - ch * 1.1; } } }
   const dx = tx - w.x, dz = tz - w.z, d = hyp(dx, dz), dpl = hyp(pl.x - w.x, pl.z - w.z);
   if (COMP.mode === 'follow' && (dpl > 30 || COMP.stuck > 1.6)) { const sh = sin(pl.h), ch = cos(pl.h); _np.x = pl.x - sh * 1.6; _np.z = pl.z - ch * 1.6; collide(_np, 0.3, pl.y, 1.6, 0.45); if (groundH(_np.x, _np.z) > 0.4 || supportY(_np.x, _np.z, pl.y, 0.5) > 0.4) wifeWarp(_np.x, _np.z, pl.h); return; }
-  if (d > 0.4) { v = d > 5 ? 6.8 : d > 2 ? max(pl.v * 1.05, 3.4) : clamp(d * 2.4, 1.1, max(pl.v, 1.6)); if (pl.crouch) v = min(v, 2.2); const stp = min(d, v * dt), ox = w.x, oz = w.z; _np.x = w.x + dx / d * stp; _np.z = w.z + dz / d * stp;
-    collide(_np, 0.27, w.y, 1.6, 0.45); collideDyn(_np, 0.27, null); const pdx = _np.x - pl.x, pdz = _np.z - pl.z, pd = hyp(pdx, pdz); if (pd < 0.7 && pd > 1e-4) { _np.x = pl.x + pdx / pd * 0.7; _np.z = pl.z + pdz / pd * 0.7; }
+  COMP.go = d > (COMP.go ? 0.07 : pv > 0.4 ? 0.12 : 0.4);      // kahraman yürürken adım adım eşlik eder (hız eşlemesi + mesafe düzeltmesi): geride kalıp kadrajdan çıkmaz
+  if (COMP.go) { v = d > 5 ? 7.2 : clamp(pv + d * 2.6, 1.1, min(7.6, max(1.9, pv * 1.2 + 0.8))); if (pl.crouch) v = min(v, 2.2); const stp = min(d, v * dt), ox = w.x, oz = w.z; _np.x = w.x + dx / d * stp; _np.z = w.z + dz / d * stp;
+    collide(_np, 0.27, w.y, 1.6, 0.45); collideDyn(_np, 0.27, null); COMP.bt = hyp(_np.x - ox, _np.z - oz) < stp * 0.55 ? (COMP.bt || 0) + dt : 0; if (COMP.bt > 0.2 && d > 0.5 && !COMP.tr) { COMP.bk = pv > 0.4 ? 1.2 : 5; COMP.bt = 0; }      // engele takıldı (masa, direk…): bir süre kahramanın izinden gelir
+    const pdx = _np.x - pl.x, pdz = _np.z - pl.z, pd = hyp(pdx, pdz); if (pd < 0.7 && pd > 1e-4) { _np.x = pl.x + pdx / pd * 0.7; _np.z = pl.z + pdz / pd * 0.7; }
     const gy = footY(_np.x, _np.z, w.y); if (gy > 0.4 && gy < w.y + 0.5) { w.x = _np.x; w.z = _np.z; w.y = gy < w.y - 0.02 ? max(gy, w.y - 9 * dt) : gy; }
     const mv = hyp(w.x - ox, w.z - oz); COMP.stuck = mv < stp * 0.3 && d > 2.5 ? COMP.stuck + dt : 0; if (mv > 1e-4) w.h += clamp(angD(w.h, Math.atan2(w.x - ox, w.z - oz)), -10 * dt, 10 * dt); v = mv / max(dt, 0.001); }
   else { COMP.stuck = 0; w.h += clamp(angD(w.h, COMP.mode === 'wait' && COMP.th !== undefined ? COMP.th : pl.h), -5 * dt, 5 * dt); }
@@ -2218,7 +2264,7 @@ function updateGuards(dt, pl, frozen) {
 /* OYUN — oyuncu (yaya / araç), omuz kamerası, etkileşim, HUD
    Kamera açısı a: bakış yönü (sin a, cos a). Fareyi sağa çekmek açıyı azaltır (sağa döner). */
 const PLY = { x: 0, y: 0, z: 0, h: 0, v: 0, vy: 0, ground: true, crouch: false, cover: false, veh: null, lock: false, pose: null, air: 0, stepT: 0 };
-const CAM = { yaw: 0, pitch: 0.16, cd: 3.2, side: 1, vyaw: 0, off: 0, offT: 9, fov: 58, eff: 0, px: 0, py: 0, pz: 0, gy: 0, shake: 0 };
+const CAM = { yaw: 0, pitch: 0.2, cd: 4.8, side: 1, vyaw: 0, off: 0, offT: 9, fov: 58, eff: 0, px: 0, py: 0, pz: 0, gy: 0, shake: 0 };
 let HCAR = null, HSCOOT = null; const INTERACT = [], TIMERS = [], _pp = { x: 0, z: 0 }, _v3 = new V3();
 const after = (sec, fn) => TIMERS.push({ t: G.t + sec, fn });
 function runTimers() { for (let i = TIMERS.length - 1; i >= 0; i--) if (TIMERS[i].t <= G.t) { const f = TIMERS[i].fn; TIMERS.splice(i, 1); f(); } }
@@ -2265,7 +2311,7 @@ function updateHUD(dt) {
 }
 function setPrompt(t) { if (t === promptOn) return; promptOn = t; const p = $('prompt'); if (t) { $('ptxt').textContent = t; p.classList.add('on'); } else p.classList.remove('on'); $('bUse').classList.toggle('dim', !t); }
 /* ---------- oyuncu: yaya ---------- */
-function plyPlace(x, z, h) { PLY.x = x; PLY.z = z; PLY.h = h; PLY.y = footY(x, z, groundH(x, z) + 0.4); PLY.vy = 0; PLY.ground = true; PLY.v = 0; HERO.x = x; HERO.y = PLY.y; HERO.z = z; HERO.h = h; humanPlace(HERO); CAM.yaw = h; CAM.pitch = 0.16; }
+function plyPlace(x, z, h) { PLY.x = x; PLY.z = z; PLY.h = h; PLY.y = footY(x, z, groundH(x, z) + 0.4); PLY.vy = 0; PLY.ground = true; PLY.v = 0; HERO.x = x; HERO.y = PLY.y; HERO.z = z; HERO.h = h; humanPlace(HERO); CAM.yaw = h; CAM.pitch = 0.2; }
 function footStep(dt) {
   const P = PLY; let tv = 0, dx = 0, dz = 0;
   if (I.an > 0.05 && !P.lock) { dx = sin(CAM.yaw) * I.mz - cos(CAM.yaw) * I.mx; dz = cos(CAM.yaw) * I.mz + sin(CAM.yaw) * I.mx; const l = hyp(dx, dz) || 1; dx /= l; dz /= l; const tr = lerp(11, 7.5, clamp((P.v - 3.4) / 3, 0, 1)), dh = clamp(angD(P.h, Math.atan2(dx, dz)), -tr * dt, tr * dt); P.h += dh; P.turn = dh / max(dt, 1e-4);
@@ -2286,7 +2332,7 @@ function footStep(dt) {
 }
 /* ---------- araca binme / inme ---------- */
 function vehSeat(c) { const two = c.sp.two; if (two) { humanSeat(HERO, c, 0, 0.93, -0.2); humanSeat(WIFE, c, 0, 0.99, -0.64); } else { humanSeat(HERO, c, 0.37, 0.5, -0.03); humanSeat(WIFE, c, -0.37, 0.53, -0.03); } COMP.mode = 'seat'; }
-function enterVeh(c, quick) { const go = () => { if (c.sp && c.sp.ad && !quick) toast(c.sp.ad, 2.4); PLY.veh = c; G.mode = 'drive'; PLY.crouch = false; PLY.v = 0; document.body.classList.add('drive'); c.col.off = true; c.ghost = true; vehSeat(c); CAM.vyaw = c.h; CAM.off = 0; CAM.cd = c.sp.two ? 4.6 : 6.4; sfx('door'); engineOn(true, c.sp.two); setPrompt(null); }; if (quick) go(); else fade(go); }
+function enterVeh(c, quick) { const go = () => { if (c.sp && c.sp.ad && !quick) toast(c.sp.ad, 2.4); PLY.veh = c; G.mode = 'drive'; PLY.crouch = false; PLY.v = 0; document.body.classList.add('drive'); c.col.off = true; c.ghost = true; vehSeat(c); CAM.vyaw = c.h; CAM.off = 0; CAM.cd = c.sp.two ? 5.2 : 7.3; sfx('door'); engineOn(true, c.sp.two); setPrompt(null); }; if (quick) go(); else fade(go); }
 function exitSpot(c, side) { const sh = sin(c.h), ch = cos(c.h), o = side * (c.sp.two ? 0.85 : c.sp.W / 2 + 0.7); _pp.x = c.x + ch * o + sh * 0.1; _pp.z = c.z - sh * o + ch * 0.1; const ox = _pp.x, oz = _pp.z; collide(_pp, 0.3, c.y, 1.8, 0.45); const moved = hyp(_pp.x - ox, _pp.z - oz); return footY(_pp.x, _pp.z, c.y + 0.4) > 0.4 && moved < 0.8 ? [_pp.x, _pp.z, moved] : null; }
 function exitVeh(quick) { const c = PLY.veh; if (!c) return; if (abs(c.v) > 2.4 && !quick) { toast('İnmek için önce dur'); return; }
   const go = () => { c.vx = c.vz = c.v = 0; c.brk = false; c.ghost = false; setCol(c.col, c.x + sin(c.h) * (c.sp.zm || 0), c.z + cos(c.h) * (c.sp.zm || 0), c.h); c.col.y0 = c.y - 1; c.col.y1 = c.y + c.sp.H; c.col.off = false; const a = exitSpot(c, 1) || exitSpot(c, -1) || [c.x - sin(c.h) * (c.sp.L / 2 + 0.8), c.z - cos(c.h) * (c.sp.L / 2 + 0.8)], b = exitSpot(c, -1) || a;
@@ -2306,15 +2352,21 @@ function vehStep(dt) {
 function camStep(dt) {
   const c = PLY.veh, pr = camera.aspect < 0.8; CAM.pitch = clamp(CAM.pitch + I.ly, -0.5, 1.15); let pvx, pvy, pvz, yaw, dist, fov = pr ? 68 : 58;
   if (c) { if (abs(I.lx) > 0.0005) { CAM.off -= I.lx; CAM.offT = 0; } else { CAM.offT += dt; if (CAM.offT > 1.4) CAM.off = damp(CAM.off, 0, 2.5, dt); } CAM.off = clamp(CAM.off, -2.6, 2.6);
-    CAM.vyaw += angD(CAM.vyaw, c.h + (c.v < -1 ? 0 : 0)) * (1 - Math.exp(-(3.2 + abs(c.v) * 0.08) * dt)); yaw = CAM.vyaw + CAM.off; CAM.yaw = yaw; dist = (c.sp.two ? 4.6 : 6.4) * (pr ? 1.3 : 1); pvx = c.x; pvy = c.y + (c.sp.two ? 1.3 : 1.42); pvz = c.z; fov += min(11, abs(c.v) * 0.24); }
+    CAM.vyaw += angD(CAM.vyaw, c.h + (c.v < -1 ? 0 : 0)) * (1 - Math.exp(-(3.2 + abs(c.v) * 0.08) * dt)); yaw = CAM.vyaw + CAM.off; CAM.yaw = yaw; dist = (c.sp.two ? 5.2 : 7.3) * (pr ? 1.3 : 1); pvx = c.x; pvy = c.y + (c.sp.two ? 1.45 : 1.58); pvz = c.z; fov += min(11, abs(c.v) * 0.24); }
   else { if (abs(I.lx) > 0.0005 || abs(I.ly) > 0.0005) CAM.offT = 0; else CAM.offT += dt; if (!locked && CAM.offT > 0.5 && I.an > 0.2 && I.mz > -0.5 && !PLY.lock) CAM.yaw -= I.mx * 0.9 * dt;      // fare kilidi yokken: yana basmak kamerayı da yavaşça çevirir
-    CAM.yaw -= I.lx; yaw = CAM.yaw; dist = (PLY.crouch ? 2.7 : 3.3) * (pr ? 1.3 : 1); const eh = HERO.H * (PLY.crouch ? 0.58 : 0.86); let so = CAM.side * (pr ? 0.36 : 0.52);
+    CAM.yaw -= I.lx; yaw = CAM.yaw; dist = (PLY.crouch ? 3.7 : 5.0) * (pr ? 1.3 : 1); const eh = HERO.H * (PLY.crouch ? 0.62 : 0.92); let so = CAM.side * (pr ? 0.42 : 0.66);      // macera kadrajı: karakter boydan görünür, çevre ferah
     // omuz kayması duvarın içine düşmesin: engel varsa kayma küçülür (anında), engel kalkınca yumuşakça geri açılır
     for (let k = 0; k < 4 && pointBlocked(PLY.x - cos(yaw) * so, PLY.y + eh, PLY.z + sin(yaw) * so, 0.3); k++) so *= 0.4; CAM.so = CAM.so === undefined || abs(so) < abs(CAM.so) || so * CAM.so < 0 ? so : damp(CAM.so, so, 5, dt); so = CAM.so;
     pvx = PLY.x - cos(yaw) * so; pvz = PLY.z + sin(yaw) * so; if (PLY.ground) CAM.gy = PLY.y; const jy = !PLY.ground && PLY.y > CAM.gy && PLY.y - CAM.gy < 1.3 ? CAM.gy + (PLY.y - CAM.gy) * 0.35 : PLY.y;      // zıplarken kamera yerinde kalır, şemsiye/tente içine girmez
     pvy = damp(CAM.py || jy + eh, jy + eh, 12, dt); CAM.py = pvy; if (hit.has('shoulder')) { CAM.side = -CAM.side; COMP.side = -CAM.side; } }
-  const p = c ? clamp(CAM.pitch, -0.1, 0.9) + 0.06 : CAM.pitch, cp = cos(p), dxx = sin(yaw) * cp, dyy = -sin(p), dzz = cos(yaw) * cp; let free = dist;
-  for (let k = 1; k <= 14; k++) { const t = k / 14 * dist, x = pvx - dxx * t, y = pvy - dyy * t, z = pvz - dzz * t; if (y < groundH(x, z) + 0.3 || pointBlocked(x, y, z, 0.32)) { free = max(0.45, t - dist / 14 * 1.3); break; } }
+  // çarpışma koruması: kamera kolu boyunca 22 örnek (aralık ≈ 23 cm); engel varsa kol o noktaya kadar kısalır
+  const p0 = c ? clamp(CAM.pitch, -0.1, 0.9) + 0.06 : CAM.pitch, ray = (q, ox, oz) => { const cq = cos(q), ax = sin(yaw) * cq, ay = -sin(q), az = cos(yaw) * cq; for (let k = 1; k <= 22; k++) { const t = k / 22 * dist, x = pvx + (ox || 0) - ax * t, y = pvy - ay * t, z = pvz + (oz || 0) - az * t; if (y < groundH(x, z) + 0.3 || pointBlocked(x, y, z, 0.32)) return max(0.45, t - dist / 22 * 1.3); } return dist; };
+  // şemsiye/tente/saçak altı: kol yukarıdan kesiliyorsa kamera yakınlaşmadan önce alçalır (bakış yatıklaşır); engel kalkınca yavaşça geri yükselir.
+  // Yürürken 0,35 sn sonraki konum da yoklanır → kamera tenteye varmadan alçalmaya başlar, ani yakınlaşma olmaz
+  const la = !c && dt > 0 ? 0.35 / dt : 0, lx = clamp((PLY.x - CAM.px) * la, -3, 3), lz = clamp((PLY.z - CAM.pz) * la, -3, 3);
+  let low = 0, f0 = ray(p0); if ((f0 < dist * 0.8 || (la && abs(lx) + abs(lz) > 0.2 && ray(p0, lx, lz) < dist * 0.8)) && p0 > 0.03) for (const q of [0.1, 0.2, 0.3]) if (p0 - q > -0.06 && ray(p0 - q) > dist * 0.9) { low = q; break; }
+  CAM.low = damp(CAM.low || 0, low, low > (CAM.low || 0) ? 8 : 2.2, dt); if (CAM.low < 0.002) CAM.low = 0;
+  const p = p0 - CAM.low, cp = cos(p), dxx = sin(yaw) * cp, dyy = -sin(p), dzz = cos(yaw) * cp, free = CAM.low ? ray(p) : f0;
   CAM.cd = free < CAM.cd ? free : damp(CAM.cd, free, 4, dt); const d = CAM.cd; let sx = 0, sy = 0; if (CAM.shake > 0.001) { CAM.shake *= Math.exp(-6 * dt); sx = (Math.random() - 0.5) * CAM.shake; sy = (Math.random() - 0.5) * CAM.shake; }
   camera.position.set(pvx - dxx * d + sx, max(pvy - dyy * d, groundH(pvx - dxx * d, pvz - dzz * d) + 0.3) + sy, pvz - dzz * d); camera.lookAt(pvx + dxx * 6, pvy + dyy * 6, pvz + dzz * 6);
   if (abs(fov - CAM.fov) > 0.05) { CAM.fov = damp(CAM.fov, fov, 4, dt); camera.fov = CAM.fov; camera.updateProjectionMatrix(); } CAM.eff = yaw; CAM.px = PLY.x; CAM.pz = PLY.z;
@@ -2657,7 +2709,8 @@ window.game = { ready: false, frame(cb) { frameCb = cb; wantFrames = 2; }, cam(x
     bench(n) { const gl = renderer.getContext(), px = new Uint8Array(4), t0 = performance.now(); n = n || 20; for (let i = 0; i < n; i++) { U_TIME.value += 1 / 60; render(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); } renderer.getDrawingBufferSize(_pv2); return { ms: +((performance.now() - t0) / n).toFixed(2), w: _pv2.x, h: _pv2.y, rs: RS, q: Q.name, post: POST.on, msaa: POST.ms, touch: IS_TOUCH, tris: renderer.info.render.triangles }; }, sim(sec, fn) { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) { if (fn) fn(i); update(1 / 60); } }, key(code, d) { if (d) keys.add(code); else keys.delete(code); }, act(a) { hit.add(a); },
   state: () => ({ step: G.step, x: +PLY.x.toFixed(2), y: +PLY.y.toFixed(2), z: +PLY.z.toFixed(2), h: +PLY.h.toFixed(2), v: +PLY.v.toFixed(2), veh: PLY.veh ? PLY.veh.type : null, cine: !!CINE, puz: !!PUZ, paused: G.paused, det: +ST.det.toFixed(2), danger: ST.chase ? +ST.chase.danger.toFixed(2) : 0, gap: Math.round(G.gap || 0), wife: [+WIFE.x.toFixed(1), +WIFE.z.toFixed(1)], ground: PLY.ground, crouch: PLY.crouch, cover: PLY.cover, prompt: promptOn, obj: objTxt, clues: G.clues.length, fails: G.fails, done: G.done }),
   start(n) { G.clues = []; G.done = false; G.playT = 0; G.fails = 0; ST.cp = 0; startPlay(); G.step = n; spawnStep(n); startStep(n, true); }, newGame, tp(x, z, h) { if (PLY.veh) { vehPut(PLY.veh, x, z, h || 0); PLY.veh.col.off = true; CAM.vyaw = h || 0; } else plyPlace(x, z, h || 0); }, skip() { let n = 0; while (CINE && n++ < 30) nextShot(); }, solve() { if (PUZ) PUZ.solve(); }, yaw(a) { CAM.yaw = a; },
-  enter(two) { enterVeh(two ? HSCOOT : HCAR, true); }, cap(on) { G.cap = !!on; applyOpts(); }, exit() { exitVeh(true); }, get d() { return { PLY, CAM, HCAR, HSCOOT, HERO, WIFE, G, ST, CHASER, TRAFFIC, NPCS, GUARDS, POI, SPOTS, scene, camera, renderer, Q }; } };
+  rng: () => [HR(), PR(), HOUSES.length, HOUSES.reduce((a, h) => a + h.x * 3 + h.z * 7 + h.hw + h.hd, 0)],      // test: ortak rastgele dizilerin konumu (dünya kurulumu aynı mı?)
+  enter(two) { enterVeh(two ? HSCOOT : HCAR, true); }, cap(on) { G.cap = !!on; applyOpts(); }, exit() { exitVeh(true); }, get d() { return { PLY, CAM, COMP, HCAR, HSCOOT, HERO, WIFE, G, ST, CHASER, TRAFFIC, NPCS, GUARDS, POI, SPOTS, scene, camera, renderer, Q }; } };
 (async () => { const t0 = performance.now(); await makeTextures(); const t1 = performance.now(); await stage('Gökyüzü ve ışık', 0.36); makeSky(); makeMaterials(); faceAtlas(); await stage('Bodrum kuruluyor', 0.45); await buildWorld(); await stage('Araçlar ve insanlar', 0.86);
   initVehicles(); HCAR = makeCar('sedan', '#1d4466', { interior: true, plate: 'plk1' }); HSCOOT = makeCar('scooter', '#8fbfae'); vehPut(HCAR, SPOTS.car.x, SPOTS.car.z, SPOTS.car.rot); vehPut(HSCOOT, SPOTS.scooter.x, SPOTS.scooter.z, SPOTS.scooter.rot); makePeople(); setupStory();
   const s = loadSave(); if (s) { if (s.q !== undefined && s.qu) { QI = clamp(s.q | 0, 0, 2); QUSER = true; } G.snd = s.snd !== false; G.cap = !!s.cap; G.sens = clamp(s.sens | 0 || 5, 1, 9); if (Array.isArray(s.mus)) { MU.on = !!s.mus[0]; MU.vol = clamp(+s.mus[1] || 0, 0, 1); if (KUPLE.includes(s.mus[2])) MU.pick = s.mus[2]; } if (s.names) { const a = String(s.names.him || ''), b = String(s.names.her || ''); G.names.him = (!a || a === 'Aras' ? 'Yavuz' : a).slice(0, 12); G.names.her = (!b || b === 'Defne' ? 'Bircan' : b).slice(0, 12); } $('btnCont').style.display = s.step > 0 ? '' : 'none'; }
