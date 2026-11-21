@@ -60,6 +60,33 @@ body.cine #hud,body.menu #hud{opacity:0}
 #objc{font-size:10.5px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:5px}
 #objt{font-size:15px;line-height:1.36;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 #objd{font-size:11px;letter-spacing:.12em;color:rgba(255,255,255,.7);margin-top:5px;font-variant-numeric:tabular-nums}
+#wn{display:none;margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.16);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.86)}
+#wn.on{display:block}
+#wst{display:inline-flex;gap:3px;vertical-align:-1px;margin-left:8px}
+#wst i{width:12px;height:12px;background:rgba(255,255,255,.2);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+#wst i.on{background:#ffcf5a}
+#wn.blink #wst i.on{animation:wbl .7s steps(2) infinite}
+@keyframes wbl{50%{opacity:.2}}
+#wbar{display:block;height:3px;margin-top:6px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
+#wbar i{display:block;height:100%;width:0;background:#ffcf5a}
+#wn.hot #wbar i{background:var(--red)}
+#hpw{display:none;margin-top:7px;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.72);align-items:center;justify-content:flex-end;gap:8px}
+#hpw.on{display:flex}
+#hpw b{display:block;width:96px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden}
+#hpf{display:block;height:100%;width:100%;background:#7fd08a}
+#hpw.low #hpf{background:var(--red)}
+#hurt{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(ellipse at 50% 50%,rgba(170,20,10,0) 45%,rgba(170,20,10,.55) 100%);z-index:2}
+#hurt.on{opacity:1;transition:opacity .05s}
+/* sokak etkileşimi: hedef yakınken beliren eylem çubuğu (masaüstünde tuş ipucu, dokunmatikte düğme) */
+#act{position:absolute;left:50%;bottom:3.4vh;transform:translateX(-50%);display:none;align-items:center;gap:7px;white-space:nowrap;font-size:12px;letter-spacing:.04em}
+#act.on{display:flex}
+#act b{font-weight:500;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-right:4px;text-shadow:0 1px 3px #000}
+#act span{display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 6px;border-radius:999px;background:rgba(11,20,29,.5);border:1px solid rgba(255,255,255,.2)}
+#act span.off{display:none}
+#act em{font-style:normal}
+#act kbd{display:inline-flex;align-items:center;justify-content:center;min-width:21px;height:21px;border-radius:6px;background:var(--sand);color:var(--ink);font:700 11px var(--ui)}
+body.touch #act{left:14px;transform:none;bottom:172px;flex-direction:column;align-items:flex-start;gap:7px;z-index:7}body.touch #act span{pointer-events:auto;padding:9px 13px;font-size:12.5px;border-color:rgba(255,255,255,.4)}body.touch #act kbd,body.touch #aP{display:none}body.touch #act b{display:none}
+body.drive #act{display:none}
 #meter{position:absolute;left:50%;top:18px;transform:translateX(-50%);width:min(230px,42vw);opacity:0;transition:opacity .3s;text-align:center}
 #meter.on{opacity:1}
 #mlab{font-size:10px;letter-spacing:.3em;color:#ffd9cf;text-shadow:0 1px 3px #000}
@@ -130,11 +157,13 @@ body.cine #touch>*,body.menu #touch>*{display:none!important}
 #bJump{right:18px;bottom:66px;width:66px;height:66px}
 #bCover{right:96px;bottom:36px;width:58px;height:58px}
 #bRun{right:92px;bottom:112px;width:54px;height:54px}
+#bPunch{right:166px;bottom:88px;width:60px;height:60px;font-size:9.5px;border-color:#ffab8f;color:#ffd9cc}
+#bBlock{right:166px;bottom:24px;width:54px;height:54px;font-size:9.5px}
 #bGas{right:14px;bottom:26px;width:84px;height:112px;border-radius:16px;font-size:13px}
 #bBrake{right:108px;bottom:26px;width:72px;height:84px;border-radius:16px}
 #bHb{right:108px;bottom:120px;width:72px;height:40px;border-radius:12px;font-size:9px}
 #bPause{left:50%;top:10px;margin-left:-17px;width:34px;height:34px;font-size:11px;opacity:.75}
-body.drive #bJump,body.drive #bCover,body.drive #bRun{display:none}
+body.drive #bJump,body.drive #bCover,body.drive #bRun,body.drive #bPunch,body.drive #bBlock{display:none}
 body:not(.drive) #bGas,body:not(.drive) #bBrake,body:not(.drive) #bHb{display:none}
 body.touch #prompt{bottom:230px;padding:12px 20px 12px 14px;font-size:15px;border-color:var(--gold)}body.touch #prompt kbd{display:none}
 body.touch #prompt:before{content:"";width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(circle,var(--gold) 0 38%,transparent 42%)}
@@ -187,20 +216,23 @@ body.touch .kb,body:not(.touch) .tc{display:none}
   #meter{top:132px}#subs{bottom:238px}#stx{font-size:14px}.btn{min-width:200px;padding:11px 16px}
   #toast{top:150px;font-size:12.5px}#stance{bottom:196px}
 }
-@media (max-height:480px){#joy{width:116px;height:116px;bottom:12px}#bUse{bottom:118px}#subs{bottom:16vh}body.touch #prompt{bottom:150px}h1{font-size:40px;margin:2px 0}.help{display:none}}
+body.wnon #toast{top:max(21vh,146px)}
+@media (max-height:480px){#joy{width:116px;height:116px;bottom:12px}#bUse{bottom:136px}#subs{bottom:16vh}body.touch #prompt{bottom:150px}body.touch #act{left:50%;transform:translateX(-50%);bottom:10px;flex-direction:row;align-items:center}h1{font-size:40px;margin:2px 0}.help{display:none}}
 </style>
 </head>
 <body class="menu">
 <canvas id="c"></canvas>
 <div id="vig"></div>
+<div id="hurt"></div>
 <div id="bars"><i></i><i></i></div>
 <div id="hud">
   <div id="radar" class="glass"><canvas id="rad" width="296" height="296"></canvas></div>
   <div id="area"></div>
-  <div id="obj" class="glass"><div id="objc"></div><div id="objt"></div><div id="objd"></div></div>
+  <div id="obj" class="glass"><div id="objc"></div><div id="objt"></div><div id="objd"></div><div id="wn"><span id="wtx">TANSİYON</span><span id="wst"><i></i><i></i><i></i><i></i></span><b id="wbar"><i></i></b></div><div id="hpw"><span>CAN</span><b><i id="hpf"></i></b></div></div>
   <div id="meter"><span id="mlab">TEHLİKE</span><b><i id="mfill"></i></b></div>
   <div id="mark"><i></i><span></span></div>
   <div id="prompt" class="glass"><kbd>E</kbd><span id="ptxt"></span></div>
+  <div id="act"><b id="actn"></b><span id="aT" data-act="taunt"><kbd>Q</kbd><em>Laf at</em></span><span id="aS" data-act="shove"><kbd>G</kbd><em>İtiş</em></span><span id="aP" data-act="punch"><kbd>X</kbd><em>Yumruk</em></span><span id="aC" data-act="calm"><kbd>R</kbd><em>Yatıştır</em></span></div>
   <div id="stance">SİPERDE</div>
   <div id="speedo"><b id="spd">0</b><small>KM/S</small><span id="gear">D</span><div id="rpm"><i></i></div></div>
   <div id="toast" class="glass"></div>
@@ -218,6 +250,8 @@ body.touch .kb,body:not(.touch) .tc{display:none}
   <div class="tb" id="bJump" data-act="jump">ZIPLA</div>
   <div class="tb" id="bCover" data-act="cover">SİPER</div>
   <div class="tb" id="bRun" data-hold="run">KOŞ</div>
+  <div class="tb" id="bPunch" data-act="punch">YUMRUK</div>
+  <div class="tb" id="bBlock" data-hold="block">SAVUN</div>
   <div class="tb" id="bGas" data-hold="gas">GAZ</div>
   <div class="tb" id="bBrake" data-hold="brake">FREN<br>GERİ</div>
   <div class="tb" id="bHb" data-hold="hb">EL FRENİ</div>
@@ -233,8 +267,8 @@ body.touch .kb,body:not(.touch) .tc{display:none}
   <div class="btn ghost" id="btnCont" style="display:none">Devam Et</div>
   <div class="row"><div class="btn ghost sm" id="btnQual">Grafik</div><div class="btn ghost sm" id="btnCap">Şapka: Yok</div></div>
   <div class="names">KAHRAMANLAR <input id="nmHim" maxlength="12" autocomplete="off" spellcheck="false"><input id="nmHer" maxlength="12" autocomplete="off" spellcheck="false"></div>
-  <div class="help kb"><b>W A S D</b> / <b>Ok tuşları</b> hareket · <b>Fare</b> <span id="hMouse">omuz kamerası</span> · <b>Shift</b> koş · <b>Boşluk</b> zıpla · <b>C</b> siper al · <b>E</b> ya da <b>tık</b>: incele / araca bin · <b>M</b> büyük harita · <b>P</b> duraklat</div>
-  <div class="help tc">Sol başparmak: hareket ve direksiyon · Ekranı sürükle: kamera · Ekrandaki ipucuna ya da aracın üstüne dokun: bin / incele · Sağdaki düğmeler: <b>ZIPLA</b>, <b>SİPER</b>, <b>KOŞ</b> · Araçta: <b>GAZ</b> ve <b>FREN</b></div>
+  <div class="help kb"><b>W A S D</b> / <b>Ok tuşları</b> hareket · <b>Fare</b> <span id="hMouse">omuz kamerası</span> · <b>Shift</b> koş · <b>Boşluk</b> zıpla · <b>C</b> siper al · <b>E</b> ya da <b>tık</b>: incele / araca bin · <b>M</b> büyük harita · <b>P</b> duraklat<br>Sokakta: <b>Q</b> laf at · <b>G</b> itiş · <b>X</b> / <b>sol tık</b> yumruk · <b>Z</b> / <b>sağ tık</b> savun · <b>R</b> yatıştır / teslim ol</div>
+  <div class="help tc">Sol başparmak: hareket ve direksiyon · Ekranı sürükle: kamera · Ekrandaki ipucuna ya da aracın üstüne dokun: bin / incele · Sağdaki düğmeler: <b>ZIPLA</b>, <b>SİPER</b>, <b>KOŞ</b>, <b>YUMRUK</b>, <b>SAVUN</b> · Birine yaklaşınca: <b>Laf at</b>, <b>İtiş</b>, <b>Yatıştır</b> · Araçta: <b>GAZ</b> ve <b>FREN</b></div>
 </div>
 <div class="ov" id="pause">
   <h2>DURAKLATILDI</h2><div class="rule"></div>
@@ -244,8 +278,8 @@ body.touch .kb,body:not(.touch) .tc{display:none}
   <div class="row"><div class="btn ghost sm" id="btnQual2">Grafik</div><div class="btn ghost sm" id="btnSnd">Ses: Açık</div><div class="btn ghost sm" id="btnSens">Hassasiyet: 5</div><div class="btn ghost sm" id="btnCap2">Şapka: Yok</div></div>
   <div class="row"><div class="btn ghost sm" id="btnMus">Müzik: Otomatik</div><div class="btn ghost sm" id="btnMusV">Müzik Sesi: %70</div></div>
   <div class="btn ghost" id="btnMenu">Ana Menü</div>
-  <div class="help kb"><b>W A S D</b> hareket · <b>Shift</b> koş · <b>Boşluk</b> zıpla / el freni · <b>C</b> siper · <b>E</b> / <b>tık</b> etkileşim · <b>H</b> korna · <b>V</b> kamera omzu · <b>M</b> harita · <b>N</b> müzik · <b>B</b> kuple · <b>9</b> / <b>0</b> müzik sesi</div>
-  <div class="help">Siperdeyken (C) alçak engellerin arkasında nöbetçiler seni göremez. Radardaki kırmızı koniler görüş alanlarıdır; altın işaret hedefi gösterir.</div>
+  <div class="help kb"><b>W A S D</b> hareket · <b>Shift</b> koş · <b>Boşluk</b> zıpla / el freni · <b>C</b> siper · <b>E</b> / <b>tık</b> etkileşim · <b>H</b> korna · <b>V</b> kamera omzu · <b>M</b> harita · <b>N</b> müzik · <b>B</b> kuple · <b>9</b> / <b>0</b> müzik sesi<br>Sokak: <b>Q</b> laf at · <b>G</b> itiş · <b>X</b> / <b>sol tık</b> yumruk (art arda: kombo) · <b>Z</b> / <b>sağ tık</b> savun · <b>R</b> yatıştır / polise teslim ol</div>
+  <div class="help">Siperdeyken (C) alçak engellerin arkasında nöbetçiler seni göremez. Radardaki kırmızı koniler görüş alanlarıdır; altın işaret hedefi gösterir.<br>Kavga büyürse aranma seviyesi (★) artar: polisin gözünden kaybol ve bekle, ya da düşük seviyede <b>R</b> ile yatıştır.</div>
 </div>
 <div class="ov" id="jour"><h2>GÜNLÜK</h2><div class="rule"></div><div id="jlist"></div><div class="btn ghost" id="btnJourBack">Kapat</div></div>
 <div class="ov" id="puz"><div class="pbox"><h3 id="puzT"></h3><p id="puzD"></p><div id="puzB"></div><div id="puzS"></div><div class="row"><div class="btn ghost sm" id="puzHint">İpucu</div><div class="btn ghost sm" id="puzQuit">Vazgeç</div></div></div></div>
@@ -319,13 +353,13 @@ function saveGame() { try { localStorage.setItem(SAVE_KEY, JSON.stringify({ step
 function loadSave() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (_) { return null; } }
 
 /* ---------- girdi ---------- */
-const keys = new Set(), hit = new Set(), held = { run: false, gas: false, brake: false, hb: false };
-const KEYACT = { KeyE: 'use', Enter: 'use', KeyF: 'use', Space: 'jump', KeyC: 'cover', ControlLeft: 'cover', KeyP: 'pause', Escape: 'pause', KeyM: 'map', KeyH: 'horn', KeyV: 'shoulder', KeyJ: 'journal' };
+const keys = new Set(), hit = new Set(), held = { run: false, gas: false, brake: false, hb: false, block: false, rmb: false };
+const KEYACT = { KeyE: 'use', Enter: 'use', KeyF: 'use', Space: 'jump', KeyC: 'cover', ControlLeft: 'cover', KeyP: 'pause', Escape: 'pause', KeyM: 'map', KeyH: 'horn', KeyV: 'shoulder', KeyJ: 'journal', KeyQ: 'taunt', KeyG: 'shove', KeyX: 'punch', KeyR: 'calm' };      // sokak: laf at / itiş / yumruk / yatıştır (savunma: Z ya da sağ tık basılı)
 const I = { mx: 0, mz: 0, an: 0, run: false, lx: 0, ly: 0, gas: 0, brake: 0, steer: 0, hb: false };
 const look = { dx: 0, dy: 0 };
 addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT') return; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault(); if (e.repeat) return; keys.add(e.code); const a = KEYACT[e.code]; if (a) hit.add(a); });
 addEventListener('keyup', e => keys.delete(e.code));
-addEventListener('blur', () => { keys.clear(); held.gas = held.brake = held.hb = false; });
+addEventListener('blur', () => { keys.clear(); held.gas = held.brake = held.hb = held.block = held.rmb = false; });
 // İşaretçi kilidi: önizleme pencereleri (sandbox iframe) buna izin vermeyebilir; o zaman farenin sol tuşu basılı sürüklenerek bakılır.
 let locked = false, dragging = false, everLocked = false, lockFails = 0, lockTry = false, lockNote = 0;
 const FRAMED = (() => { try { return window.top !== window.self; } catch (_) { return true; } })();
@@ -338,8 +372,8 @@ function unlock() { try { if (document.pointerLockElement) document.exitPointerL
 let tapS = null; const _tv = new V3();
 function tapEnd(x, y) { const s = tapS; tapS = null; if (!s || !promptOn || !promptPos || !G.playing || G.paused || G.cine) return; if (performance.now() - s.t > 380 || hyp(x - s.x, y - s.y) > 14) return;
   _tv.set(promptPos.x, promptPos.y, promptPos.z).project(camera); if (_tv.z > 1) return; if (hyp(x - (_tv.x * 0.5 + 0.5) * SW, y - (0.5 - _tv.y * 0.5) * SH) < max(96, min(SW, SH) * 0.2)) hit.add('use'); }
-canvas.addEventListener('mousedown', e => { if (!G.playing || G.paused) return; if (G.cine) { hit.add('use'); return; } if (e.button === 0) { if (locked) { if (promptOn) hit.add('use'); } else tapS = { x: e.clientX, y: e.clientY, t: performance.now() }; } dragging = true; if (!locked) tryLock(); });
-addEventListener('mouseup', e => { dragging = false; tapEnd(e.clientX, e.clientY); });
+canvas.addEventListener('mousedown', e => { if (!G.playing || G.paused) return; if (G.cine) { hit.add('use'); return; } if (e.button === 2) held.rmb = true; if (e.button === 0) { if (locked) hit.add('click'); else tapS = { x: e.clientX, y: e.clientY, t: performance.now() }; } dragging = true;      /* kilitli farede sol tık: ipucu varsa etkileşim, kavgada yumruk (karar 75_street.js'te) */ if (!locked) tryLock(); });
+addEventListener('mouseup', e => { if (e.button === 2) held.rmb = false; dragging = false; if (e.button === 0) tapEnd(e.clientX, e.clientY); });
 addEventListener('mousemove', e => { if (dragging && !locked && e.buttons === 0) dragging = false; if (locked || dragging) { look.dx += e.movementX || 0; look.dy += e.movementY || 0; } });
 document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === canvas; if (locked) { everLocked = true; lockTry = false; } });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
@@ -376,7 +410,7 @@ function readInput() {
   if (gp && gp.connected) { const dz = v => abs(v) < 0.16 ? 0 : v, ax = gp.axes, bt = i => gp.buttons[i] && gp.buttons[i].pressed, bv = i => gp.buttons[i] ? gp.buttons[i].value : 0;
     const x = dz(ax[0] || 0), y = dz(ax[1] || 0); if (x || y) { mx = x; mz = -y; an = min(1, hyp(x, y)); }
     look.dx += dz(ax[2] || 0) * 14; look.dy += dz(ax[3] || 0) * 10; gas = max(gas, bv(7)); brake = max(brake, bv(6)); if (bt(10) || bt(1)) run = true; if (bt(5)) hb = true;
-    for (const [i, a] of [[0, 'jump'], [2, 'use'], [1, 'cover'], [9, 'pause'], [3, 'map']]) { if (bt(i) && !padPrev[i]) hit.add(a); padPrev[i] = bt(i); } }
+    held.pad = !!bt(4); for (const [i, a] of [[0, 'jump'], [2, 'use'], [1, 'cover'], [9, 'pause'], [3, 'map'], [5, 'punch']]) { if (bt(i) && !padPrev[i]) hit.add(a); padPrev[i] = bt(i); } }
   I.mx = mx; I.mz = mz; I.an = an; I.run = run; I.gas = gas; I.brake = brake; I.steer = clamp(mx, -1, 1); I.hb = hb;
   const s = (0.0011 + G.sens * 0.00034); I.lx = look.dx * s; I.ly = look.dy * s; look.dx = look.dy = 0;
 }
@@ -551,6 +585,11 @@ function signAtlas() {
   S('hali', 'HALI · KİLİM', '#7a1f2b', '#f3e2bd', serif, { px: 38 }); S('taksi', 'TAKSİ', '#f2c230', '#111', sans, { px: 60 }); S('cadde', 'NEYZEN TEVFİK CD.', '#1c4f8f', '#fff', sans, { px: 24, border: '#fff' }); S('cadde2', 'ARTEMİSİA SK.', '#1c4f8f', '#fff', sans, { px: 28, border: '#fff' });
   S('bayrak', '', '#e30a17', '#fff', sans, { draw: (x, y) => { g.fillStyle = '#fff'; g.beginPath(); g.arc(x + 96, y + 64, 32, 0, TAU); g.fill(); g.fillStyle = '#e30a17'; g.beginPath(); g.arc(x + 104, y + 64, 25.6, 0, TAU); g.fill(); g.fillStyle = '#fff'; g.beginPath(); for (let k = 0; k < 5; k++) { const a = -PI / 2 + k * TAU / 5 + PI / 2, a2 = a + TAU / 10; g.lineTo(x + 140 + cos(a + PI) * 16, y + 64 + sin(a + PI) * 16); g.lineTo(x + 140 + cos(a2 + PI) * 6.2, y + 64 + sin(a2 + PI) * 6.2); } g.fill(); } });
   S('kazi', 'KAZI ALANI\nKARYA DÖNEMİ · MÖ 4. YY', '#e9e2cf', '#3d3528', serif, { px: 24, border: '#3d3528' }); S('bar', 'LİMAN BAR', '#101820', '#f2a65a', serif, { px: 44 }); S('market', 'BAKKAL', '#2e7d4f', '#fff', sans);
+  // sokak sistemi: gece kulübü neonu, polis aracı yazısı, polis noktası ve sağlık ocağı tabelaları
+  S('korfez', ' ', '#0d0a1a', '#ff5fd2', serif, { px: 46, draw: (x, y) => { g.strokeStyle = '#46e0ff'; g.lineWidth = 4; g.strokeRect(x + 10, y + 12, 236, 104); g.save(); let px = 44; g.font = serif.replace('#', px); while (g.measureText('KÖRFEZ BAR').width > 208 && px > 12) { px -= 2; g.font = serif.replace('#', px); } g.shadowColor = '#ff5fd2'; g.shadowBlur = 18; g.fillStyle = '#ff5fd2'; g.fillText('KÖRFEZ BAR', x + 128, y + 66); g.shadowBlur = 5; g.fillStyle = '#ffe6fa'; g.fillText('KÖRFEZ BAR', x + 128, y + 66); g.restore(); } });
+  S('polis', 'POLİS', '#f4f6f8', '#17337a', sans, { px: 64, draw: (x, y) => { g.fillStyle = '#17337a'; g.fillRect(x, y + 108, 256, 20); g.fillRect(x, y, 256, 14); } });
+  S('karakol', 'POLİS NOKTASI\nKALE MEYDANI', '#17337a', '#ffffff', sans, { px: 30, border: '#ffffff' });
+  S('saglik', 'SAĞLIK OCAĞI\nACİL', '#ffffff', '#c1272d', sans, { px: 32, border: '#c1272d' });
   TX.sign = canvasTex(c, true);
 }
 // Bitki atlası: 4×4 hücre (256). FOL[ad] = [u0, v0, u1, v1]
@@ -729,6 +768,10 @@ function makeMaterials() {
   reg('window', std({ map: TX.win, roughnessMap: TX.winR, roughness: 1, metalness: 0, envMapIntensity: 1.5 }), { cast: false, far: 900 });
   reg('sign', std({ map: TX.sign, roughness: 0.55, metalness: 0, side: T.DoubleSide }), { cast: false, far: 340 });
   reg('generic', genericMat(), { far: 280, ax: true }); MATS.genericD = genericMat({ side: T.DoubleSide });
+  // neon: ışıması müziğin vuruşuyla (120 vuruş/dk) atan yüzeyler — aX = [pürüz, faz (0–1), ışıma]; gece kulübünün pisti, LED duvarı, tüpleri
+  { const mt = std({ vertexColors: true, roughness: 1, metalness: 0 }); mt.onBeforeCompile = sh => { sh.uniforms.uT = U_TIME; sh.vertexShader = 'attribute vec3 aX;\nvarying vec3 vX;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vX = aX;');
+      sh.fragmentShader = 'uniform float uT;\nvarying vec3 vX;\n' + sh.fragmentShader.replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n roughnessFactor = vX.x;').replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n { float ph_ = fract(uT * 2.0 + vX.y); float k_ = vX.y < 0.0 ? 1.0 : 0.3 + 0.7 * exp(-3.2 * ph_); totalEmissiveRadiance += diffuseColor.rgb * vX.z * 5.0 * k_; }'); };
+    mt.customProgramCacheKey = () => 'neon'; reg('neon', mt, { far: 240, ax: true, cast: false, ch: 110 }); }
   reg('paintV', new T.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.5, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.9 }), { far: 480 });
   reg('glassS', std({ color: LC('#0c141b'), roughness: 0.045, metalness: 0, envMapIntensity: 1.7 }), { cast: false, far: 480 });
   reg('foliage', windPatch(std({ map: TX.foliage, alphaTest: POST.msaa ? 0.3 : 0.42, alphaToCoverage: !!POST.msaa, side: T.DoubleSide, vertexColors: true, roughness: 0.8, metalness: 0, envMapIntensity: 0.45 }), 'fol'), { far: 800, ax: true });
@@ -1399,6 +1442,80 @@ function buildCastle() {
   signPost(140, 80, PI * 0.5, ['kale']);
 }
 
+/* ============================== 48b_venue.js ============================== */
+/* DÜNYA 4b — Kale Meydanı mekânları: Körfez Bar (içine girilen gece kulübü), Polis Noktası, Sağlık Ocağı.
+   Ortak rastgele dizilere (HR, PR) dokunmaz; kendi RNG'si var. Canlı öğeler (insanlar, ışık hüzmeleri, olay) 75_street.js'te. */
+const VEN = {
+  bar: { x: 213, z: 56, x0: 203.3, x1: 222.7, z0: 47.8, z1: 64.2, door: [203.1, 56], out: [199.5, 56] },
+  pol: { x: 139, z: 42.5, out: [139, 49.2, 0], park: [[148.2, 42.2, 0], [151.6, 42.2, 0]], lot: [[129.2, 44.5, 0], [156.2, 44.5, 0], [139, 56, PI / 2]] },
+  med: { x: 186, z: 42, out: [186, 48.6, 0], lot: [[195.6, 44.5, 0], [176.4, 44.5, 0], [186, 55.5, PI / 2]] },
+  spots: { bartender: [209.5, 49.0, 0], dj: [221.25, 56, -PI / 2], dance: [[212.0, 54.6, 0.6], [214.7, 56.4, -2.2], [213.1, 58.1, 2.6]], victim: [207.3, 51.25, PI], bully: [212.6, 51.3, PI], bouncer: [202.1, 59.6, -PI / 2], sofa: [211.5, 63.32, PI] }
+};
+function buildVenues() {
+  const R = RNG(4141), Y = PL, nb = (g, x, y, z, sx, sy, sz, c, em, ph) => box(g, x, y, z, sx, sy, sz, 0, c, { ex: [0.5, ph === undefined ? -1 : ph, em] });
+  /* ---------- Körfez Bar ---------- */
+  { const b = VEN.bar, cx = b.x, cz = b.z, H = 4.4, cW = col('#1c1e27'), cIn = col('#15161d'), cGold = col('#c9a45c'), cMag = col('#ff3fc8'), cCy = col('#35d8ff'), cAm = col('#ffb43a'), cVi = col('#8a5cff');
+    anchor(cx, cz); const gp = B('plaster'), gg = B('generic'), gn = B('neon');
+    // duvarlar (batı cephesinde 5,2 m'lik giriş), çatı, altın saçak bandı
+    box(gp, cx, Y + H / 2, 47.65, 20, H, 0.3, 0, cW, { uv: 3 }); box(gp, cx, Y + H / 2, 64.35, 20, H, 0.3, 0, cW, { uv: 3 }); box(gp, 222.85, Y + H / 2, cz, 0.3, H, 16.4, 0, cW, { uv: 3 });
+    box(gp, 203.15, Y + H / 2, 50.45, 0.3, H, 5.9, 0, cW, { uv: 3 }); box(gp, 203.15, Y + H / 2, 61.55, 0.3, H, 5.9, 0, cW, { uv: 3 }); box(gp, 203.15, Y + 3.9, cz, 0.3, 1.0, 5.2, 0, cW, { uv: 3 });
+    box(gp, cx, Y + H + 0.15, cz, 20.6, 0.3, 17.6, 0, col('#101116'), { uv: 3 }); box(gg, cx, Y + H + 0.36, cz, 20.7, 0.12, 17.7, 0, cGold, { ex: [0.35, 0.8, 0], skip: 'B' });
+    colBox(cx, 47.65, 10, 0.15, 0, Y - 1, Y + H + 0.3, 'bar'); colBox(cx, 64.35, 10, 0.15, 0, Y - 1, Y + H + 0.3, 'bar'); colBox(222.85, cz, 0.15, 8.2, 0, Y - 1, Y + H + 0.3, 'bar');
+    colBox(203.15, 50.45, 0.15, 2.95, 0, Y - 1, Y + H + 0.3, 'bar'); colBox(203.15, 61.55, 0.15, 2.95, 0, Y - 1, Y + H + 0.3, 'bar'); colBox(203.15, cz, 0.15, 2.6, 0, Y + 3.4, Y + H + 0.3, 'bar');
+    colBox(cx, cz, 10.3, 8.8, 0, Y + H - 0.02, Y + H + 0.4, 'bar').cam = true;      // çatı: yalnız kamera için engel (kamera tavanın üstüne çıkmasın)
+    HOUSES.push({ x: cx, z: cz, hw: 10, hd: 8.5, rot: 0, h: H + 0.4 });
+    // zemin: koyu parlak döşeme + vuruşla yanıp sönen pist (6×6 karo)
+    quad(gg, [b.x0, Y + 0.025, b.z1], [b.x1, Y + 0.025, b.z1], [b.x1, Y + 0.025, b.z0], [b.x0, Y + 0.025, b.z0], undefined, col('#231f36'), [0.5, 0.05, 0.16]);
+    quad(gg, [b.x0, Y + H - 0.01, b.z0], [b.x1, Y + H - 0.01, b.z0], [b.x1, Y + H - 0.01, b.z1], [b.x0, Y + H - 0.01, b.z1], undefined, col('#0a0a0e'), [0.9, 0, 0]);      // tavan altı
+    const PC = [cMag, cCy, cVi, cAm]; for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) { const x = 210.5 + i, z = 53 + j, c = PC[(i * 3 + j * 5 + (i * j) % 3) % 4];
+      quad(gn, [x + 0.04, Y + 0.04, z + 0.96], [x + 0.96, Y + 0.04, z + 0.96], [x + 0.96, Y + 0.04, z + 0.04], [x + 0.04, Y + 0.04, z + 0.04], [0, 0, 0, 0], c, [0.25, ((i + j) % 2) * 0.5 + (i % 3) * 0.08, 0.16]); }
+    // bar: tezgâh, arkadan aydınlatmalı raf, şişeler, tabureler
+    box(gg, 209.5, Y + 0.55, 50.2, 8, 1.1, 0.6, 0, col('#2a1a12'), { ex: [0.4, 0, 0] }); box(gg, 209.5, Y + 1.13, 50.2, 8.3, 0.06, 0.82, 0, col('#0b0b0d'), { ex: [0.12, 0.3, 0] }); nb(gn, 209.5, Y + 0.98, 50.52, 7.8, 0.05, 0.03, cMag, 0.5, 0.0);
+    colBox(209.5, 50.2, 4.1, 0.4, 0, Y - 1, Y + 1.16, 'cover');
+    box(gg, 209.5, Y + 1.7, 47.95, 7.8, 2.6, 0.26, 0, col('#17110d'), { ex: [0.6, 0, 0], skip: 'N' }); nb(gn, 209.5, Y + 1.75, 48.1, 7.4, 2.1, 0.02, cCy, 0.11);
+    for (let r = 0; r < 3; r++) { box(gg, 209.5, Y + 0.95 + r * 0.62, 48.22, 7.5, 0.04, 0.24, 0, col('#0e0e10'), { ex: [0.3, 0.2, 0] });
+      for (let k = 0; k < 17; k++) { if (R.chance(0.14)) continue; const x = 206 + k * 0.44 + R.r(-0.05, 0.05), hh = R.r(0.22, 0.34), c = col(R.pick(['#6b3a12', '#1f5a34', '#b9c4c9', '#24507a', '#a8301e', '#d9a441']), R.r(0.7, 1)); cyl(gg, x, Y + 0.97 + r * 0.62, 48.24, 0.04, 0.035, hh, 6, c, { ex: [0.15, 0, 0.04] }); cyl(gg, x, Y + 0.97 + r * 0.62 + hh, 48.24, 0.016, 0.016, 0.08, 5, c, { ex: [0.15, 0, 0.04], cap: false }); } }
+    for (let k = 0; k < 5; k++) { const x = 206.5 + k * 1.5; cyl(gg, x, Y, 51.05, 0.16, 0.03, 0.04, 8, col('#1a1a1e'), { ex: GX.metal }); cyl(gg, x, Y + 0.04, 51.05, 0.03, 0.03, 0.68, 6, col('#8d9299'), { ex: GX.metal, cap: false }); cyl(gg, x, Y + 0.72, 51.05, 0.19, 0.19, 0.07, 10, col('#5a1420'), { ex: GX.cloth }); }
+    // DJ sahnesi: platform, masa, LED duvar, hoparlörler
+    box(gg, 221.3, Y + 0.225, cz, 2.7, 0.45, 7, 0, col('#101116'), { ex: [0.5, 0, 0] }); nb(gn, 219.94, Y + 0.3, cz, 0.03, 0.06, 7, cCy, 0.5, 0.25); colBox(221.3, cz, 1.35, 3.5, 0, Y - 1, Y + 0.45, 'step');
+    box(gg, 220.7, Y + 0.95, cz, 0.8, 1.0, 2.4, 0, col('#0d0d10'), { ex: [0.4, 0.2, 0] }); nb(gn, 220.28, Y + 0.95, cz, 0.03, 0.7, 2.2, cMag, 0.45, 0.5); colBox(220.7, cz, 0.4, 1.2, 0, Y, Y + 1.5, 'cover');
+    box(gg, 220.7, Y + 1.47, 55.55, 0.5, 0.04, 0.42, 0, col('#2a2d33'), { ex: GX.metal }); box(gg, 220.7, Y + 1.47, 56.45, 0.5, 0.04, 0.42, 0, col('#2a2d33'), { ex: GX.metal });
+    for (let i = 0; i < 7; i++) for (let j = 0; j < 3; j++) { const z = 52.75 + i * 0.94, y = Y + 1.35 + j * 0.8, c = PC[(i + j * 2 + (i * j) % 2) % 4]; quad(gn, [222.66, y, z], [222.66, y, z + 0.86], [222.66, y + 0.72, z + 0.86], [222.66, y + 0.72, z], [0, 0, 0, 0], c, [0.3, ((i * 7 + j * 3) % 8) / 8, 0.3]); }
+    for (const z of [51.9, 60.1]) { box(gg, 221.6, Y + 0.45 + 0.9, z, 0.9, 1.8, 0.75, 0, col('#0a0a0c'), { ex: [0.7, 0, 0] }); for (const y of [0.9, 1.75]) cyl(gg, 221.13, Y + y, z, 0.26, 0.26, 0.02, 12, col('#2a2c31'), { ex: [0.5, 0.3, 0] }); }
+    // oturma köşeleri (güney duvarı)
+    for (const x of [206.5, 211.5, 216.5]) { box(gg, x, Y + 0.22, 63.4, 2.4, 0.44, 0.9, 0, col('#4a1220'), { ex: GX.cloth }); box(gg, x, Y + 0.62, 63.95, 2.4, 0.78, 0.26, 0, col('#3c0f1a'), { ex: GX.cloth }); cyl(gg, x, Y, 62.2, 0.42, 0.36, 0.42, 10, col('#111114'), { ex: [0.3, 0.3, 0] }); nb(gn, x, Y + 0.435, 62.2, 0.5, 0.012, 0.5, cAm, 0.12, 0.3); colBox(x, 63.6, 1.2, 0.5, 0, Y - 1, Y + 0.95, 'cover'); }
+    // tavan: taşıyıcı kirişler, renkli spotlar; duvarlarda neon çizgiler
+    for (const z of [53, 59]) { box(gg, 213.5, Y + 4.12, z, 15, 0.1, 0.1, 0, col('#3a3d44'), { ex: GX.metal }); for (let k = 0; k < 5; k++) { const x = 207.5 + k * 3, c = PC[(k + (z > 55 ? 2 : 0)) % 4]; box(gg, x, Y + 3.98, z, 0.22, 0.2, 0.22, 0, col('#15161a'), { ex: GX.metal }); nb(gn, x, Y + 3.87, z, 0.16, 0.02, 0.16, c, 0.9, (k * 0.2 + (z > 55 ? 0.5 : 0)) % 1); } }
+    nb(gn, cx, Y + 3.1, 64.18, 19, 0.04, 0.03, cMag, 0.45, 0.5); nb(gn, cx, Y + 3.1, 47.83, 19, 0.04, 0.03, cVi, 0.45, 0.0); nb(gn, 222.68, Y + 0.9, cz, 0.03, 0.04, 16, cCy, 0.35, 0.75);
+    // giriş: neon çerçeve, tabela, kırmızı halı, ipli direkler, saksılar, cephe ışıkları
+    for (const z of [53.38, 58.62]) nb(gn, 202.98, Y + 1.7, z, 0.05, 3.4, 0.05, cMag, 0.6, 0.0); nb(gn, 202.98, Y + 3.42, cz, 0.05, 0.05, 5.3, cMag, 0.6, 0.0);
+    signQuad(202.97, Y + 4.05, cz, 6.6, 1.5, -PI / 2, 'korfez'); nb(gn, 202.95, Y + 4.86, cz, 0.04, 0.05, 6.9, cCy, 0.55, 0.5);
+    for (let k = 0; k < 14; k++) { const z = 48.3 + k * 1.19; if (abs(z - cz) < 3.6) continue; nb(gn, 202.96, Y + 4.3, z, 0.05, 0.09, 0.09, k % 2 ? cAm : cMag, 0.8, (k % 4) * 0.25); }
+    nb(gn, 202.96, Y + 0.12, 50.45, 0.04, 0.05, 5.6, cCy, 0.35); nb(gn, 202.96, Y + 0.12, 61.55, 0.04, 0.05, 5.6, cCy, 0.35);
+    quad(gg, [198.2, Y + 0.02, 57.5], [203.4, Y + 0.02, 57.5], [203.4, Y + 0.02, 54.5], [198.2, Y + 0.02, 54.5], undefined, col('#6a1220'), GX.cloth);
+    for (const z of [54.2, 57.8]) { for (const x of [198.6, 201.4]) { cyl(gg, x, Y, z, 0.11, 0.09, 0.04, 8, cGold, { ex: [0.3, 0.9, 0] }); cyl(gg, x, Y + 0.04, z, 0.025, 0.025, 0.9, 6, cGold, { ex: [0.3, 0.9, 0], cap: false }); cyl(gg, x, Y + 0.94, z, 0.045, 0.045, 0.05, 6, cGold, { ex: [0.3, 0.9, 0] }); } box(gg, 200, Y + 0.84, z, 2.8, 0.035, 0.035, 0, col('#7a1626'), { ex: GX.cloth }); }
+    anchor(201, 52); pot(201.6, 52.4, Y, R, true); pot(201.6, 59.9, Y, R, true);
+    quad(B('ao'), [203.0, Y + 0.015, 64.5], [203.0, Y + 0.015, 47.5], [202.2, Y + 0.015, 47.5], [202.2, Y + 0.015, 64.5], [0, 0, 1, 1]);
+  }
+  /* ---------- Polis Noktası ---------- */
+  { const p = VEN.pol, cx = p.x, cz = p.z, H = 3.2, w = 11, d = 7, cW = col('#f1eee6'), cB = col('#17337a'); anchor(cx, cz); const gp = B('plaster'), gg = B('generic');
+    box(gp, cx, Y + H / 2, cz, w, H, d, 0, cW, { uv: 3, skip: 'B' }); box(gp, cx, Y + 0.45, cz, w + 0.04, 0.9, d + 0.04, 0, cB, { uv: 3, skip: 'TB' }); box(gp, cx, Y + H + 0.12, cz, w + 0.3, 0.24, d + 0.3, 0, col('#e2ded2'), { uv: 3 });
+    colBox(cx, cz, w / 2, d / 2, 0, Y - 1, Y + H + 0.3, 'house'); HOUSES.push({ x: cx, z: cz, hw: w / 2, hd: d / 2, rot: 0, h: H + 0.3 });
+    const zf = cz + d / 2 + 0.012; quad(gg, [cx - 0.6, Y, zf], [cx + 0.6, Y, zf], [cx + 0.6, Y + 2.15, zf], [cx - 0.6, Y + 2.15, zf], undefined, col('#13264f'), GX.paint); box(gg, cx, Y + 0.06, zf + 0.25, 1.9, 0.12, 0.5, 0, col('#cfc7b6'), { ex: GX.stone, skip: 'B' });
+    for (const x of [-3.4, 3.4]) quad(B('window'), [cx + x - 0.6, Y + 1.0, zf], [cx + x + 0.6, Y + 1.0, zf], [cx + x + 0.6, Y + 2.2, zf], [cx + x - 0.6, Y + 2.2, zf], [0.252, 0.252, 0.498, 0.998]);
+    signQuad(cx, Y + 2.72, zf + 0.03, 3.6, 0.72, 0, 'karakol'); box(gg, cx + 1.25, Y + 2.3, zf + 0.12, 0.16, 0.2, 0.16, 0, col('#2f6bff'), { ex: [0.3, 0, 0.5] });
+    cyl(gg, cx - 4.6, Y, zf + 0.8, 0.04, 0.03, 4.6, 6, col('#c9ccd1'), { ex: GX.metal }); { const u = signCell('bayrak'); quad(B('sign'), [cx - 4.56, Y + 3.7, zf + 0.8], [cx - 3.36, Y + 3.7, zf + 0.8], [cx - 3.36, Y + 4.5, zf + 0.8], [cx - 4.56, Y + 4.5, zf + 0.8], u); }
+    quad(B('ao'), [cx + w / 2, Y + 0.015, zf], [cx - w / 2, Y + 0.015, zf], [cx - w / 2, Y + 0.015, zf + 0.6], [cx + w / 2, Y + 0.015, zf + 0.6], [0, 0, 1, 1]); }
+  /* ---------- Sağlık Ocağı ---------- */
+  { const p = VEN.med, cx = p.x, cz = p.z, H = 3.2, w = 12, d = 7, cW = col('#f4f1ea'), cR = col('#c1272d'); anchor(cx, cz); const gp = B('plaster'), gg = B('generic');
+    box(gp, cx, Y + H / 2, cz, w, H, d, 0, cW, { uv: 3, skip: 'B' }); box(gp, cx, Y + H + 0.12, cz, w + 0.3, 0.24, d + 0.3, 0, col('#e2ded2'), { uv: 3 }); box(gg, cx, Y + H - 0.25, cz + d / 2 + 0.02, w, 0.14, 0.04, 0, cR, { ex: GX.paint });
+    colBox(cx, cz, w / 2, d / 2, 0, Y - 1, Y + H + 0.3, 'house'); HOUSES.push({ x: cx, z: cz, hw: w / 2, hd: d / 2, rot: 0, h: H + 0.3 });
+    const zf = cz + d / 2 + 0.012; quad(B('window'), [cx - 0.8, Y, zf], [cx + 0.8, Y, zf], [cx + 0.8, Y + 2.2, zf], [cx - 0.8, Y + 2.2, zf], [0.004, 0.004, 0.246, 0.246]); box(gg, cx, Y + 0.06, zf + 0.25, 2.4, 0.12, 0.5, 0, col('#cfc7b6'), { ex: GX.stone, skip: 'B' });
+    for (const x of [-4, 4]) quad(B('window'), [cx + x - 0.6, Y + 1.0, zf], [cx + x + 0.6, Y + 1.0, zf], [cx + x + 0.6, Y + 2.2, zf], [cx + x - 0.6, Y + 2.2, zf], [0.502, 0.252, 0.748, 0.998]);
+    signQuad(cx, Y + 2.62, zf + 0.03, 3.4, 0.68, 0, 'saglik'); box(gg, cx + 2.6, Y + 2.62, zf + 0.04, 0.5, 0.16, 0.03, 0, col('#1f9d55'), { ex: [0.4, 0, 0.25] }); box(gg, cx + 2.6, Y + 2.62, zf + 0.04, 0.16, 0.5, 0.03, 0, col('#1f9d55'), { ex: [0.4, 0, 0.25] });      /* genel sağlık işareti: yeşil artı */
+    quad(B('ao'), [cx + w / 2, Y + 0.015, zf], [cx - w / 2, Y + 0.015, zf], [cx - w / 2, Y + 0.015, zf + 0.6], [cx + w / 2, Y + 0.015, zf + 0.6], [0, 0, 1, 1]); }
+}
+
 /* ============================== 49_layout.js ============================== */
 /* DÜNYA 5 — yerleşim planı: kordon, ön sıra dükkânlar, mahalleler, meydan ve cami, marina, yamaçlar; mini harita altlığı */
 const SPOTS = { seats: [], parked: [], routes: [], car: null, scooter: null }; let MAP = null;
@@ -1817,7 +1934,7 @@ function driveStep(c, dt, gas, brake, steer, hb) {
 }
 // hareketli engeller (trafik, takipçi, park etmiş oyuncu aracı): yönlü kutudan dışarı it
 const DYN = [];
-function collideDyn(p, r, self) { let any = false; for (const o of DYN) { if (o === self || !o.on || o.ghost) continue; const sp = o.sp, dx = p.x - o.x, dz = p.z - o.z; if (abs(dx) + abs(dz) > 9) continue; const s = sin(o.h), c = cos(o.h), hwd = sp.two ? 0.36 : sp.W / 2, zc = sp.two ? 0 : sp.zm, hl = sp.L / 2;
+function collideDyn(p, r, self, incl) { let any = false; for (const o of DYN) { if (o === self || !o.on || (o.ghost && o !== incl)) continue; const sp = o.sp, dx = p.x - o.x, dz = p.z - o.z; if (abs(dx) + abs(dz) > 9) continue; const s = sin(o.h), c = cos(o.h), hwd = sp.two ? 0.36 : sp.W / 2, zc = sp.two ? 0 : sp.zm, hl = sp.L / 2;
     let lx = dx * c - dz * s, lz = dx * s + dz * c - zc; if (abs(lx) > hwd + r || abs(lz) > hl + r) continue; const qx = clamp(lx, -hwd, hwd), qz = clamp(lz, -hl, hl), ex = lx - qx, ez = lz - qz, d = hyp(ex, ez);
     if (d < 1e-6) { if (hwd - abs(lx) < hl - abs(lz)) lx = (lx < 0 ? -1 : 1) * (hwd + r); else lz = (lz < 0 ? -1 : 1) * (hl + r); } else if (d < r) { lx = qx + ex / d * r; lz = qz + ez / d * r; } else continue;
     lz += zc; p.x = o.x + lx * c + lz * s; p.z = o.z - lx * s + lz * c; any = true; } return any; }
@@ -2100,26 +2217,26 @@ function humanGeo(o) {
   return { geo, JP, s, hs, fu, male, tris: g.I.length / 3, capR };
 }
 /* ---------- şapka (kamyoncu tipi; markasız): kafa kemiğine bağlı ayrı, katı bir ağ ---------- */
-function capGeo(male, fu, hs, s) {
-  const g = new Geo('generic'), cB = [0.014, 0.014, 0.016], cM = col('#d9d1bd'), CX = [0.9, 0, 0], NCc = 28, RU = [0, 0.12, 0.26, 0.42, 0.6, 0.8, 1], K = hs * s, P = p => [p[0] * K, 0.085 * hs * s + p[1] * K, 0.012 * s + p[2] * K];
+function capGeo(male, fu, hs, s, cc) {
+  const g = new Geo('generic'), cB = cc ? col(cc[0]) : [0.014, 0.014, 0.016], cM = cc ? col(cc[1]) : col('#d9d1bd'), CX = [0.9, 0, 0], NCc = 28, RU = [0, 0.12, 0.26, 0.42, 0.6, 0.8, 1], K = hs * s, P = p => [p[0] * K, 0.085 * hs * s + p[1] * K, 0.012 * s + p[2] * K];
   const rimLat = th => capRim(th, male, fu);
   const offC = (th, u) => 0.013 + 0.012 * GS(th / 0.8) * sstep(0, 0.22, u) * (1 - 0.65 * sstep(0.55, 1, u));
   loftGrid(g, RU.map(u => { const row = []; for (let j = 0; j <= NCc; j++) { const th = (j / NCc * 2 - 1) * PI, r0 = rimLat(th); row.push(P(headPt(th, lerp(r0, 90, u) * DEG, male, offC(th, u), fu)).concat([abs(th) < 1.08 ? cB : cM, CX])); } return row; }), { wrap: true });
   const NB_ = 10, brim = []; for (let i = 0; i <= 3; i++) { const v = i / 3, row = []; for (let j = 0; j <= NB_; j++) { const th = (j / NB_ * 2 - 1) * 1.02, q = headPt(th, rimLat(th) * DEG, male, 0.013, fu), L = 0.082 * (1 - 0.62 * Math.pow(abs(th) / 1.02, 2.2)); row.push(P([q[0] * (1 + 0.1 * v), q[1] - 0.006 * v - 0.012 * v * v - 0.01 * v * Math.pow(th / 1.02, 2), q[2] + L * v]).concat([cB, CX])); } brim.push(row); }
   loftGrid(g, brim, { flip: true });
   const r00 = rimLat(0), pq = (th, la, d) => P(headPt(th, la * DEG, male, offC(th, (la - r00) / (90 - r00)) + d, fu)), l0 = r00 + 9, l1 = l0 + 21;      // ön panelde düz bir arma (yazısız)
-  quad(g, pq(-0.3, l0, 0.002), pq(0.3, l0, 0.002), pq(0.25, l1, 0.002), pq(-0.25, l1, 0.002), [0, 0, 0, 0], col('#3a2a20'), CX); quad(g, pq(-0.25, l0 + 2.5, 0.0035), pq(0.25, l0 + 2.5, 0.0035), pq(0.2, l1 - 2.5, 0.0035), pq(-0.2, l1 - 2.5, 0.0035), [0, 0, 0, 0], col('#e9dcc0'), CX);
+  quad(g, pq(-0.3, l0, 0.002), pq(0.3, l0, 0.002), pq(0.25, l1, 0.002), pq(-0.25, l1, 0.002), [0, 0, 0, 0], col(cc ? cc[2] : '#3a2a20'), CX); quad(g, pq(-0.25, l0 + 2.5, 0.0035), pq(0.25, l0 + 2.5, 0.0035), pq(0.2, l1 - 2.5, 0.0035), pq(-0.2, l1 - 2.5, 0.0035), [0, 0, 0, 0], col(cc ? cc[3] : '#e9dcc0'), CX);
   return g;
 }
 /* ---------- iskelet ve duruşlar ---------- */
-const PK = ['hx', 'hy', 'hz', 'hp', 'hw', 'hr', 'sp', 'sy', 'cp', 'cy', 'np', 'dp', 'dy', 'aLx', 'aLz', 'eL', 'aRx', 'aRz', 'eR', 'lLx', 'lLz', 'kL', 'fL', 'lRx', 'lRz', 'kR', 'fR', 'aLy', 'aRy', 'cz', 'dz', 'wL', 'wR'];
+const PK = ['hx', 'hy', 'hz', 'hp', 'hw', 'hr', 'sp', 'sy', 'cp', 'cy', 'np', 'dp', 'dy', 'aLx', 'aLz', 'eL', 'aRx', 'aRz', 'eR', 'lLx', 'lLz', 'kL', 'fL', 'lRx', 'lRz', 'kR', 'fR', 'aLy', 'aRy', 'cz', 'dz', 'wL', 'wR', 'gL', 'gR'];
 const pose0 = () => { const p = {}; for (const k of PK) p[k] = 0; return p; };
 function makeHuman(o) {
   const hg = humanGeo(o), s = hg.s, mesh = new T.SkinnedMesh(hg.geo, humanMat()), bones = BONES.map(n => { const b = new T.Bone(); b.name = n; return b; }), B = {};
   BONES.forEach((n, i) => { const p = hg.JP[n], q = PARENT[i] < 0 ? [0, 0, 0] : hg.JP[BONES[PARENT[i]]]; bones[i].position.set((p[0] - q[0]) * s, (p[1] - q[1]) * s, (p[2] - q[2]) * s); if (PARENT[i] >= 0) bones[PARENT[i]].add(bones[i]); B[n] = bones[i]; });
   const g = new T.Group(); mesh.add(bones[0]); g.add(mesh); bones[0].updateMatrixWorld(true); mesh.bind(new T.Skeleton(bones)); mesh.castShadow = true; mesh.receiveShadow = true; scene.add(g);
   const h = { g, mesh, B, s, H: o.H, o, hipY: 0.94 * s, Lt: 0.44 * s, Ls: 0.415 * s, P: pose0(), P0: pose0(), T: pose0(), bt: 1, mode: 'foot', ph: Math.random() * 6, vs: 0, cr: 0, air: 0, t: Math.random() * 20, x: 0, y: 0, z: 0, h: 0, look: 0, aw: o.male ? 0.07 + 0.05 * ((o.build || 1) - 1) * 10 : 0.05, cap: null, capR: hg.capR };
-  if (o.cap) { h.cap = geoMesh(capGeo(hg.male, hg.fu, hg.hs, s), MATS.genericD); B.head.add(h.cap); setCap(h, false); }
+  if (o.cap) { h.cap = geoMesh(capGeo(hg.male, hg.fu, hg.hs, s, o.capc), MATS.genericD); B.head.add(h.cap); setCap(h, false); }
   return h;
 }
 // şapkayı tak / çıkar: takılıyken kenarın üstünde kalan saç çizilmez
@@ -2171,6 +2288,21 @@ function humanAnim(h, dt, st) {
     if (mode === 'inspect') { T_.sp += 0.3; T_.aRx = 1.0 + 0.08 * sin(t * 2.2); T_.eR = 0.35; T_.dp = 0.25; }
     if (mode === 'phone') { T_.aRx = 0.35; T_.aRz = 0.3; T_.eR = 2.45; T_.aRy = -0.5; T_.dy = -0.12; T_.dp = 0.05; }
     if (st.talk) { const q = sin(t * 2.6) * 0.5 + 0.5; T_.aRx = lerp(T_.aRx, 0.45, 0.8); T_.eR = lerp(T_.eR, 1.2 + 0.4 * q, 0.8); T_.dp += 0.04 * sin(t * 3.3); }
+    // sokak katmanları (75_street.js): gard, yumruk, blok, darbe, eller havada, panik, işaret, nişan, dans, yerde — hepsi 0–1 ağırlıkla üstüne biner
+    if (st.fx) { const f = st.fx, L = (k, v, a) => { T_[k] = lerp(T_[k], v, a); };
+      if (f.g > 0.01) { const a = f.g; L('aLx', 0.82, a); L('aRx', 0.62, a); L('eL', 2.0, a); L('eR', 2.28, a); L('aLz', 0.06, a); L('aRz', 0.05, a); L('aLy', 0.4, a); L('aRy', -0.5, a); T_.gL = T_.gR = a; T_.sp += 0.1 * a; T_.hw -= 0.3 * a; T_.cy += 0.18 * a; T_.dy += 0.12 * a; T_.hy -= 0.035 * s * a; T_.lLz += 0.07 * a; T_.lRz += 0.07 * a; }
+      if (f.pun) { const e = sin(min(1, abs(f.pun)) * PI), hv = f.hv || 0; T_.gL = max(T_.gL, f.pun < 0 ? 1 : 0); T_.gR = max(T_.gR, f.pun > 0 ? 1 : 0); if (f.pun > 0) { L('aRx', 1.52, e); L('eR', 0.12 + 0.5 * hv, e); L('aRy', -0.12 + 0.5 * hv, e); L('aRz', 0.1 + 0.5 * hv, e); T_.cy -= (0.5 + 0.35 * hv) * e; T_.sy -= 0.25 * e; T_.hw -= 0.2 * e; } else { L('aLx', 1.5, e); L('eL', 0.12, e); L('aLy', 0.1, e); T_.cy += 0.45 * e; T_.sy += 0.2 * e; T_.hw += 0.15 * e; } T_.sp += 0.09 * e; T_.hz += 0.04 * s * e; }
+      if (f.push > 0.01) { const e = sin(min(1, f.push) * PI); L('aLx', 1.45, e); L('aRx', 1.45, e); L('eL', 0.25, e); L('eR', 0.25, e); L('aLz', 0.02, e); L('aRz', 0.02, e); T_.sp += 0.16 * e; T_.hz += 0.05 * s * e; }
+      if (f.blk > 0.01) { const a = f.blk; T_.gL = max(T_.gL, a); T_.gR = max(T_.gR, a); L('aLx', 1.38, a); L('aRx', 1.38, a); L('eL', 2.3, a); L('eR', 2.3, a); L('aLy', 0.55, a); L('aRy', -0.55, a); L('aLz', -0.04, a); L('aRz', -0.04, a); T_.dp += 0.2 * a; T_.sp += 0.12 * a; T_.hy -= 0.03 * s * a; }
+      if (f.hit > 0.01) { const a = f.hit; T_.sp -= 0.28 * a; T_.cp -= 0.14 * a; T_.dp -= 0.32 * a; T_.cy += 0.3 * a * (f.hs || 1); T_.hz -= 0.05 * s * a; }
+      if (f.hands > 0.01) { const a = f.hands; L('aLx', 0.95, a); L('aRx', 0.95, a); L('eL', 1.85, a); L('eR', 1.85, a); L('aLz', 0.42, a); L('aRz', 0.42, a); L('aLy', -0.25, a); L('aRy', 0.25, a); L('wL', -0.55, a); L('wR', -0.55, a); }
+      if (f.panic > 0.01) { const a = f.panic, q = sin(t * 11); L('aLx', 2.35 + 0.25 * q, a); L('aRx', 2.35 - 0.25 * q, a); L('eL', 0.55, a); L('eR', 0.55, a); L('aLz', 0.5, a); L('aRz', 0.5, a); }
+      if (f.point > 0.01) { const a = f.point, q = sin(t * 9) * 0.12; L('aRx', 1.22 + q, a); L('eR', 0.4, a); L('aRy', -0.12, a); T_.sp += 0.06 * a; T_.dp += 0.04 * a; }
+      if (f.aim > 0.01) { const a = f.aim; T_.gR = max(T_.gR, a); L('aRx', 1.5, a); L('eR', 0.05, a); L('aRy', -0.3, a); L('aRz', 0.02, a); L('aLx', 1.38, a); L('eL', 0.75, a); L('aLy', 0.78, a); L('aLz', -0.1, a); T_.hw -= 0.22 * a; T_.cy += 0.2 * a; T_.dp += 0.03 * a; }
+      if (f.dance > 0.01) { const a = f.dance, b = U_TIME.value * TAU * 2 + (f.ph || 0) * TAU, s1 = sin(b), s2 = sin(b * 0.5 + (f.ph || 0) * 9), k1 = 0.5 + 0.5 * s1; T_.hy -= (0.03 + 0.035 * k1) * s * a; T_.hr += 0.07 * s2 * a; T_.hw += 0.24 * s2 * a; T_.cy -= 0.3 * s2 * a; T_.cz += 0.07 * s2 * a; T_.dp += 0.07 * s1 * a; T_.hx += 0.03 * s2 * s * a;
+        L('aLx', 1.25 + 0.65 * s2, 0.9 * a); L('aRx', 1.25 - 0.65 * s2, 0.9 * a); L('eL', 1.35 + 0.4 * s1, 0.9 * a); L('eR', 1.35 - 0.4 * s1, 0.9 * a); L('aLz', 0.32, a); L('aRz', 0.32, a); T_.kL += 0.3 * k1 * a; T_.kR += 0.3 * k1 * a; T_.lLx += 0.16 * k1 * a; T_.lRx += 0.16 * k1 * a; T_.fL -= 0.14 * k1 * a; T_.fR -= 0.14 * k1 * a; }
+      if (f.down > 0.01) { const a = f.down; L('hp', -1.5, a); L('hy', 0.15 * s - h.hipY, a); L('hz', -0.25 * s, a); L('hx', 0, a); L('hr', 0, a); L('hw', 0.12, a); L('sp', -0.05, a); L('cp', 0, a); L('dp', -0.12, a); L('sy', 0, a); L('cy', 0, a);
+        L('lLx', 0.05, a); L('lRx', 0.22, a); L('kL', 0.12, a); L('kR', 0.5, a); L('fL', 0.45, a); L('fR', 0.3, a); L('lLz', 0.16, a); L('lRz', 0.1, a); L('aLx', 0.15, a); L('aRx', 0.35, a); L('aLz', 1.15, a); L('aRz', 0.8, a); L('eL', 0.35, a); L('eR', 0.9, a); L('aLy', 0, a); L('aRy', 0, a); } }
   } else { seated = true; h.vs = 0; h.cr = 0;
     if (mode === 'drive') { const sv = st.steer || 0; T_.lLx = 1.32; T_.lRx = 1.36; T_.lLz = 0.13; T_.lRz = 0.1; T_.kL = 0.98; T_.kR = 0.86; T_.fL = -0.25; T_.fR = -0.1; T_.hp = -0.36; T_.sp = 0.08; T_.cp = 0.06; T_.dp = 0.22; T_.aLx = 1.02 + sv * 0.35; T_.aRx = 1.02 - sv * 0.35; T_.aLz = 0.05; T_.aRz = 0.05; T_.eL = 0.72; T_.eR = 0.72; T_.dy = sv * 0.25; }
     else if (mode === 'pass') { T_.lLx = 1.36; T_.lRx = 1.36; T_.lLz = 0.06; T_.lRz = 0.06; T_.kL = 1.0; T_.kR = 1.0; T_.fL = -0.2; T_.fR = -0.2; T_.hp = -0.36; T_.sp = 0.08; T_.cp = 0.06; T_.dp = 0.22; T_.aLx = 0.42; T_.aRx = 0.42; T_.eL = 0.62; T_.eR = 0.62; T_.aLz = 0.02; T_.aRz = 0.02; T_.dy = 0.25 * sin(t * 0.33) + (st.look || 0); }
@@ -2180,7 +2312,7 @@ function humanAnim(h, dt, st) {
   if (st.look && !seated) T_.dy += clamp(st.look, -1, 1);
   const P = h.P, w = h.bt * h.bt * (3 - 2 * h.bt); for (const k of PK) P[k] = w >= 1 ? T_[k] : lerp(h.P0[k], T_[k], w);
   const B = h.B;
-  B.hips.position.set(P.hx, h.hipY + P.hy, P.hz); B.hips.rotation.set(P.hp, P.hw, P.hr); B.spine.rotation.set(P.sp, P.sy, 0); B.chest.rotation.set(P.cp, P.cy, P.cz); B.neck.rotation.x = P.np; B.head.rotation.set(P.dp, P.dy, P.dz); B.handL.rotation.set(-P.wL, 0, -0.08); B.handR.rotation.set(-P.wR, 0, 0.08);
+  B.hips.position.set(P.hx, h.hipY + P.hy, P.hz); B.hips.rotation.set(P.hp, P.hw, P.hr); B.spine.rotation.set(P.sp, P.sy, 0); B.chest.rotation.set(P.cp, P.cy, P.cz); B.neck.rotation.x = P.np; B.head.rotation.set(P.dp, P.dy, P.dz); B.handL.rotation.set(-P.wL, 0, -0.08); B.handR.rotation.set(-P.wR, 0, 0.08); B.handL.scale.set(1 + 0.8 * P.gL, 1 - 0.42 * P.gL, 1 + 0.08 * P.gL); B.handR.scale.set(1 + 0.8 * P.gR, 1 - 0.42 * P.gR, 1 + 0.08 * P.gR);      /* gL/gR: yumruk — el kısalır ve kalınlaşır */
   B.armL.rotation.set(-P.aLx, P.aLy, P.aLz); B.armR.rotation.set(-P.aRx, P.aRy, -P.aRz); B.foreL.rotation.x = -P.eL; B.foreR.rotation.x = -P.eR;
   B.legL.rotation.set(-P.lLx, 0, P.lLz); B.legR.rotation.set(-P.lRx, 0, -P.lRz); B.shinL.rotation.x = P.kL; B.shinR.rotation.x = P.kR; B.footL.rotation.x = P.fL; B.footR.rotation.x = P.fR;
 }
@@ -2212,27 +2344,28 @@ function makePeople() {
 function routePos(n, out) { const P = SPOTS.routes[n.route], a = P[n.i], b = P[(n.i + 1) % P.length]; out.x = lerp(a[0], b[0], n.t); out.z = lerp(a[1], b[1], n.t); out.l = hyp(b[0] - a[0], b[1] - a[1]) || 1; out.hx = b[0] - a[0]; out.hz = b[1] - a[1]; return out; }
 // yayaların doğduğu yer: oyuncudan 45–115 m ötede ve başka bir yayadan en az 7 m uzakta; uygun yer yoksa (oyuncu yollardan uzakta) yaya gizli bekler — tek noktada kalabalık birikmez
 function npcSpawn(n, px, pz, first) { const R = n.R, o = {}; let ok = false; for (let k = 0; k < 10 && !ok; k++) { n.route = R.i(0, SPOTS.routes.length - 1); n.i = R.i(0, SPOTS.routes[n.route].length - 1); n.t = R(); routePos(n, o); const d = hyp(o.x - px, o.z - pz); ok = (first ? d > 9 : d > 45 && d < 115) && !NPCS.some(m => m !== n && !m.sit && !m.far && hyp(m.h.x - o.x, m.h.z - o.z) < 7); }
-  const h = n.h; h.x = o.x; h.z = o.z; h.y = footY(o.x, o.z, 9); h.h = Math.atan2(o.hx, o.hz); n.off = R.r(-0.5, 0.5); n.far = !ok && !first; }
+  const h = n.h; h.x = o.x; h.z = o.z; h.y = footY(o.x, o.z, 9); h.h = Math.atan2(o.hx, o.hz); n.off = R.r(-0.5, 0.5); n.far = !ok && !first; if (n.f) fCalm(n.f); }
 function updateNPCs(dt, px, pz, pcar) {
   const cx = camera.position.x, cz = camera.position.z, o = {}; let k = 0;
   for (const n of NPCS) { const h = n.h, act = k++ < Q.npc; if (!act) { if (h.g.visible) h.g.visible = false; continue; }
     const dc = hyp(h.x - cx, h.z - cz), vis = dc < 105 * Q.det; if (h.g.visible !== vis) h.g.visible = vis;
     if (n.sit) { if (vis && dc < 60) humanAnim(h, dt, { mode: 'cafe', talk: (floor(h.t * 0.25) + k) % 2 === 0 }); continue; }
     if (n.far || dc > 135) { if (h.g.visible) h.g.visible = false; if ((n.cool = (n.cool || 0) - dt) < 0) { n.cool = n.far ? 1.2 : 0; npcSpawn(n, px, pz); } continue; }
+    if (n.f && n.f.st !== 'calm') { fStep(n.f, dt, vis && dc < 80); continue; }      // kavga / kaçış / izleme durumundaki yaya: 75_street.js
     let v = n.sp; if (n.pause > 0) { n.pause -= dt; v = 0; } else if (n.R() < dt * 0.02) n.pause = n.R.r(2, 5);
     const dp = hyp(h.x - px, h.z - pz); if (dp < 1.0 && !pcar) v = 0;
     routePos(n, o); n.t += v * dt / o.l; if (n.t >= 1) { n.t = 0; n.i = (n.i + 1) % SPOTS.routes[n.route].length; }
     const ht = Math.atan2(o.hx, o.hz), nx = o.hz / o.l, nz = -o.hx / o.l; let tx = o.x + nx * n.off, tz = o.z + nz * n.off;
     if (pcar && dp < 4.5) { const ax = h.x - pcar.x, az = h.z - pcar.z, l = hyp(ax, az) || 1; tx = h.x + ax / l * 2; tz = h.z + az / l * 2; v = 3.2; }      // araçtan kaç
     const dx = tx - h.x, dz = tz - h.z, d = hyp(dx, dz), stp = min(d, (v || 0.6) * dt * 1.25); if (d > 0.01) { h.x += dx / d * stp; h.z += dz / d * stp; }
-    h.h += clamp(angD(h.h, v > 0 ? ht : h.h), -4 * dt, 4 * dt); h.y = footY(h.x, h.z, h.y); humanPlace(h); if (vis && dc < 75) humanAnim(h, dt, { v: v ? max(v, stp / max(dt, 0.001) * 0.8) : 0 }); }
+    h.h += clamp(angD(h.h, v > 0 ? ht : h.h), -4 * dt, 4 * dt); h.y = footY(h.x, h.z, h.y); humanPlace(h); if (vis && dc < 75) humanAnim(h, dt, { v: v ? max(v, stp / max(dt, 0.001) * 0.8) : 0, fx: n.f ? fxRest(n.f.fx, dt) : null, look: n.f && n.f.talkT > G.t ? clamp(angD(h.h, Math.atan2(px - h.x, pz - h.z)), -0.8, 0.8) : 0 }); }
 }
 /* ---------- eş: oyuncuyu izler ---------- */
 function wifeWarp(x, z, h) { const w = WIFE; w.x = x; w.z = z; w.h = h === undefined ? w.h : h; w.y = footY(x, z, groundH(x, z) + 0.4); COMP.stuck = 0; humanPlace(w); }
 function updateWife(dt, pl) {
   const w = WIFE; if (COMP.mode === 'seat') return; if (COMP.mode === 'script') { humanAnim(w, dt, { v: 0, mode: COMP.pose || 'foot', talk: COMP.talk > 0, look: COMP.look }); COMP.talk -= dt; humanPlace(w); return; }
   // eş: kahramanın yanında (kameranın karşı omzu tarafında), yarım adım geride — kadrajda yan yana görünürler; yan taraf kapalıysa (duvar, direk) arkasına geçer
-  let tx, tz, v = 0, pv = 0; if (COMP.mode === 'wait') { tx = COMP.tx; tz = COMP.tz; } else { const sh = sin(pl.h), ch = cos(pl.h), T = COMP.trail || (COMP.trail = []); tx = pl.x - sh * 0.45 - ch * 1.05 * COMP.side; tz = pl.z - ch * 0.45 + sh * 1.05 * COMP.side; pv = pl.v;
+  let tx, tz, v = 0, pv = 0; if (COMP.mode === 'wait') { tx = COMP.tx; tz = COMP.tz; } else { const sh = sin(pl.h), ch = cos(pl.h), T = COMP.trail || (COMP.trail = []); tx = pl.x - sh * 0.45 - ch * 1.05 * COMP.side; tz = pl.z - ch * 0.45 + sh * 1.05 * COMP.side; pv = pl.v; if (G.t < FT.combatT + 1 && !pl.veh) { tx = pl.x - sh * 2.3 - ch * 1.9 * COMP.side; tz = pl.z - ch * 2.3 + sh * 1.9 * COMP.side; }      /* kavga sırasında eş birkaç adım geride durur */
     const dT = T.length ? hyp(pl.x - T[0][0], pl.z - T[0][1]) : 9; if (dT > 3) T.length = 0; if (dT > 0.35) { T.unshift([pl.x, pl.z]); if (T.length > 5) T.pop(); }      // kahramanın izi (≈35 cm aralıklı son adımlar): yanı kapalıysa eş bu izden, arkasından gelir
     if (pointBlocked(tx, pl.y + 0.9, tz, 0.12) || pointBlocked(tx, pl.y + 0.35, tz, 0.12) || (pv > 0.4 && pointBlocked((tx + w.x) / 2, pl.y + 0.35, (tz + w.z) / 2, 0.25))) COMP.bk = max(COMP.bk || 0, 0.5);
     COMP.tr = COMP.bk > 0; if (COMP.tr) { COMP.bk -= dt; const q = T[min(T.length - 1, 3)]; if (hyp(q[0] - pl.x, q[1] - pl.z) > 0.8) { tx = q[0]; tz = q[1]; } else { tx = pl.x - sh * 1.1; tz = pl.z - ch * 1.1; } } }
@@ -2245,7 +2378,7 @@ function updateWife(dt, pl) {
     const gy = footY(_np.x, _np.z, w.y); if (gy > 0.4 && gy < w.y + 0.5) { w.x = _np.x; w.z = _np.z; w.y = gy < w.y - 0.02 ? max(gy, w.y - 9 * dt) : gy; }
     const mv = hyp(w.x - ox, w.z - oz); COMP.stuck = mv < stp * 0.3 && d > 2.5 ? COMP.stuck + dt : 0; if (mv > 1e-4) w.h += clamp(angD(w.h, Math.atan2(w.x - ox, w.z - oz)), -10 * dt, 10 * dt); v = mv / max(dt, 0.001); }
   else { COMP.stuck = 0; w.h += clamp(angD(w.h, COMP.mode === 'wait' && COMP.th !== undefined ? COMP.th : pl.h), -5 * dt, 5 * dt); }
-  humanAnim(w, dt, { v, crouch: pl.crouch || COMP.crouch, talk: COMP.talk > 0, look: COMP.look }); COMP.talk -= dt; humanPlace(w);
+  humanAnim(w, dt, { v, crouch: pl.crouch || COMP.crouch || G.t - WN.shotT < 4, talk: COMP.talk > 0, look: COMP.look }); COMP.talk -= dt; humanPlace(w);
 }
 /* ---------- nöbetçiler: devriye + görüş konisi ---------- */
 const GV = { range: 15, half: 0.66 };
@@ -2288,7 +2421,8 @@ function drawRadar() {
   c.translate(R, R); c.rotate(a); c.scale(RADK / MAP.s, RADK / MAP.s); c.translate(-(px - MAP.x0) * MAP.s, -(pz - MAP.z0) * MAP.s); c.drawImage(MAP.c, 0, 0); c.restore(); c.save(); c.beginPath(); c.arc(R, R, R, 0, TAU); c.clip();
   const mk = (wx, wz, lim) => { const dx = wx - px, dz = wz - pz; let x = (dx * ca - dz * sa) * RADK, y = (dx * sa + dz * ca) * RADK; const d = hyp(x, y), L = R - (lim || 13); let edge = false; if (d > L) { x *= L / d; y *= L / d; edge = true; } return [R + x, R + y, edge]; };
   for (const gd of GUARDS) { if (!gd.on) continue; const h = gd.h, p = mk(h.x, h.z); if (p[2]) continue; const ang = -(h.h - CAM.eff) - PI / 2; c.fillStyle = gd.see > 0 ? 'rgba(255,70,40,0.5)' : 'rgba(255,90,60,0.26)'; c.beginPath(); c.moveTo(p[0], p[1]); c.arc(p[0], p[1], GV.range * RADK, ang - GV.half, ang + GV.half); c.closePath(); c.fill(); c.fillStyle = '#ff5a3c'; c.beginPath(); c.arc(p[0], p[1], 5, 0, TAU); c.fill(); }
-  c.fillStyle = 'rgba(255,255,255,0.85)'; for (const v of CARS) { if (!v.on || v === PLY.veh || v === CHASER) continue; const p = mk(v.x, v.z); if (p[2]) continue; c.save(); c.translate(p[0], p[1]); c.rotate(-(v.h - CAM.eff)); c.fillRect(-2.5, -5, 5, 10); c.restore(); }
+  for (const v of CARS) { if (!v.on || v === PLY.veh || v === CHASER) continue; const p = mk(v.x, v.z); if (p[2]) continue; c.fillStyle = v.pol ? (WN.lvl && floor(G.t * 5) % 2 ? '#ff5a3c' : '#4f8dff') : 'rgba(255,255,255,0.85)'; c.save(); c.translate(p[0], p[1]); c.rotate(-(v.h - CAM.eff)); c.fillRect(-2.5, -5, 5, 10); c.restore(); }
+  for (const C of COPS) { if (C.st === 'in') continue; const p = mk(C.h.x, C.h.z); if (p[2]) continue; c.fillStyle = C.st === 'down' ? '#7d8799' : '#4f8dff'; c.strokeStyle = '#0b141d'; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], 4.5, 0, TAU); c.fill(); c.stroke(); }
   for (const v of [HCAR, HSCOOT]) { if (!v || v === PLY.veh) continue; const p = mk(v.x, v.z, 16); c.fillStyle = '#7fd0e0'; c.strokeStyle = '#0b141d'; c.lineWidth = 2; c.beginPath(); c.rect(p[0] - 5, p[1] - 5, 10, 10); c.fill(); c.stroke(); }
   if (CHASER && CHASER.on) { const p = mk(CHASER.x, CHASER.z); c.fillStyle = '#ff3b24'; c.beginPath(); c.arc(p[0], p[1], 7 + 2 * sin(G.t * 9), 0, TAU); c.fill(); }
   if (!PLY.veh && COMP.mode !== 'seat') { const p = mk(WIFE.x, WIFE.z); c.fillStyle = '#f2c6d0'; c.strokeStyle = '#0b141d'; c.lineWidth = 2; c.beginPath(); c.arc(p[0], p[1], 5, 0, TAU); c.fill(); c.stroke(); }
@@ -2299,6 +2433,7 @@ function drawRadar() {
 function drawBigMap() { const cv2 = $('bigc'), s = min(innerWidth * 0.94 / MAP.c.width, innerHeight * 0.78 / MAP.c.height); cv2.width = MAP.c.width; cv2.height = MAP.c.height; cv2.style.width = Math.round(MAP.c.width * s) + 'px'; const c = cv2.getContext('2d'), X = x => (x - MAP.x0) * MAP.s, Z = z => (z - MAP.z0) * MAP.s; c.drawImage(MAP.c, 0, 0);
   c.font = '600 17px sans-serif'; c.textAlign = 'center'; c.lineWidth = 4; c.strokeStyle = 'rgba(11,20,29,0.9)'; c.fillStyle = '#fff'; for (const [t, x, z] of [['MARİNA', -190, 96], ['ÇARŞI', -40, -30], ['KALE', 184, 190], ['ANTİK TİYATRO', -30, -150], ['DEĞİRMENLER', -430, 82], ['KORDON', 20, 62]]) { c.strokeText(t, X(x), Z(z)); c.fillText(t, X(x), Z(z)); }
   const dot = (x, z, cl, r) => { c.fillStyle = cl; c.strokeStyle = '#0b141d'; c.lineWidth = 3; c.beginPath(); c.arc(X(x), Z(z), r, 0, TAU); c.fill(); c.stroke(); };
+  c.font = '600 13px sans-serif'; for (const [t, x, z, cl, dy] of [['Körfez Bar', VEN.bar.x, VEN.bar.z, '#ff7ad9', 22], ['Polis', VEN.pol.x, VEN.pol.z, '#6aa8ff', -11], ['Sağlık', VEN.med.x, VEN.med.z, '#ff6a5e', -11]]) { dot(x, z, cl, 5); c.lineWidth = 4; c.strokeStyle = 'rgba(11,20,29,0.9)'; c.fillStyle = '#fff'; c.strokeText(t, X(x), Z(z) + dy); c.fillText(t, X(x), Z(z) + dy); }      /* Kale Meydanı mekânları */
   if (HCAR) dot(HCAR.x, HCAR.z, '#7fd0e0', 7); if (HSCOOT) dot(HSCOOT.x, HSCOOT.z, '#7fd0e0', 6); if (objPos) { const x = X(objPos.x), z = Z(objPos.z); c.fillStyle = '#d9b36a'; c.strokeStyle = '#0b141d'; c.lineWidth = 3; c.beginPath(); c.moveTo(x, z - 13); c.lineTo(x + 13, z); c.lineTo(x, z + 13); c.lineTo(x - 13, z); c.closePath(); c.fill(); c.stroke(); } dot(CAM.px, CAM.pz, '#fff', 8); }
 function updateHUD(dt) {
   if (toastT && G.t > toastT) { $('toast').classList.remove('on'); toastT = 0; }
@@ -2313,14 +2448,15 @@ function setPrompt(t) { if (t === promptOn) return; promptOn = t; const p = $('p
 /* ---------- oyuncu: yaya ---------- */
 function plyPlace(x, z, h) { PLY.x = x; PLY.z = z; PLY.h = h; PLY.y = footY(x, z, groundH(x, z) + 0.4); PLY.vy = 0; PLY.ground = true; PLY.v = 0; HERO.x = x; HERO.y = PLY.y; HERO.z = z; HERO.h = h; humanPlace(HERO); CAM.yaw = h; CAM.pitch = 0.2; }
 function footStep(dt) {
-  const P = PLY; let tv = 0, dx = 0, dz = 0;
+  const P = PLY; let tv = 0, dx = 0, dz = 0; streetPlayer(dt);
   if (I.an > 0.05 && !P.lock) { dx = sin(CAM.yaw) * I.mz - cos(CAM.yaw) * I.mx; dz = cos(CAM.yaw) * I.mz + sin(CAM.yaw) * I.mx; const l = hyp(dx, dz) || 1; dx /= l; dz /= l; const tr = lerp(11, 7.5, clamp((P.v - 3.4) / 3, 0, 1)), dh = clamp(angD(P.h, Math.atan2(dx, dz)), -tr * dt, tr * dt); P.h += dh; P.turn = dh / max(dt, 1e-4);
     tv = P.crouch ? 1.7 : I.run ? 6.6 : IS_TOUCH && joy.id !== null ? lerp(1.5, 3.9, clamp((I.an - 0.25) / 0.6, 0, 1)) : (TEST && window.__tv) || 3.8; }
-  P.v = damp(P.v, tv, tv > P.v ? 7 : 11, dt);
+  tv = min(tv, FT.vcap); P.v = damp(P.v, tv, tv > P.v ? 7 : 11, dt);
   if (hit.has('cover') && P.ground && !P.lock) { P.crouch = !P.crouch; sfx('step'); }
   if (hit.has('jump') && P.ground && !P.lock) { if (P.crouch) P.crouch = false; else { P.vy = 5.2; P.ground = false; sfx('jump'); } }
   if (P.v > 0.02 && (dx || dz)) { const st = P.v * dt, tryMove = (mx, mz) => { _pp.x = P.x + mx; _pp.z = P.z + mz; collide(_pp, 0.3, P.y, P.crouch ? 1.15 : 1.9, P.ground ? 0.45 : 0.2); collideDyn(_pp, 0.3, null);
-        for (const n of NPCS) { if (!n.h.g.visible) continue; const ex = _pp.x - n.h.x, ez = _pp.z - n.h.z, d = hyp(ex, ez); if (d < 0.55 && d > 1e-4) { _pp.x = n.h.x + ex / d * 0.55; _pp.z = n.h.z + ez / d * 0.55; } }
+        for (const n of NPCS) { if (!n.h.g.visible || (n.f && n.f.st === 'down')) continue; const ex = _pp.x - n.h.x, ez = _pp.z - n.h.z, d = hyp(ex, ez); if (d < 0.55 && d > 1e-4) { _pp.x = n.h.x + ex / d * 0.55; _pp.z = n.h.z + ez / d * 0.55; } }
+        for (const F of FTR) { if (F.n || !F.h.g.visible || F.st === 'down' || F.st === 'in' || abs(F.h.y - P.y) > 1) continue; const ex = _pp.x - F.h.x, ez = _pp.z - F.h.z, d = hyp(ex, ez); if (d < 0.55 && d > 1e-4) { _pp.x = F.h.x + ex / d * 0.55; _pp.z = F.h.z + ez / d * 0.55; } }
         const gy = footY(_pp.x, _pp.z, P.y); if (gy < 0.35) return false; if (P.ground) { if (gy > P.y + 0.55) return false; P.x = _pp.x; P.z = _pp.z; if (gy < P.y - 0.55) { P.ground = false; P.vy = 0; } else P.y = gy > P.y ? min(gy, P.y + 7 * dt + (gy - P.y) * 0.35) : max(gy, P.y - 6 * dt); return true; }
         if (gy > P.y + 0.3) return false; P.x = _pp.x; P.z = _pp.z; return true; };
     if (!tryMove(dx * st, dz * st)) if (!tryMove(dx * st, 0)) tryMove(0, dz * st); }
@@ -2328,7 +2464,7 @@ function footStep(dt) {
   if (P.crouch) { _pp.x = P.x; _pp.z = P.z; HITN.c = null; P.cover = collide(_pp, 0.95, P.y, 1.0, 0.5) && HITN.c && HITN.c.y1 >= P.y + 0.8; } else P.cover = false;
   if (P.ground && P.v > 0.6) { P.stepT -= dt * (P.v / 1.9); if (P.stepT <= 0) { P.stepT = 1; sfx('step', P.crouch ? 0.3 : P.v > 5 ? 1 : 0.6); } }
   HERO.x = P.x; HERO.y = P.y; HERO.z = P.z; HERO.h = P.h; humanPlace(HERO); P.lean = damp(P.lean || 0, I.an > 0.05 && !P.lock ? clamp(-(P.turn || 0) * P.v * 0.011, -0.15, 0.15) : 0, 7, dt); P.turn = 0;
-  humanAnim(HERO, dt, { v: P.v, crouch: P.crouch, air: !P.ground, mode: P.pose || 'foot', talk: P.talk > G.t, lean: P.lean });
+  humanAnim(HERO, dt, { v: P.v, crouch: P.crouch, air: !P.ground, mode: P.pose || 'foot', talk: P.talk > G.t, lean: P.lean, fx: FT.fx });
 }
 /* ---------- araca binme / inme ---------- */
 function vehSeat(c) { const two = c.sp.two; if (two) { humanSeat(HERO, c, 0, 0.93, -0.2); humanSeat(WIFE, c, 0, 0.99, -0.64); } else { humanSeat(HERO, c, 0.37, 0.5, -0.03); humanSeat(WIFE, c, -0.37, 0.53, -0.03); } COMP.mode = 'seat'; }
@@ -2375,6 +2511,7 @@ function camStep(dt) {
 /* ---------- etkileşim ---------- */
 const _pq = { x: 0, y: 0, z: 0 };      // ipucunun dünyadaki yeri (üstüne dokununca / tıklayınca E ile aynı)
 function interactStep() {
+  if (hit.has('click') && !FT.clk && promptOn) hit.add('use');      // kilitli farede sol tık: kavgada yumruk, yoksa ipucundaki etkileşim
   if (G.cine || PLY.lock) { setPrompt(null); promptPos = null; return; } const c = PLY.veh;
   if (c) { setPrompt(abs(c.v) < 2.4 ? 'Araçtan in' : null); _pq.x = c.x; _pq.y = PLY.y + 1; _pq.z = c.z; promptPos = _pq; if (hit.has('use')) exitVeh(); return; }
   let best = null, bd = 1e9; for (const it of INTERACT) { if (it.on && !it.on()) continue; const d = hyp(it.x - PLY.x, it.z - PLY.z); if (d < it.r && d < bd && (it.y === undefined || abs(it.y - PLY.y) < 1.6)) { bd = d; best = it; } }
@@ -2382,6 +2519,368 @@ function interactStep() {
   if (best) { _pq.x = best.x; _pq.y = (best.y !== undefined ? best.y : PLY.y) + 1; _pq.z = best.z; promptPos = _pq; } else promptPos = null;
   setPrompt(best ? best.text : null); if (best && hit.has('use')) { sfx('use'); best.fn(); }
 }
+
+/* ============================== 75_street.js ============================== */
+/* SOKAK — laf atma / itiş / yakın dövüş / yatıştırma, çevrenin tepkisi, aranma seviyesi (1–4), polis müdahalesi, Körfez Bar olayı.
+   Hikâyenin kurgulu anlarında (ara sahne, bulmaca, takip bölümü, kale içi) tümü kapalıdır: sOff(). */
+const mkFx = () => ({ g: 0, pun: 0, hv: 0, push: 0, blk: 0, hit: 0, hs: 1, hands: 0, panic: 0, point: 0, aim: 0, dance: 0, ph: 0, down: 0 });
+const FT = { hp: 100, hurtT: -99, fx: mkFx(), atkT: -1, atkN: 0, atkDone: false, comboT: -9, cool: 0, stag: 0, block: false, tgt: null, tgtD: 9, combatT: -99, vcap: 99, clk: false, pushT: -1, pushF: null, handsT: -99, pointT: -99, actT: -99, out: 0, wifeT: -99, flashT: -99, coolK: -99, dodgeT: -99, towT: -99, distT: -99, t10: 0, tip10: false, hud: {} };
+const WN = { heat: 0, lvl: 0, ph: 0, eta: 0, lost: 0, contact: false, lx: 0, lz: 0, bust: 0, warn: 0, warnOn: false, quietT: -99, trail: [], t34: 0, shotT: -99, shoutT: -99, sepT: -99 };
+const FTR = [], COPS = [], PCARS = [], LVH = [0, 25, 55, 90, 130], LOSTT = [0, 9, 13, 18, 25], _sv = new T.Vector3();
+const inBar = (x, z) => { const b = VEN.bar; return x > b.x0 - 0.3 && x < b.x1 && z > b.z0 && z < b.z1; };
+function offScr(x, y, z) { _sv.set(x, y, z).project(camera); return _sv.z > 1 || abs(_sv.x) > 1.12 || abs(_sv.y) > 1.25; }      /* nokta kadrajın dışında mı? */
+const KBAR = { ppl: [], near: false, inside: false, inc: 0, incT: 0, coolT: 25, warned: 0, lineT: 0, lineK: 0, beams: [], bully: null, victim: null, tipT: -99, how: '', resT: -999 };
+let SIR = null, TRC = null;
+const sOff = () => !G.playing || !!CINE || !!PUZ || G.failing || G.step === 0 || G.step === 4 || (G.step >= 7 && G.step <= 9);
+const pick = a => a[floor(Math.random() * a.length)], rnd = (a, b) => a + Math.random() * (b - a);
+const L_CAR = ['Dikkat etsene!', 'Yavaş!', 'Önüne baksana!'];
+const L_TAUNT = ['Hey! Sana diyorum!', 'Ne bakıyorsun öyle?', 'Yürü git işine!', 'Çekil yolumdan!'];
+const L_BRAVE = ['Sen kime diyorsun?!', 'Derdin ne senin?', 'Bela mı arıyorsun?', 'Bir daha söyle bakayım!'], L_TIMID = ['Bana mı dediniz?..', 'Lütfen rahat bırakın.', 'Ben bir şey yapmadım ki…'];
+const L_FIGHT = ['Yeter artık!', 'Sen kaşındın!', 'Gel bakalım!'], L_FLEE = ['İmdat!', 'Uzak dur benden!', 'Biri polis çağırsın!'], L_YIELD = ['Tamam, yeter! Vurma!', 'Dur, dur! Pes ediyorum.'];
+const L_CALM = ['Tamam, sakin olalım.', 'Kusura bakma, yanlış anlaşıldı.', 'Kavga istemiyorum.'], L_OKAY = ['Peki… Bir daha olmasın.', 'Tamam, kapandı gitti.', 'İyi, uzatmayalım.'], L_NOPE = ['Şimdi mi aklın başına geldi?', 'Geç onu!'];
+
+/* ---------- kişiler ---------- */
+function mkF(h, kind, o) { const F = Object.assign({ h, kind, name: kind === 'cop' ? 'Polis' : h.o.male ? 'Adam' : 'Kadın', hpMax: 60, st: 'calm', t: 0, brave: Math.random(), ang: 0, fx: mkFx(), n: null, home: null, v: 0, wind: 0, atkCool: 0.6, stag: 0, dmg: 9, spd: 3.6, lose: 0, tries: 0, dur: 0, blocked: 0, dodge: 0, side: 0, talkT: -9 }, o || {}); F.hp = F.hpMax; FTR.push(F); return F; }
+function fSet(F, st) { F.st = st; F.t = 0; F.wind = 0; F.lose = 0; F.blocked = 0; F.side = 0; F.dodge = 0; }
+function fCalm(F) { F.hp = F.hpMax; F.ang = 0; F.tries = 0; F.stag = 0; F.phone = false; fSet(F, F.kind === 'civ' ? 'calm' : F.kind === 'cop' ? F.st : 'idle'); const fx = F.fx; for (const k in fx) if (k !== 'ph') fx[k] = 0; }
+function fxEase(fx, tg, dt) { fx.g = damp(fx.g, tg.g || 0, 8, dt); fx.hands = damp(fx.hands, tg.hands || 0, 9, dt); fx.panic = damp(fx.panic, tg.panic || 0, 7, dt); fx.point = damp(fx.point, tg.point || 0, 9, dt); fx.aim = damp(fx.aim, tg.aim || 0, 7, dt); fx.dance = damp(fx.dance, tg.dance || 0, 4, dt); fx.down = damp(fx.down, tg.down || 0, tg.down ? 7 : 3.2, dt); fx.blk = damp(fx.blk, tg.blk || 0, 14, dt); fx.hit = damp(fx.hit, 0, 6.5, dt); if (!tg.keepPun) fx.pun = 0; return fx; }
+const fxRest = (fx, dt) => { if (fx.g + fx.hands + fx.panic + fx.point + fx.hit + fx.down + fx.dance > 0.004) fxEase(fx, FXZ, dt); return fx; }, FXZ = {};
+function bark(F, txt, sec) { F.talkT = G.t + 1.6; say([[F.name, txt, sec || 2.2]]); }
+function fMove(F, tx, tz, v, dt, face) { const h = F.h, dx = tx - h.x, dz = tz - h.z, d = hyp(dx, dz); if (d < 0.04) { F.v = 0; return 0; } const st = min(d, v * dt), ox = h.x, oz = h.z; _np.x = h.x + dx / d * st; _np.z = h.z + dz / d * st;
+  collide(_np, 0.27, h.y, 1.7, 0.45); collideDyn(_np, 0.27, null, PLY.veh); const px = _np.x - PLY.x, pz = _np.z - PLY.z, pd = hyp(px, pz); if (!PLY.veh && pd < 0.66 && pd > 1e-4) { _np.x = PLY.x + px / pd * 0.66; _np.z = PLY.z + pz / pd * 0.66; }
+  if (!PLY.veh) { const wx = _np.x - WIFE.x, wz = _np.z - WIFE.z, wd = hyp(wx, wz); if (wd < 0.62 && wd > 1e-4) { _np.x = WIFE.x + wx / wd * 0.62; _np.z = WIFE.z + wz / wd * 0.62; } }
+  const gy = footY(_np.x, _np.z, h.y); if (gy > 0.4 && gy < h.y + 0.6) { h.x = _np.x; h.z = _np.z; h.y = gy < h.y - 0.02 ? max(gy, h.y - 9 * dt) : gy; }
+  const mv = hyp(h.x - ox, h.z - oz); F.v = mv / max(dt, 1e-3); F.blocked = mv < st * 0.4 ? F.blocked + dt : 0; if (face !== false && mv > 1e-4) h.h += clamp(angD(h.h, Math.atan2(h.x - ox, h.z - oz)), -9 * dt, 9 * dt); return mv; }
+function fGo(F, x, z, v, dt) { const h = F.h; if (F.dodge > 0) { F.dodge -= dt; const dx = x - h.x, dz = z - h.z, d = hyp(dx, dz) || 1, ux = dx / d, uz = dz / d; fMove(F, h.x + (ux * 0.3 - uz * F.side) * 4, h.z + (uz * 0.3 + ux * F.side) * 4, v, dt); if (F.blocked > 0.3) { F.side = -F.side; F.blocked = 0; } return; }
+  fMove(F, x, z, v, dt); if (F.blocked > 0.3) { F.dodge = 0.9; F.side = F.side || (Math.random() < 0.5 ? 1 : -1); F.blocked = 0; } }      /* fMove + basit engel aşma */
+const fFace = (F, x, z, dt, k) => { const h = F.h; h.h += clamp(angD(h.h, Math.atan2(x - h.x, z - h.z)), -(k || 7) * dt, (k || 7) * dt); };
+const fAway = (F, x, z, v, dt) => { const h = F.h, ax = h.x - x, az = h.z - z, d = hyp(ax, az) || 1; let ux = ax / d, uz = az / d; if (F.blocked > 0.3) { F.side = F.side || (Math.random() < 0.5 ? 1 : -1); const c = ux; ux = ux * 0.25 - uz * F.side; uz = uz * 0.25 + c * F.side; } fMove(F, h.x + ux * 6, h.z + uz * 6, v, dt); };
+function fDown(F) { fSet(F, 'down'); F.dur = F.kind === 'cop' ? 26 : rnd(11, 17); F.hp = 0; F.v = 0; sfx('ko'); if (F.kind === 'bully') barResolve('ko'); }
+// dövüşen kişi: oyuncuya yaklaşır, kurulur (görünür bir hazırlık), vurur; oyuncu savunmadaysa darbe sönümlenir
+function fightAI(F, dt, pd, tg) { const h = F.h; tg.g = 1; if (F.stag > 0 || FT.out) { F.v = 0; F.wind = 0; return; } fFace(F, PLY.x, PLY.z, dt, 9);
+  if (F.wind > 0) { const k0 = 1 - F.wind / 0.5; F.wind -= dt; const k1 = 1 - max(0, F.wind) / 0.5; F.fx.pun = F.arm * min(1, k1); F.fx.hv = F.kind === 'cop' ? 0.6 : 0; tg.keepPun = true; F.v = 0;
+    if (k0 < 0.5 && k1 >= 0.5 && pd < 1.75 && abs(angD(h.h, Math.atan2(PLY.x - h.x, PLY.z - h.z))) < 0.9) plyHurt(F.dmg * rnd(0.85, 1.15), F); if (F.wind <= 0) { F.atkCool = rnd(0.55, 1.25); F.fx.pun = 0; } return; }
+  if (pd > 1.2) fMove(F, PLY.x, PLY.z, F.spd, dt, false); else F.v = 0; F.atkCool -= dt; if (pd < 1.55 && F.atkCool <= 0 && !PLY.veh) { F.wind = 0.5; F.arm = Math.random() < 0.5 ? 1 : -1; sfx('swing', 0.6); } }
+function fGone(F) { const h = F.h, pd = hyp(PLY.x - h.x, PLY.z - h.z); if (F.kind === 'civ') { if (pd > 22 && (pd > 70 || offScr(h.x, h.y + 1, h.z))) { fCalm(F); npcSpawn(F.n, PLY.x, PLY.z); } else if (pd > 30 || F.t > 14) { fCalm(F); fSet(F, 'back'); } } else {      /* gözden uzaktaysa başka yerde yeniden belirir; görünüyorsa yürüyerek güzergâhına döner */ F.hp = max(F.hp, F.hpMax * 0.6); fSet(F, 'home'); } }
+const _ro = {};
+function fStep(F, dt, anim) { const h = F.h, pd = hyp(PLY.x - h.x, PLY.z - h.z), tg = {}; F.t += dt; if (F.stag > 0) F.stag -= dt; let pose = 'foot', look = 0; F.v = damp(F.v, 0, 12, dt);
+  if (F.kind === 'cop' && F.st !== 'down') copAI(F, dt, pd, tg);
+  else switch (F.st) {
+    case 'wary': fFace(F, PLY.x, PLY.z, dt); if (F.t > 2.6) fSet(F, F.kind === 'civ' ? 'back' : 'home'); break;
+    case 'watch': { fFace(F, F.ex, F.ez, dt, 4); const d = hyp(F.ex - h.x, F.ez - h.z); if (d < 6.5) fAway(F, F.ex, F.ez, 1.7, dt); if (F.phone) pose = 'phone'; if (F.t > F.dur) fSet(F, F.kind === 'civ' ? 'back' : 'home'); break; }
+    case 'flee': tg.panic = F.pan ? 1 : 0; fAway(F, PLY.x, PLY.z, 5.3, dt); if (pd > 30 || F.t > 10) fGone(F); break;
+    case 'fight': if (PLY.veh || pd > 17) { F.lose += dt; if (F.lose > 2.5) fSet(F, F.kind === 'civ' ? 'back' : 'home'); } else F.lose = 0; fightAI(F, dt, pd, tg); break;
+    case 'yield': tg.hands = 1; fFace(F, PLY.x, PLY.z, dt); if (pd < 3) fAway(F, PLY.x, PLY.z, 1.5, dt); if (F.t > 3) { F.pan = false; fSet(F, 'flee'); } break;
+    case 'down': tg.down = 1; F.v = 0; if (F.t > F.dur && (pd > 5 || F.t > F.dur + 6)) { F.hp = F.hpMax * 0.55; F.pan = false; fSet(F, F.kind === 'cop' ? 'go' : F.kind === 'civ' ? 'flee' : 'home'); } break;
+    case 'dodge': tg.hands = 0.5; fMove(F, F.tx, F.tz, 5.4, dt); if (F.t > 1.0) fSet(F, 'wary'); break;      /* oyuncunun aracından yana kaçış */
+    case 'leave': fMove(F, F.tx, F.tz, 1.9, dt); if (hyp(F.tx - h.x, F.tz - h.z) < 0.7 || F.t > 12 || F.blocked > 1) fGone(F); break;
+    case 'back': { routePos(F.n, _ro); fGo(F, _ro.x, _ro.z, 1.5, dt); if (hyp(_ro.x - h.x, _ro.z - h.z) < 1.3 || F.t > 40 || (F.t > 9 && offScr(h.x, h.y + 1, h.z))) fSet(F, 'calm'); break; }
+    case 'home': { const o = F.home; fMove(F, o[0], o[1], 2.2, dt); if (hyp(o[0] - h.x, o[1] - h.z) < 0.35 || F.t > 14) { if (F.t > 14) { h.x = o[0]; h.z = o[1]; } h.y = o[3] !== undefined ? o[3] : footY(h.x, h.z, h.y); fSet(F, 'idle'); } break; }
+    case 'cower': tg.hands = 1; if (pd < 7) fAway(F, F.ex, F.ez, 3.4, dt); else fFace(F, F.ex, F.ez, dt, 4); if (F.t > F.dur && G.t > FT.combatT) fSet(F, 'home'); break;
+    case 'idle': barIdle(F, dt, tg, pd); pose = F.pose || 'foot'; break;
+    case 'script': barScript(F, dt, tg, pd); break; }
+  fxEase(F.fx, tg, dt); if (F.st === 'wary' || F.st === 'watch') look = clamp(angD(h.h, Math.atan2(PLY.x - h.x, PLY.z - h.z)), -0.7, 0.7);
+  if (F.seat) { h.g.position.set(h.x, h.y + 0.1 * h.s - h.hipY, h.z); h.g.rotation.y = h.h; if (anim) humanAnim(h, dt, { mode: 'cafe', talk: false }); return; }
+  humanPlace(h); if (anim !== false) humanAnim(h, dt, { v: F.v, fx: F.fx, mode: pose, look, talk: F.talkT > G.t }); }
+
+/* ---------- oyuncu: hedef, yumruk, savunma, laf atma, itiş, yatıştırma ---------- */
+function pickTarget(reach, cone) { let best = null, bs = 1e9; for (const F of FTR) { const h = F.h; if (!h.g.visible || F.st === 'in' || F.st === 'down' || F.seat || F.kind === 'victim') continue; const dx = h.x - PLY.x, dz = h.z - PLY.z, d = hyp(dx, dz); if (d > reach || abs(h.y - PLY.y) > 1.3) continue; const a = abs(angD(PLY.h, Math.atan2(dx, dz))); if (a > cone && d > 1.0) continue; const s = d + a * 0.7; if (s < bs) { bs = s; best = F; FT.tgtD = d; } } if (!best) FT.tgtD = 99; return best; }
+const faceTo = F => { PLY.h = Math.atan2(F.h.x - PLY.x, F.h.z - PLY.z); };
+function plyHurt(dmg, F, shot) { if (FT.out || sOff()) return; const a = F ? abs(angD(PLY.h, Math.atan2(F.h.x - PLY.x, F.h.z - PLY.z))) : 9;
+  if (!shot && FT.block && a < 1.5) { dmg *= 0.18; sfx('block'); if (F) { F.fx.hit = 0.6; F.stag = 0.32; } FT.fx.hit = 0.25; }
+  else { FT.stag = shot ? 0.1 : 0.26; FT.fx.hit = 1; FT.fx.hs = Math.random() < 0.5 ? 1 : -1; CAM.shake = max(CAM.shake, shot ? 0.2 : 0.14); sfx(shot ? 'hurt' : 'hit'); FT.flashT = G.t + 0.14; if (FT.atkT >= 0) { FT.atkT = -1; FT.fx.pun = 0; } }
+  FT.hp -= dmg; FT.hurtT = G.t; FT.combatT = max(FT.combatT, G.t + 6); if (FT.hp <= 0) plyOut(F); }
+function fHurt(F, dmg, heavy) { if (F.st === 'down' || F.st === 'in') return; const h = F.h, dx = h.x - PLY.x, dz = h.z - PLY.z, d = hyp(dx, dz) || 1, k = heavy ? 0.6 : 0.26;
+  F.hp -= dmg; F.fx.hit = 1; F.fx.hs = Math.random() < 0.5 ? 1 : -1; F.stag = heavy ? 0.62 : 0.34; F.wind = 0; F.fx.pun = 0; sfx('hit', heavy ? 1 : 0.75); CAM.shake = max(CAM.shake, heavy ? 0.1 : 0.05); FT.combatT = G.t + 6;
+  _np.x = h.x + dx / d * k; _np.z = h.z + dz / d * k; collide(_np, 0.27, h.y, 1.7, 0.45); h.x = _np.x; h.z = _np.z; const wasYield = F.st === 'yield', ko = F.hp <= 0; if (ko) fDown(F); crime(ko ? 'ko' : wasYield ? 'beat' : 'hit', F); if (ko) return;
+  if (F.kind === 'civ') { if (wasYield) { F.pan = true; fSet(F, 'flee'); } else if (F.st === 'fight') { if (F.hp < F.hpMax * 0.3 && F.brave < 0.86) { fSet(F, 'yield'); bark(F, pick(L_YIELD)); } } else if (F.brave > 0.5) { fSet(F, 'fight'); bark(F, pick(L_FIGHT), 1.6); } else { F.pan = true; fSet(F, 'flee'); bark(F, pick(L_FLEE), 1.6); } }
+  else if (F.kind === 'cop') { F.angry = true; if (F.st !== 'go') fSet(F, 'go'); }
+  else if (F.kind === 'bully' || F.kind === 'bouncer') { if (F.st !== 'fight') { fSet(F, 'fight'); if (F.kind === 'bully') { if (KBAR.inc === 1 || KBAR.inc === 2) barConfront(); bark(F, 'Sen de kimsin?! Gel buraya!', 1.8); } else bark(F, 'Burada kavga yok! Dışarı!', 1.8); } }
+  else { F.ex = PLY.x; F.ez = PLY.z; F.dur = 8; fSet(F, 'cower'); } }
+function plyPunch() { const n = G.t - FT.comboT < 0.6 ? (FT.atkN + 1) % 3 : 0; FT.atkN = n; FT.atkT = 0; FT.atkDone = false; FT.combatT = max(FT.combatT, G.t + 2.5); PLY.crouch = false; sfx('swing'); const F = FT.tgt;
+  if (F && FT.tgtD < 2.8) { faceTo(F); if (FT.tgtD > 1.25) { const k = min(0.5, FT.tgtD - 1.05) / FT.tgtD; _np.x = PLY.x + (F.h.x - PLY.x) * k; _np.z = PLY.z + (F.h.z - PLY.z) * k; collide(_np, 0.3, PLY.y, 1.9, 0.45); if (footY(_np.x, _np.z, PLY.y) < PLY.y + 0.5) { PLY.x = _np.x; PLY.z = _np.z; } } } }
+function streetPlayer(dt) {      // footStep'in başında çağrılır: girdi → saldırı / savunma; FT.vcap yürüme hızını sınırlar
+  const fx = FT.fx; FT.vcap = 99; FT.clk = false; FT.cool -= dt; if (FT.stag > 0) { FT.stag -= dt; FT.vcap = 0.9; }
+  if (sOff() || PLY.lock || FT.out) { FT.tgt = null; FT.block = false; if (!FT.out) fxEase(fx, FXZ, dt); return; }
+  FT.tgt = pickTarget(3.3, 1.15); const inC = G.t < FT.combatT;
+  FT.block = !!(keys.has('KeyZ') || held.block || held.rmb || held.pad) && FT.stag <= 0 && FT.atkT < 0 && !!PLY.ground; if (FT.block) { FT.vcap = min(FT.vcap, 1.3); FT.combatT = max(FT.combatT, G.t + 1.5); }
+  const wantP = hit.has('punch') || (hit.has('click') && (inC || (FT.tgt && FT.tgtD < 2.7 && !promptOn))); if (hit.has('click') && wantP) FT.clk = true;
+  if (wantP && FT.atkT < 0 && FT.cool <= 0 && FT.stag <= 0 && !FT.block && PLY.ground && FT.pushT < 0) plyPunch();
+  if (FT.atkT >= 0) { const n = FT.atkN, D = n === 2 ? 0.44 : 0.3; FT.atkT += dt; const k = FT.atkT / D; fx.pun = (n === 0 ? -1 : 1) * min(1, k); fx.hv = n === 2 ? 1 : 0; FT.vcap = min(FT.vcap, 1.5);
+    if (!FT.atkDone && k >= 0.42) { FT.atkDone = true; const d0 = FT.tgtD, F = pickTarget(1.7, 0.95); FT.tgtD = d0; if (F) fHurt(F, [9, 11, 21][n] * rnd(0.9, 1.1), n === 2); }
+    if (k >= 1) { FT.atkT = -1; fx.pun = 0; FT.comboT = G.t; FT.cool = n === 2 ? 0.3 : 0.03; } }
+  if (FT.pushT >= 0) { FT.pushT += dt; const k = FT.pushT / 0.36; fx.push = min(1, k); FT.vcap = min(FT.vcap, 1); if (FT.pushF && k >= 0.4) { const F = FT.pushF; FT.pushF = null; shoveHit(F); } if (k >= 1) { FT.pushT = -1; fx.push = 0; } }
+  if (FT.atkT < 0 && FT.pushT < 0 && FT.stag <= 0) { if (hit.has('taunt')) doTaunt(); else if (hit.has('shove')) doShove(); else if (hit.has('calm')) doCalm(); }
+  const tg = { g: inC && !FT.block ? 1 : 0, blk: FT.block ? 1 : 0, hands: G.t < FT.handsT ? 1 : 0, point: G.t < FT.pointT ? 1 : 0, keepPun: true }; fxEase(fx, tg, dt);
+  if (FT.hp < 100 && G.t - FT.hurtT > 6) FT.hp = min(100, FT.hp + 4.5 * dt); }
+function doTaunt() { const F = FT.tgt; if (!F || FT.tgtD > 3.2 || G.t - FT.actT < 1.1) return; FT.actT = G.t; FT.pointT = G.t + 0.8; PLY.talk = G.t + 1.2; faceTo(F);
+  if (F.kind === 'bully' && (KBAR.inc === 1 || KBAR.inc === 2)) { barWarn(F); return; }
+  if (F.kind === 'cop') { say([[HIM(), 'Ne var memur bey? Bir şey yapmadık!', 1.8], ['Polis', 'Sözlerinize dikkat edin.', 2]]); crime('taunt', F); return; }
+  if (F.kind !== 'civ') { say([[HIM(), pick(L_TAUNT), 1.5], [F.name, F.kind === 'bouncer' ? 'Sorun çıkarma, kapı orada.' : 'Lütfen… Eğlenmeye geldik.', 2]]); crime('taunt', F); F.talkT = G.t + 3; if (F.kind === 'bouncer') { F.ang += 0.5; if (F.ang >= 1) { fSet(F, 'fight'); } } return; }
+  F.ang += 0.36; const brave = F.brave > 0.55; crime('taunt', F); F.talkT = G.t + 3.2;
+  if (F.ang >= 1 && brave) { fSet(F, 'fight'); say([[HIM(), pick(L_TAUNT), 1.4], [F.name, pick(L_FIGHT), 1.8]]); }
+  else if (F.ang >= 0.7 && !brave) { F.pan = false; fSet(F, 'flee'); say([[HIM(), pick(L_TAUNT), 1.4], [F.name, pick(L_FLEE), 1.8]]); }
+  else { fSet(F, 'wary'); say([[HIM(), pick(L_TAUNT), 1.4], [F.name, pick(brave ? L_BRAVE : L_TIMID), 2]]); } }
+function doShove() { const F = FT.tgt; if (!F || FT.tgtD > 2.1 || G.t - FT.actT < 0.8) return; FT.actT = G.t; faceTo(F); FT.pushT = 0; FT.pushF = F; PLY.crouch = false; sfx('swing', 0.8); FT.combatT = max(FT.combatT, G.t + 2.5); }
+function shoveHit(F) { const h = F.h, dx = h.x - PLY.x, dz = h.z - PLY.z, d = hyp(dx, dz) || 1; if (d > 2.4 || F.st === 'down' || F.st === 'in') return; _np.x = h.x + dx / d * 1.0; _np.z = h.z + dz / d * 1.0; collide(_np, 0.27, h.y, 1.7, 0.45); h.x = _np.x; h.z = _np.z; F.stag = 0.6; F.fx.hit = 0.85; F.wind = 0; F.ang += 0.7; sfx('hit', 0.5); crime('shove', F);
+  if (F.kind === 'civ') { if (F.st === 'fight') return; if (F.brave > 0.45) { fSet(F, 'fight'); bark(F, 'Ne itiyorsun be?!', 1.8); } else { F.pan = false; fSet(F, 'flee'); bark(F, pick(L_FLEE), 1.6); } }
+  else if (F.kind === 'cop') { F.angry = true; bark(F, 'Polise mukavemet ha?!', 1.8); }
+  else if (F.kind === 'bully') { if (KBAR.inc === 1 || KBAR.inc === 2) barConfront(); if (F.st !== 'fight') { fSet(F, 'fight'); bark(F, 'İtme beni! Gel buraya!', 1.8); } }
+  else if (F.kind === 'bouncer') { if (F.st !== 'fight') { fSet(F, 'fight'); bark(F, 'Yanlış yaptın kardeşim.', 1.8); } }
+  else { F.ex = PLY.x; F.ez = PLY.z; F.dur = 8; fSet(F, 'cower'); } }
+function nearCop(r) { let b = null, bd = r; for (const C of COPS) { if (C.st === 'in' || C.st === 'down') continue; const d = hyp(C.h.x - PLY.x, C.h.z - PLY.z); if (d < bd) { bd = d; b = C; } } return b; }
+function doCalm() { if (G.t - FT.actT < 1.0) return; FT.actT = G.t; FT.handsT = G.t + 1.4; PLY.talk = G.t + 1.2; const C = WN.lvl >= 1 ? nearCop(9) : null;
+  if (C) { faceTo(C); if (WN.lvl === 1) { say([[HIM(), 'Tamam memur bey, sakiniz. Bir yanlış anlaşılma oldu.', 2.4], ['Polis', 'Bu seferlik uyarıyorum. Bir daha olmasın.', 2.6]]); wantedClear('warn'); } else { say([[HIM(), 'Tamam! Teslim oluyorum.', 1.6]]); busted(); } return; }
+  const F = FT.tgt;
+  if (F && FT.tgtD < 4.2 && F.kind === 'bully' && KBAR.inc >= 1 && KBAR.inc <= 3 && F.st !== 'down') { faceTo(F); barCalm(F); return; }
+  if (F && FT.tgtD < 4.2 && F.kind !== 'cop' && (F.st === 'fight' || F.st === 'wary' || F.st === 'yield' || F.ang > 0.05)) { faceTo(F); const p = clamp(0.92 - 0.3 * F.ang - 0.55 * (1 - F.hp / F.hpMax) + 0.28 * F.tries, 0.12, 0.96);
+    if (Math.random() < p) { const h = F.h, d = FT.tgtD || 1; F.ang = 0; F.tries = 0; F.tx = h.x + (h.x - PLY.x) / d * 11; F.tz = h.z + (h.z - PLY.z) / d * 11; fSet(F, F.kind === 'civ' ? 'leave' : 'home'); say([[HIM(), pick(L_CALM), 1.8], [F.name, pick(L_OKAY), 2]]); calmed(); }
+    else { F.tries++; F.ang = max(0, F.ang - 0.2); say([[HIM(), pick(L_CALM), 1.8], [F.name, pick(L_NOPE), 1.8]]); } return; }
+  say([[HIM(), 'Tamam, sorun yok. Herkes sakin olsun.', 2]]); if (WN.lvl === 0 && WN.heat > 1) { WN.heat *= 0.55; FT.coolK = G.t + 6; toast('Geri çekildin — tansiyon düşüyor', 2.6); } }
+function calmed() { if (WN.lvl === 0) { WN.heat = max(0, WN.heat - 16); FT.coolK = G.t + 6; } FT.combatT = min(FT.combatT, G.t + 0.6); toast('Tansiyon yatıştırıldı', 2.8); sfx('ok'); if (G.t - FT.wifeT > 4) { FT.wifeT = G.t; after(2.2, () => { if (!SAYQ.length) say([[HER(), 'Oh… İyi ki büyümedi.', 2]]); }); } }
+
+/* ---------- suç, çevrenin tepkisi, aranma ---------- */
+function crime(type, F) { if (sOff()) return; const cop = F && F.kind === 'cop'; let add = cop ? { taunt: 12, shove: 22, hit: 24, ko: 45, beat: 40 }[type] : { taunt: 4, shove: 10, hit: 9, ko: 22, beat: 16 }[type];
+  if (F && F.kind === 'bully' && KBAR.inc >= 1) add *= 0.5;      // kadını rahatsız edene müdahale: tanıklar daha anlayışlı
+  if (type === 'taunt' && !cop) WN.heat = max(WN.heat, min(22, WN.heat + add)); else WN.heat = min(165, WN.heat + add); WN.quietT = G.t;
+  if (cop && type !== 'taunt') wantLevel(type === 'ko' ? 4 : 3);
+  disturb(F ? F.h.x : PLY.x, F ? F.h.z : PLY.z, type === 'taunt' ? 1 : type === 'ko' ? 3 : 2, F);
+  if (type !== 'taunt' && G.t - FT.wifeT > 7 && !PLY.veh) { FT.wifeT = G.t; const l = F && F.kind === 'bully' ? 'Dikkat et!' : type === 'ko' ? HIM() + '! Yeter, gidelim buradan!' : HIM() + ', ne yapıyorsun?!'; after(1.1, () => { if (!SAYQ.length) say([[HER(), l, 2]]); }); } }
+function disturb(x, z, sev, src) { const R = [0, 7, 13, 22][sev]; for (const F of FTR) { if (F === src || !F.h.g.visible || F.kind === 'cop' || F.seat) continue; const d = hyp(F.h.x - x, F.h.z - z); if (d > R) continue;
+    if (F.kind === 'civ') { if (F.st !== 'calm' && F.st !== 'watch' && F.st !== 'back') continue; if (sev < 2) { F.talkT = G.t + 0.01; continue; } F.ex = x; F.ez = z;
+      if (F.brave < 0.42) { F.pan = sev === 3; fSet(F, 'flee'); } else { const was = F.st === 'watch'; fSet(F, 'watch'); F.dur = rnd(5, 9); if (!was && !F.phone && Math.random() < 0.45) { F.phone = true; WN.heat = min(165, WN.heat + 5); } } }
+    else if (sev >= 2 && (F.st === 'idle' || F.st === 'home') && F.kind !== 'bully' && F.kind !== 'bouncer' && F.kind !== 'victim') { F.ex = x; F.ez = z; F.dur = rnd(6, 9); fSet(F, 'cower'); } } }
+function wantLevel(n) { if (n <= WN.lvl || sOff()) return; const first = WN.lvl === 0; WN.lvl = n; WN.heat = max(WN.heat, LVH[n]); sfx('alert'); WN.lost = 0;
+  toast(['', 'Biri polisi aradı — polis yolda', 'Aranma seviyesi 2 — polis seni yakalamaya çalışıyor', 'Aranma seviyesi 3 — takviye ekip geliyor', 'Aranma seviyesi 4 — polis ateş açabilir! Siper al (C) ya da izini kaybettir'][n], 4.2);
+  if (first) { WN.ph = 1; WN.eta = TEST ? 1.5 : 5; WN.contact = false; WN.warn = 0; WN.warnOn = false; WN.bust = 0; WN.t34 = 0; WN.trail.length = 0; if (!PLY.veh && G.t - FT.wifeT > 3) { FT.wifeT = G.t; after(2.5, () => { if (!SAYQ.length && WN.lvl) say([[HER(), 'Polis geliyor… Lütfen sakin ol.', 2.2]]); }); } }
+  for (const C of COPS) if (C.st === 'warn') fSet(C, 'go'); }
+function wantedClear(why) { const had = WN.lvl > 0 || WN.ph > 0; WN.heat = 0; WN.lvl = 0; WN.ph = 0; WN.lost = 0; WN.contact = false; WN.bust = 0; WN.warn = 0; WN.warnOn = false; WN.t34 = 0; WN.trail.length = 0; setMeter(null);
+  for (const C of COPS) { C.angry = false; if (C.st !== 'in') { if (why === 'off' || why === 'reset') copHide(C); else if (C.st !== 'down') fSet(C, 'ret'); } }
+  for (const K of PCARS) { if (!K.on) continue; if (why === 'off' || why === 'reset') pcarHome(K); else { K.mode = 'leave'; K.t = 0; } }
+  if (!had) return; if (why === 'lost') { toast('Polis izini kaybetti — aranma kalktı', 3.4); sfx('ok'); } else if (why === 'warn') { toast('Polis uyarıp ayrıldı — tansiyon yatıştırıldı', 3.6); sfx('ok'); } }
+function wantedStep(dt) {
+  if (sOff()) { if (WN.ph || WN.heat || WN.lvl) wantedClear('off'); return; }
+  const need = WN.heat >= LVH[4] ? 4 : WN.heat >= LVH[3] ? 3 : WN.heat >= LVH[2] ? 2 : WN.heat >= LVH[1] ? 1 : 0; if (need > WN.lvl) wantLevel(need);
+  if (WN.lvl === 0) { if (G.t - WN.quietT > 5) WN.heat = max(0, WN.heat - 2.4 * dt * (G.t < FT.coolK ? 3 : 1)); return; }
+  const T = WN.trail, l = T[T.length - 1]; if (!l || hyp(PLY.x - l[0], PLY.z - l[1]) > 1.3) { T.push([PLY.x, PLY.z]); if (T.length > 110) { T.shift(); for (const K of PCARS) K.i = max(0, K.i - 1); } }
+  const units = WN.lvl >= 3 ? 2 : 1; if (WN.ph === 1) { WN.eta -= dt; if (WN.eta <= 0) WN.ph = 2; } if (WN.ph >= 2) for (let k = 0; k < units; k++) if (!PCARS[k].on) dispatch(k);
+  // görüş: sahadaki bir memur (ya da ekibi içinde olan araç) oyuncuyu görüyor mu?
+  let seen = false; const ey = PLY.y + (PLY.crouch && !PLY.veh ? 0.82 : 1.55);
+  for (const C of COPS) { if (C.st === 'in' || C.st === 'down') continue; const d = hyp(C.h.x - PLY.x, C.h.z - PLY.z); C.los = d < 62 && (d < 4 || !segBlocked(C.h.x, C.h.z, PLY.x, PLY.z, ey)); if (C.los) seen = true; }
+  for (const K of PCARS) { if (!K.on || K.out || K.mode === 'leave') continue; const d = hyp(K.c.x - PLY.x, K.c.z - PLY.z); if (d < 45 && (d < 9 || !segBlocked(K.c.x, K.c.z, PLY.x, PLY.z, ey))) seen = true; }
+  if (WN.ph >= 2) navTick(NAV, WN.ph === 3 ? WN.lx : PLY.x, WN.ph === 3 ? WN.lz : PLY.z, PLY.y, COPS.some(C => C.st === 'go' && !C.los));
+  if (seen && G.t > WN.sepT) { WN.sepT = G.t + 0.4; for (const F of FTR) { if (F.kind === 'cop' || F.st !== 'fight' || !F.h.g.visible) continue; if (!COPS.some(C => C.st !== 'in' && C.st !== 'down' && hyp(C.h.x - F.h.x, C.h.z - F.h.z) < 11)) continue;      /* polis gelince kavgacı geri çekilir */
+      F.ang = 0; if (F.kind === 'bully' && KBAR.inc >= 1 && KBAR.inc <= 3) barResolve('quit'); else fSet(F, F.kind === 'civ' ? 'back' : 'home'); } }
+  if (seen) { if (!WN.contact) WN.contact = true; WN.nc = 0; WN.lost = max(0, WN.lost - 3 * dt); WN.lx = PLY.x; WN.lz = PLY.z; } else if (WN.contact) WN.lost += dt * (PLY.cover ? 1.6 : PLY.crouch ? 1.25 : 1);
+  else if (WN.ph >= 2) { WN.nc = (WN.nc || 0) + dt; if (WN.nc > 50) { wantedClear('lost'); return; } }      // ekip oyuncuyu hiç bulamadıysa arama düşer
+  if (WN.contact) WN.ph = WN.lost > 1.5 ? 3 : 2; if (WN.lost >= LOSTT[WN.lvl]) { wantedClear('lost'); return; }
+  // tutuklama sayacı: 2. seviyeden itibaren yanındaki memur yavaşsan kelepçeler; araçta durursan ekip aracı sıkıştırır
+  if (WN.lvl >= 2 && !FT.out) { let adj = 0; if (PLY.veh) { if (abs(PLY.veh.v) < 2) { for (const K of PCARS) if (K.on && K.mode !== 'leave' && hyp(K.c.x - PLY.x, K.c.z - PLY.z) < 8) adj++; for (const C of COPS) if (C.st !== 'in' && C.st !== 'down' && hyp(C.h.x - PLY.x, C.h.z - PLY.z) < 3.3) adj++; } }
+    else for (const C of COPS) if (C.st !== 'in' && C.st !== 'down' && C.stag <= 0 && hyp(C.h.x - PLY.x, C.h.z - PLY.z) < 1.7) adj++;
+    const slow = PLY.veh ? true : (PLY.v < 3.2 || FT.stag > 0) && FT.atkT < 0 && G.t - FT.comboT > 1.2;      /* karşılık veren oyuncu kelepçelenemez: ekip copla müdahale eder */ WN.bust = clamp(WN.bust + (adj && slow ? (0.42 + 0.2 * (min(adj, 2) - 1)) * (WN.lvl >= 3 ? 1.25 : 1) : -0.55) * dt, 0, 1); setMeter('YAKALANIYORSUN', WN.bust > 0.02 ? WN.bust : null); if (WN.bust >= 1) { busted(); return; } }
+  if (WN.lvl === 3) { if (G.t < FT.combatT) WN.t34 += dt; if (WN.t34 > 28) wantLevel(4); } }
+
+/* ---------- polis: memurlar ---------- */
+function copHide(C) { C.st = 'in'; C.h.g.visible = false; C.v = 0; C.angry = false; C.hp = C.hpMax; const fx = C.fx; for (const k in fx) if (k !== 'ph') fx[k] = 0; if (C.gun) C.gun.visible = false; if (C.bat) C.bat.visible = false; }
+/* ---------- yaya yol bulma: hedeften dışa doğru mesafe alanı (1 m hücreli BFS, birkaç kareye yayılır) — memurlar görüş yokken binaların çevresinden dolaşır ---------- */
+const mkNav = () => ({ n: 129, A: { d: new Int16Array(16641), hy: new Float32Array(16641) }, B: { d: new Int16Array(16641), hy: new Float32Array(16641) }, q: new Int32Array(16641), qh: 0, qt: 0, busy: false, ok: false, ox: 0, oz: 0, tx: 1e9, tz: 1e9, box: 0, boz: 0, bx: 0, bz: 0, t: -99 });
+const NAV = mkNav(), NAVR = [mkNav(), mkNav()], NAVC = new Map(), NDX = [1, -1, 0, 0, 1, 1, -1, -1], NDZ = [0, 0, 1, -1, 1, -1, 1, -1];      /* NAV: oyuncuya; NAVR[k]: k. ekip aracına dönüş */
+function navC(wx, wz, y) {      /* hücre yürünür mü? değilse -1, yürünürse zemin yüksekliği (kalıcı önbellek: sabit engeller değişmez) */
+  const k = (wx + 2048) * 4096 + (wz + 2048) + Math.round(y / 1.5 + 8) * 16777216, m = NAVC; let v = m.get(k); if (v !== undefined) return v; const x = wx + 0.5, z = wz + 0.5; let g = groundH(x, z); if (g < y - 1 || g < 0.4) { const sy = supportY(x, z, y, 0.6); if (sy > g) g = sy; }
+  if (!(g > 0.4)) v = -1; else { const c = pointBlocked(x, g + 0.55, z, 0.5) || pointBlocked(x, g + 1.2, z, 0.5); if (c && (c.tag === 'veh' || c.cam)) return g; v = c ? -1 : g; } m.set(k, v); return v; }
+function navStart(N, tx, tz, ty) { const n = N.n, h = n >> 1, d = N.B.d; if (NAVC.size > 90000) NAVC.clear(); N.box = floor(tx) - h; N.boz = floor(tz) - h; N.bx = tx; N.bz = tz; d.fill(-1); N.qh = N.qt = 0;
+  for (let r = 0; r < 3 && !N.qt; r++) for (let dz = -r; dz <= r && !N.qt; dz++) for (let dx = -r; dx <= r; dx++) { if (max(abs(dx), abs(dz)) !== r) continue; const g = navC(N.box + h + dx, N.boz + h + dz, ty); if (g >= 0) { const i = (h + dz) * n + h + dx; d[i] = 0; N.B.hy[i] = g; N.q[N.qt++] = i; break; } }
+  N.busy = N.qt > 0; if (!N.busy) N.t = G.t; }
+function navRun(N, budget) { const n = N.n, d = N.B.d, hy = N.B.hy, q = N.q, ox = N.box, oz = N.boz;
+  while (N.qh < N.qt && budget-- > 0) { const c = q[N.qh++], cx = c % n, cz = (c - cx) / n, dc = d[c] + 1, y0 = hy[c];
+    for (let k = 0; k < 8; k++) { const nx = cx + NDX[k], nz = cz + NDZ[k]; if (nx < 0 || nz < 0 || nx >= n || nz >= n) continue; const i = nz * n + nx; if (d[i] !== -1) continue; const g = navC(ox + nx, oz + nz, y0); if (g < 0) { d[i] = -2; continue; }
+      if (k >= 4 && (navC(ox + nx, oz + cz, y0) < 0 || navC(ox + cx, oz + nz, y0) < 0)) continue; if (g < y0 - 0.6 || g > y0 + 4) continue; d[i] = dc; hy[i] = g; q[N.qt++] = i; } }
+  if (N.qh >= N.qt) { const a = N.A; N.A = N.B; N.B = a; N.ox = ox; N.oz = oz; N.tx = N.bx; N.tz = N.bz; N.ok = true; N.busy = false; N.t = G.t; } }
+function navTick(N, tx, tz, ty, need) { if (N.busy) { navRun(N, 900); return; } if (!need) return; if (!N.ok || G.t - N.t > 5 || (G.t - N.t > 0.9 && hyp(N.tx - tx, N.tz - tz) > 1.6)) navStart(N, tx, tz, ty); }
+function navLine(x0, z0, x1, z1, y) { const m = Math.ceil(hyp(x1 - x0, z1 - z0) / 0.5); for (let i = 1; i < m; i++) { const t = i / m; if (navC(floor(x0 + (x1 - x0) * t), floor(z0 + (z1 - z0) * t), y) < 0) return false; } return true; }
+function navNext(N, x, z, y, out) {      /* (x,z)'den hedefe giden yolda, düz çizgiyle ulaşılabilen en ileri hücre */
+  if (!N.ok) return false; const n = N.n, d = N.A.d, cx = floor(x) - N.ox, cz = floor(z) - N.oz; if (cx < 1 || cz < 1 || cx >= n - 1 || cz >= n - 1) return false; let cur = cz * n + cx;
+  if (d[cur] < 0) { let b = -1, bd = 32767; for (let k = 0; k < 8; k++) { const i = (cz + NDZ[k]) * n + cx + NDX[k]; if (d[i] >= 0 && d[i] < bd) { bd = d[i]; b = i; } } if (b < 0) return false; cur = b; }
+  if (d[cur] < 2) return false; let best = cur;
+  for (let s = 0; s < 12 && d[cur] > 0; s++) { const ux = cur % n, uz = (cur - ux) / n; let nb = -1, nd = d[cur]; for (let k = 0; k < 8; k++) { const nx = ux + NDX[k], nz = uz + NDZ[k]; if (nx < 0 || nz < 0 || nx >= n || nz >= n) continue; const i = nz * n + nx, di = d[i]; if (di < 0 || di >= nd) continue; if (k >= 4 && (d[uz * n + nx] < 0 || d[nz * n + ux] < 0)) continue; nd = di; nb = i; }
+    if (nb < 0) break; cur = nb; const wx = N.ox + cur % n + 0.5, wz = N.oz + (cur - cur % n) / n + 0.5; if (s < 1 || navLine(x, z, wx, wz, y)) best = cur; else break; }
+  out[0] = N.ox + best % n + 0.5; out[1] = N.oz + (best - best % n) / n + 0.5; return true; }
+function chasePt(C) { if (G.t < C.cpT) return C.cp; C.cpT = G.t + 0.22; const h = C.h, y = PLY.y + 1.0, srch = WN.ph === 3, cin = inBar(h.x, h.z), tin = srch ? inBar(WN.lx, WN.lz) : KBAR.inside; let p = null;
+  if (!srch && (C.los || !segBlocked(h.x, h.z, PLY.x, PLY.z, y))) p = [PLY.x, PLY.z];      /* görüyorsa dosdoğru */
+  else if (navNext(NAV, h.x, h.z, h.y, C.np)) p = C.np;      /* görmüyorsa yol alanını izler (binaların çevresinden) */
+  else if (cin !== tin) { const ax = abs(h.z - 56) < 1.6; p = cin ? (ax && h.x < 206.5 ? [199.5, 56] : [205.2, 56]) : (ax && h.x > 197.5 ? [205.2, 56] : [199.5, 56]); }      /* yedek: Körfez Bar'a yalnız kapıdan girilir/çıkılır */
+  else if (srch) p = [WN.lx, WN.lz];
+  else { const T = WN.trail; for (let i = T.length - 1, k = 0; i >= 0 && k < 50; i--, k++) if (!segBlocked(h.x, h.z, T[i][0], T[i][1], y)) { p = T[i]; break; } if (!p) p = T.length ? T[max(0, T.length - 50)] : [PLY.x, PLY.z]; }      /* yedek: oyuncunun izi */
+  C.cp = p; return p; }
+function copAI(C, dt, pd, tg) { const h = C.h, lv = WN.lvl, K = PCARS[C.car];
+  if (C.st === 'ret') { const c = K.c, d = hyp(c.x - h.x, c.z - h.z), N = NAVR[C.car]; navTick(N, c.x, c.z, c.y, true); if (d > 4 && hyp(N.tx - c.x, N.tz - c.z) < 2 && navNext(N, h.x, h.z, h.y, C.np)) fGo(C, C.np[0], C.np[1], 4.6, dt); else fGo(C, c.x, c.z, 4.6, dt);      /* araca dönüş: yol alanıyla (bina/kapı çevresinden) */
+    if (d < 2.4 || C.t > 25 || (C.t > 8 && offScr(h.x, h.y + 1, h.z))) copHide(C); return; }
+  if (lv === 0) { fSet(C, 'ret'); return; }
+  if (PLY.veh && pd > 16 && abs(PLY.veh.v) > 4) { fSet(C, 'ret'); return; }
+  if (C.st === 'warn') { fFace(C, PLY.x, PLY.z, dt); C.talkT = G.t + 0.3; tg.point = 0.6; if (!WN.warnOn) { WN.warnOn = true; WN.vouch = KBAR.inc >= 4 && KBAR.how === 'ko' && G.t - KBAR.resT < 90 && KBAR.inside; say(WN.vouch ? [['Polis', 'Polis! Ne oluyor burada?', 2.2], ['Kadın', 'Memur bey, o adam beni rahatsız ediyordu. Beyefendi yardım etti.', 3.2]] : [['Polis', 'Polis! Olduğun yerde kal. Ne oluyor burada?', 2.8]]); toast('Polis uyarıyor: sakin kal ya da R ile durumu yatıştır', 4.5); }
+    if (pd > 15) { say([['Polis', 'Dur! Kaçma!', 1.6]]); wantLevel(2); return; } if (PLY.v < 2.4 && G.t - WN.quietT > 1.5 && pd < 9) { WN.warn += dt; if (WN.warn > (WN.vouch ? 5.2 : 4.2)) { say([['Polis', WN.vouch ? 'Anlaşıldı. Hanımefendi, şikâyetinizi alalım. Siz gidebilirsiniz.' : 'Bu seferlik uyarıyorum. Dağılın bakalım.', 2.8]]); wantedClear('warn'); } } if (pd > 5.5) fSet(C, 'go'); return; }
+  if (C.st === 'shoot') { fFace(C, PLY.x, PLY.z, dt, 5); tg.aim = 1; if (C.gun) C.gun.visible = C.fx.aim > 0.3; if (C.bat) C.bat.visible = false; C.v = 0; if (!C.los || pd > 34 || pd < 3.6 || lv < 4) { fSet(C, 'go'); return; } if (pd < 8) fAway(C, PLY.x, PLY.z, 1.6, dt), fFace(C, PLY.x, PLY.z, dt, 9);
+    C.shootT -= dt; if (C.shootT <= 0 && C.fx.aim > 0.85 && !FT.out) { C.shootT = rnd(1.1, 1.9); copShot(C, pd); } return; }
+  // 'go': oyuncuya (ya da izine) git; seviye ve mesafeye göre uyar / yakala / vur / ateş et
+  if (C.gun) C.gun.visible = false; if (C.bat) C.bat.visible = lv >= 3 || C.angry;
+  if (lv === 1 && !C.angry) { if (C.los && pd < 4.2) { fSet(C, 'warn'); return; } const p = chasePt(C); fGo(C, p[0], p[1], 3.7, dt); return; }
+  if (lv >= 4 && C.los && pd > 5 && pd < 30 && C.stag <= 0) { fSet(C, 'shoot'); C.shootT = rnd(0.9, 1.5); if (G.t - WN.shoutT > 14 && G.t - WN.shotT > 8) { WN.shoutT = G.t; C.shootT += 0.7; say([['Polis', 'Teslim ol! Yoksa ateş açarız!', 1.8]]); } return; }
+  if (pd < 1.9 && (lv >= 3 || C.angry) && !PLY.veh) { fightAI(C, dt, pd, tg); return; }
+  if (C.stag > 0) return; const p = chasePt(C), d = hyp(p[0] - h.x, p[1] - h.z); if (WN.ph === 3 && d < 2) { h.h += 1.2 * dt; C.v = 0; return; } if (pd > 1.15 || p[0] !== PLY.x) fGo(C, p[0], p[1], 5.75, dt); else { fFace(C, PLY.x, PLY.z, dt); tg.g = 0.6; } }
+function copShot(C, pd) { const h = C.h, mx = h.x + sin(h.h) * 0.6, mz = h.z + cos(h.h) * 0.6, my = h.y + 1.42 * h.s; sfx('shot', clamp(1.3 - pd / 40, 0.35, 1)); WN.shotT = G.t; FT.combatT = max(FT.combatT, G.t + 4);
+  let p = 0.42 * clamp(1.15 - pd / 42, 0.3, 1) * (PLY.v > 5 ? 0.5 : PLY.v > 2 ? 0.8 : 1) * (PLY.crouch ? 0.6 : 1) * (PLY.veh ? 0.45 : 1); if (PLY.cover && segBlocked(h.x, h.z, PLY.x, PLY.z, PLY.y + 0.82)) p = 0;
+  const hitP = Math.random() < p, tx = PLY.x + (hitP ? 0 : rnd(-1.1, 1.1)), tz = PLY.z + (hitP ? 0 : rnd(-1.1, 1.1)), ty = PLY.y + (hitP ? 1.2 : rnd(0.1, 1.9)); tracer(mx, my, mz, tx, ty, tz); if (hitP) plyHurt(rnd(8, 12), C, true); disturb(PLY.x, PLY.z, 3, null); }
+function tracer(x0, y0, z0, x1, y1, z1) { if (!TRC) return; const a = TRC.geo.attributes.position, i = TRC.k = (TRC.k + 1) % 6; a.setXYZ(i * 2, x0, y0, z0); a.setXYZ(i * 2 + 1, x1, y1, z1); a.needsUpdate = true; TRC.t[i] = G.t + 0.07; TRC.m.visible = true; }
+
+/* ---------- polis: ekip araçları ---------- */
+const pcCol = c => { setCol(c.col, c.x + sin(c.h) * (c.sp.zm || 0), c.z + cos(c.h) * (c.sp.zm || 0), c.h); c.col.y0 = c.y - 1; c.col.y1 = c.y + c.sp.H; };
+function pcarHome(K) { const s = VEN.pol.park[K.k], c = K.c; K.on = false; K.mode = 'idle'; K.out = false; K.i = 0; carPlace(c, s[0], s[1], s[2]); c.v = 0; c.brk = false; pcCol(c); K.path.length = 0; K.pre = false; K.rev = 0; K.lr.visible = K.lb.visible = false; for (const C of K.crew) copHide(C); }
+function dispatch(k) { const K = PCARS[k], c = K.c, s = VEN.pol.park[k]; K.on = true; K.out = false; K.t = 0; K.i = 0; K.stuck = 0;
+  const onSq = PLY.x > 124 && PLY.x < 236 && PLY.z > 36 && PLY.z < 86; K.pre = false; if (onSq || hyp(PLY.x - s[0], PLY.z - s[1]) < 70) { K.mode = 'direct'; K.pre = true; return; }      // meydandaki olaya karakoldan doğrudan
+  const S = LOOP.S, m = S.length; let bi = 0, bd = 1e9; for (let i = 0; i < m; i += 2) { const d = hyp(S[i].x - PLY.x, S[i].z - PLY.z); if (d < bd) { bd = d; bi = i; } }
+  K.dir = k ? -1 : 1; K.tgt = bi; K.s = ((bi - K.dir * (58 + k * 6)) % m + m) % m; const p = S[floor(K.s)]; carPlace(c, p.x, p.z, Math.atan2(p.tx * K.dir, p.tz * K.dir)); K.mode = 'road'; }
+function reroute(K) { const S = LOOP.S, m = S.length, c = K.c; let ci = 0, cd = 1e9, pi = 0, pd = 1e9; for (let i = 0; i < m; i += 2) { const a = hyp(S[i].x - c.x, S[i].z - c.z), b = hyp(S[i].x - PLY.x, S[i].z - PLY.z); if (a < cd) { cd = a; ci = i; } if (b < pd) { pd = b; pi = i; } }
+  const fw = ((pi - ci) % m + m) % m; K.dir = fw <= m / 2 ? 1 : -1; K.tgt = pi; K.s = ci; K.t = 0; const p = S[ci]; carPlace(c, p.x, p.z, Math.atan2(p.tx * K.dir, p.tz * K.dir)); K.mode = 'road'; }
+function deploy(K) { if (K.out) return; K.out = true; const c = K.c, ch = cos(c.h), sh = sin(c.h); K.crew.forEach((C, j) => { const sd = j ? -1 : 1, h = C.h; _np.x = c.x + ch * 1.45 * sd; _np.z = c.z - sh * 1.45 * sd; collide(_np, 0.27, c.y, 1.7, 0.45); h.x = _np.x; h.z = _np.z; h.y = footY(h.x, h.z, c.y + 0.4); h.h = c.h; h.g.visible = true; C.hp = C.hpMax; C.cpT = 0; C.los = false; fSet(C, 'go'); humanPlace(h); }); sfx('door'); }
+function pcarDrive(K, tx, tz, vmax, stopD, dt) { const c = K.c, dx = tx - c.x, dz = tz - c.z, d = hyp(dx, dz), hT = Math.atan2(dx, dz), dh = angD(c.h, hT); let vt = clamp((d - stopD) * 1.3, 0, vmax) * clamp(1.25 - abs(dh) * 0.9, 0.25, 1);
+  const sh = sin(c.h), ch = cos(c.h), ax = c.x + sh * 3.6, az = c.z + ch * 3.6; const pb = pointBlocked(ax, c.y + 0.7, az, 1.0); if ((pb && pb !== c.col) || (!PLY.veh && hyp(ax - PLY.x, az - PLY.z) < 2.2)) vt = 0;      /* kendi çarpışma kutusu engel sayılmaz */
+  c.brk = vt < c.v - 0.4; c.v += clamp(vt - c.v, -11 * dt, 4.2 * dt); if (c.v > 0.3) { c.h += clamp(dh, -1.9 * dt, 1.9 * dt) * min(1, c.v / 3); c.steer = damp(c.steer, clamp(dh * 1.5, -0.5, 0.5), 8, dt); } c.x += sin(c.h) * c.v * dt; c.z += cos(c.h) * c.v * dt; carGround(c, dt, sin(c.h), cos(c.h)); return d; }
+function pcarStep(K, dt) { const c = K.c; if (!K.on) return; K.t += dt; const fl = floor(G.t * 6) % 2; K.lr.visible = !!fl; K.lb.visible = !fl; const pd = hyp(c.x - PLY.x, c.z - PLY.z), S = LOOP.S, m = S.length;
+  if (K.mode === 'road') { const i0 = floor(K.s), P = j => S[((j % m) + m) % m], p0 = P(i0), p1 = P(i0 + 1), pa = P(i0 + K.dir * 6), t = K.s - i0, tx = lerp(p0.tx, p1.tx, t), tz = lerp(p0.tz, p1.tz, t), curv = abs(angD(Math.atan2(p0.tx, p0.tz), Math.atan2(pa.tx, pa.tz))) / 12;
+    let rem = (K.tgt - K.s) * K.dir; rem = ((rem % m) + m) % m; if (rem > m / 2) rem = 0; const vt = min(18.5, sqrt(5.5 / max(curv, 0.004)), 2 + rem * 2 * 1.1); c.brk = vt < c.v - 0.5; c.v += clamp(vt - c.v, -10 * dt, 5 * dt); K.s = (K.s + K.dir * c.v * dt / 2 + m) % m;
+    const h = Math.atan2(tx * K.dir, tz * K.dir); c.steer = damp(c.steer, clamp(angD(c.h, h) * 3, -0.5, 0.5), 8, dt); c.x = lerp(p0.x, p1.x, t); c.z = lerp(p0.z, p1.z, t); c.h = h; c.y = p0.y;
+    if (rem < 2.5 || pd < 16) { K.mode = (pd > 14 && pd < 75 && !segBlocked(c.x, c.z, PLY.x, PLY.z, c.y + 0.7) && abs(groundH(PLY.x, PLY.z) - c.y) < 0.7) ? 'direct' : 'park'; } }
+  else if (K.mode === 'direct' && K.pre) { const s = VEN.pol.park[K.k], d0 = pcarDrive(K, s[0], s[1] + 10, 9, 0, dt); K.stuck = 0; if (d0 < 3.5 || c.z > s[1] + 6.5 || K.t > 6) K.pre = false; }      /* önce park yerinden düz çık */
+  else if (K.mode === 'direct') { const sx = WN.ph === 3 ? WN.lx : PLY.x, sz = WN.ph === 3 ? WN.lz : PLY.z, inB = inBar(sx, sz), tx = inB ? 194.5 - K.k * 3.6 : sx, tz = inB ? 61.5 + K.k * 3.2 : sz, d = pcarDrive(K, tx, tz, 13, inB ? 0.5 : 8.5, dt); K.stuck = c.v < 0.4 ? K.stuck + dt : 0; if (d < (inB ? 2.5 : 10.5) || K.stuck > 1.2) K.mode = 'park'; }
+  else if (K.mode === 'park') { c.brk = true; c.v = damp(c.v, 0, 6, dt); c.x += sin(c.h) * c.v * dt; c.z += cos(c.h) * c.v * dt; if (c.v < 0.25) { c.v = 0; if (!K.out && (!PLY.veh || abs(PLY.veh.v) < 3)) deploy(K); }
+    if (PLY.veh && abs(PLY.veh.v) > 4 && pd > 14 && K.crew.every(C => C.st === 'in' || C.st === 'down' || K.t2 > 3.5)) { for (const C of K.crew) if (C.st !== 'down') copHide(C); K.out = false; K.mode = 'trail'; const T = WN.trail; let bi = max(0, T.length - 1), bd = 1e9; for (let i = max(0, T.length - 70); i < T.length; i++) { const d = hyp(T[i][0] - c.x, T[i][1] - c.z); if (d < bd) { bd = d; bi = i; } } K.i = bi; }
+    else if (pd > 75 && K.t > 4 && WN.lvl > 0) { for (const C of K.crew) if (C.st !== 'down') copHide(C); K.out = false; reroute(K); }      // oyuncu uzaklaştı: ekip toplanır, araç çevre yolundan yeniden yaklaşır
+    K.t2 = PLY.veh && pd > 14 ? (K.t2 || 0) + dt : 0; }
+  else if (K.mode === 'trail') { const T = WN.trail, n = T.length; if (!n) { K.mode = 'park'; return; } const lim = K.k ? max(0, PCARS[0].i - 5) : n - 1, idx = min(n - 1, lim, floor(K.i) + 1), tg = T[idx], dx = tg[0] - c.x, dz = tg[1] - c.z, d = hyp(dx, dz), gap = max(pd, (n - 1 - idx) * 1.3);
+    const far = T[min(n - 1, idx + 6)], turn = abs(angD(c.h, Math.atan2(far[0] - c.x, far[1] - c.z))); let vt = min(24, PLY.v * 0.86 + (gap - 9.5) * 0.45, 24 - turn * 13); if (gap < 7) vt = min(vt, max(0, PLY.v - 1)); vt = max(vt, gap > 9 ? 4 : 0);
+    c.brk = vt < c.v - 0.5; c.v += clamp(vt - c.v, -14 * dt, 3.8 * dt); const st = c.v * dt; if (d > 0.05) { const dh = angD(c.h, Math.atan2(dx, dz)); c.h += clamp(dh, -2.6 * dt, 2.6 * dt); c.steer = damp(c.steer, clamp(dh * 1.6, -0.5, 0.5), 8, dt); const mv = min(st, d); c.x += dx / d * mv; c.z += dz / d * mv; }
+    if (d < 1.5 + st && idx < n - 1) K.i = idx; carGround(c, dt, sin(c.h), cos(c.h)); if (gap < 11 && (!PLY.veh || abs(PLY.veh.v) < 2.2) && c.v < 5) { K.mode = 'park'; K.t2 = 0; } }
+  else if (K.mode === 'leave') { K.lr.visible = K.lb.visible = false; const s = VEN.pol.park[K.k], P = K.path, back = K.crew.every(C => C.st === 'in') || K.t > 30;      /* olay kapandı: ekip araca döner, araç karakola ya da çevre yolundan uzağa gider */
+    if (!back || K.t < 2) { c.brk = true; c.v = damp(c.v, 0, 4, dt); c.x += sin(c.h) * c.v * dt; c.z += cos(c.h) * c.v * dt; K.ls = -1; K.stuck = 0; K.rev = 0; }
+    else if (K.rev > 0) { const q = P[P.length - 1]; c.brk = false;      /* önü kapalı: geldiği izden geri geri çıkar */
+      if (!q) { K.rev = 0; c.v = 0; } else { const dx = q[0] - c.x, dz = q[1] - c.z, d = hyp(dx, dz), bx = c.x - sin(c.h) * 3.2, bz = c.z - cos(c.h) * 3.2;
+        if (d < 0.6) P.pop(); else if (!PLY.veh && (hyp(bx - PLY.x, bz - PLY.z) < 2.4 || hyp(bx - WIFE.x, bz - WIFE.z) < 1.8)) c.v = 0;
+        else { const mv = min(3.2 * dt, d); c.x += dx / d * mv; c.z += dz / d * mv; K.rev -= mv; c.h += clamp(angD(c.h, Math.atan2(-dx, -dz)), -1.4 * dt, 1.4 * dt); c.v = -3.2; carGround(c, dt, sin(c.h), cos(c.h)); if (K.rev <= 0) { c.v = 0; K.ls = -1; } } } }
+    else { if (hyp(c.x - s[0], c.z - s[1]) < 150 && !segBlocked(c.x, c.z, s[0], s[1] + 6, c.y + 0.7)) { const d = pcarDrive(K, s[0], s[1] + 3, 9, 1.2, dt); if (d < 2.6) { pcarHome(K); return; } }
+      else { if (!(K.ls >= 0)) { let bi = 0, bd = 1e9; for (let i = 0; i < m; i += 2) { const d = hyp(S[i].x - c.x, S[i].z - c.z); if (d < bd) { bd = d; bi = i; } } K.ls = bi; K.ld = sin(c.h) * S[bi].tx + cos(c.h) * S[bi].tz >= 0 ? 1 : -1; }
+        const tg = S[((K.ls + K.ld * 4) % m + m) % m], d = pcarDrive(K, tg.x, tg.z, 10, 0, dt); if (d < 7) K.ls = ((K.ls + K.ld) % m + m) % m; }
+      K.stuck = c.v < 0.3 ? K.stuck + dt : 0; if (K.stuck > 1.0 && P.length) { K.rev = 6; K.stuck = 0; } }
+    if (K.t > 5 && (pd > 150 || K.t > 240 || ((pd > 70 || ((K.stuck > 4 || K.t > 60) && pd > 40)) && offScr(c.x, c.y + 0.8, c.z)))) { pcarHome(K); return; } }
+  if (K.mode === 'road') K.path.length = 0; else if (K.mode === 'direct' || K.mode === 'trail') { const P = K.path, l = P[P.length - 1]; if (!l || hyp(c.x - l[0], c.z - l[1]) > 1.2) { P.push([c.x, c.z]); if (P.length > 60) P.shift(); } }      /* yoldan ayrıldıktan sonraki kendi izi (geri çıkış için) */
+  pcCol(c); carPose(c, dt); }
+
+/* ---------- oyuncunun devre dışı kalması: tutuklanma / bayılma ---------- */
+function plyOut(F) { if (FT.out) return; const wasW = WN.lvl > 0 || (F && F.kind === 'cop'); FT.out = 1; FT.hp = 0; PLY.lock = true; PLY.v = 0; setMeter(null); sfx('ko'); toast(wasW ? 'Etkisiz hale getirildin' : 'Bayıldın', 3);
+  after(TEST ? 0.4 : 2.3, () => fade(() => respawn('med', wasW), 600)); }
+function busted() { if (FT.out) return; FT.out = 2; PLY.lock = true; PLY.v = 0; if (PLY.veh) { PLY.veh.v = 0; PLY.veh.vx = PLY.veh.vz = 0; } setMeter(null); sfx('fail'); toast('Tutuklandın', 3); after(TEST ? 0.4 : 1.5, () => fade(() => respawn('pol', true), 600)); }
+function respawn(where, wasW) { const pv = PLY.veh; if (pv) exitVeh(true); const o = VEN[where].out, car = pv || HCAR; streetReset(true);
+  if (car && hyp(car.x - o[0], car.z - o[1]) > 45) { for (const q of VEN[where].lot) if (!pointBlocked(q[0], PL + 0.7, q[1], 1.5)) { vehPut(car, q[0], q[1], q[2]); FT.towT = G.t; break; } }      /* aracın uzakta kaldıysa çıkışın yanına çekilir */ plyPlace(o[0], o[1], o[2]); wifeWarp(o[0] + 1.15, o[1] + 0.35, o[2]); if (COMP.mode === 'wait') COMP.mode = 'follow'; PLY.lock = false; PLY.crouch = false; SAYQ = []; subtitle(null);
+  if (where === 'pol') { chapterCard('KARAKOL SONRASI DEVAM', 'TUTUKLANDIN'); toast('İfaden alındı, serbest bırakıldın. Aranma kaydın silindi.' + (G.t - FT.towT < 1 ? ' Aracın meydana çekildi.' : ''), 5.5); }
+  else { chapterCard(wasW ? 'HASTANE · KARAKOL SONRASI DEVAM' : 'SAĞLIK OCAĞI SONRASI DEVAM', wasW ? 'ETKİSİZ HALE GELDİN' : 'BAYILDIN'); toast((wasW ? 'Tedavi edildin, ifaden alındı. Aranma kaydın silindi.' : 'Sağlık ocağında kendine geldin.') + (G.t - FT.towT < 1 ? ' Aracın meydana çekildi.' : ''), 5.5); } }
+function streetReset(keep) { FT.hp = 100; FT.out = 0; FT.atkT = FT.pushT = -1; FT.stag = 0; FT.combatT = -99; FT.block = false; FT.tgt = null; FT.pushF = null; const fx = FT.fx; for (const k in fx) if (k !== 'ph') fx[k] = 0; wantedClear('reset');
+  for (const F of FTR) { if (F.kind === 'cop') continue; fCalm(F); if (F.home) { const o = F.home, h = F.h; h.x = o[0]; h.z = o[1]; h.h = o[2]; h.y = o[3] !== undefined ? o[3] : PL; } } KBAR.inc = 0; KBAR.warned = 0; KBAR.coolT = keep ? max(KBAR.coolT, G.t + 20) : G.t + 20; if (KBAR.bully) { KBAR.bully.st = 'idle'; KBAR.victim.st = 'idle'; } }
+
+/* ---------- Körfez Bar: insanlar, ışıklar, olay ---------- */
+function barIdle(F, dt, tg, pd) { const o = F.home, h = F.h; F.v = 0;
+  if (F.kind === 'dancer') { tg.dance = 1; h.h = o[2] + 0.5 * sin(G.t * 0.35 + F.fx.ph * 9); }
+  else if (F.kind === 'dj') { tg.dance = 0.55; h.h = o[2]; }
+  else if (F.kind === 'bouncer') { if (pd < 9) fFace(F, PLY.x, PLY.z, dt, 3); else h.h += clamp(angD(h.h, o[2]), -2 * dt, 2 * dt); }
+  else if (F.kind === 'bartender') { if (pd < 5 && PLY.z > 50) fFace(F, PLY.x, PLY.z, dt, 3); else h.h += clamp(angD(h.h, o[2]), -2 * dt, 2 * dt); F.pose = (floor(G.t * 0.18 + 0.3) % 3 === 0) ? 'inspect' : 'foot'; }
+  else h.h += clamp(angD(h.h, o[2]), -2 * dt, 2 * dt); }
+function barScript(F, dt, tg, pd) { const B = KBAR.bully, V = KBAR.victim, bh = B.h, vh = V.h;
+  if (F === B) { if (KBAR.inc === 1) { fMove(F, vh.x + 1.0, vh.z + 0.15, 2.0, dt); if (hyp(vh.x + 1.0 - bh.x, vh.z + 0.15 - bh.z) < 0.4 || F.t > 9) { KBAR.inc = 2; KBAR.incT = 0; KBAR.lineT = 0.4; KBAR.lineK = 0; toast('Körfez Bar\'da olay çıktı: biri bir kadını rahatsız ediyor', 4.5); sfx('alert'); } }
+    else if (KBAR.inc === 2) { fFace(F, vh.x, vh.z, dt); tg.point = 0.8; F.talkT = G.t + 0.3; const d = hyp(vh.x - bh.x, vh.z - bh.z); if (d > 1.35) fMove(F, vh.x, vh.z, 1.2, dt, false); else F.v = 0; }
+    else if (KBAR.inc === 3) { fFace(F, PLY.x, PLY.z, dt); tg.g = 0.7; if (F.t > 1.6) { fSet(F, 'fight'); bark(F, 'Gel buraya!', 1.6); } } }
+  else { if (KBAR.inc === 2) { fFace(F, bh.x, bh.z, dt); tg.hands = 0.75; const d = hyp(vh.x - bh.x, vh.z - bh.z); if (d < 1.15 && vh.x > 204.6) fMove(F, vh.x - 1, vh.z + 0.05, 0.9, dt, false); else F.v = 0; }
+    else if (KBAR.inc === 3 || KBAR.inc === 4) { const sx = 205.2, sz = 53.2; if (hyp(sx - vh.x, sz - vh.z) > 0.5) fMove(F, sx, sz, 3.2, dt); else { F.v = 0; fFace(F, bh.x, bh.z, dt, 4); } tg.hands = KBAR.inc === 3 ? 0.5 : 0; } else F.v = 0; } }
+function barConfront() { KBAR.inc = 3; const B = KBAR.bully, V = KBAR.victim; if (B.st === 'script') B.t = 0; V.st = 'script'; V.t = 0; }
+function barWarn(F) { KBAR.warned++; if (KBAR.inc === 1) { KBAR.inc = 2; KBAR.incT = 0; }
+  if (Math.random() < 0.26 + 0.24 * (KBAR.warned - 1)) { say([[HIM(), 'Hanımefendiyi rahat bırak.', 1.8], [F.name, 'Tamam ya… Bir şey yapmadık. Gidiyorum.', 2.4], ['Kadın', 'Teşekkür ederim.', 1.8]]); barResolve('calm'); }
+  else if (KBAR.warned >= 2 || Math.random() < 0.5) { say([[HIM(), 'Hanımefendiyi rahat bırak.', 1.8], [F.name, 'Sana ne? Karışma!', 1.8]]); barConfront(); }
+  else say([[HIM(), 'Hanımefendiyi rahat bırak.', 1.8], [F.name, 'Sen işine bak, biz konuşuyoruz.', 2.2], ['Kadın', 'Konuşmuyoruz! Lütfen yardım edin.', 2.2]]); }
+function barCalm(F) { KBAR.warned++; if (Math.random() < 0.42 + 0.2 * (KBAR.warned - 1) - (F.st === 'fight' ? 0.5 * (1 - F.hp / F.hpMax) - 0.1 : 0)) { say([[HIM(), 'Sakin ol dostum. Kimse kavga istemiyor; hadi, bırak gitsin.', 2.6], [F.name, 'Tamam, tamam… Abarttım galiba.', 2.2], ['Kadın', 'Teşekkür ederim.', 1.8]]); barResolve('calm'); }
+  else { say([[HIM(), 'Sakin ol dostum. Kimse kavga istemiyor.', 2.2], [F.name, 'Çekil başımdan!', 1.6]]); if (F.st !== 'fight') { barConfront(); after(0.5, () => { if (F.st !== 'down' && hyp(F.h.x - PLY.x, F.h.z - PLY.z) < 2.2) plyHurt(4, F); }); } } }
+function barResolve(how) { if (KBAR.inc === 0 || KBAR.inc >= 4) return; const B = KBAR.bully, V = KBAR.victim; KBAR.inc = 4; KBAR.incT = 0; KBAR.how = how; KBAR.resT = G.t; KBAR.coolT = G.t + 150; V.st = 'script'; V.t = 0;
+  if (how === 'calm') { B.ang = 0; B.tx = 192; B.tz = 62; fSet(B, 'leave'); calmed(); toast('Tansiyon yatıştırıldı — adam uzaklaştı', 3.4); }
+  else if (how === 'ko') { toast('Saldırgan etkisiz hale getirildi', 3.4); after(1.4, () => say([['Kadın', 'Teşekkür ederim… İyi ki geldiniz.', 2.6], ['Barmen', 'Polisi arıyorum, kimse bir yere gitmesin!', 2.6]])); WN.heat = max(WN.heat, min(165, WN.heat + 8)); }
+  else { fSet(B, 'home'); } after(how === 'ko' ? 14 : 9, () => { if (KBAR.inc === 4) { KBAR.inc = 5; fSet(V, 'home'); } }); }
+function barStep(dt) { const b = VEN.bar, d = G.playing ? hyp(PLY.x - b.x, PLY.z - b.z) : 999, near = d < 78; KBAR.inside = near && inBar(PLY.x, PLY.z);
+  if (near !== KBAR.near) { KBAR.near = near; for (const F of KBAR.ppl) F.h.g.visible = near; for (const m of KBAR.beams) m.visible = near; }
+  if (!near) { if (KBAR.inc >= 4 || (KBAR.inc && d > 120)) { KBAR.inc = 0; KBAR.warned = 0; for (const F of [KBAR.bully, KBAR.victim]) { fCalm(F); const o = F.home; F.h.x = o[0]; F.h.z = o[1]; F.h.h = o[2]; } } return; }
+  const anim = d < 55; for (const F of KBAR.ppl) fStep(F, dt, anim);
+  KBAR.beams.forEach((m, i) => { m.rotation.x = 0.42 * sin(G.t * 0.9 + i * 1.7); m.rotation.z = 0.42 * sin(G.t * 0.7 + i * 2.3 + 1); m.material.opacity = 0.045 + 0.025 * sin(G.t * TAU * 2 + i); });
+  // olay: oyuncu bara yaklaşınca (ya da girince) adam kadına askıntı olmaya başlar
+  const B = KBAR.bully, V = KBAR.victim; if (sOff()) { if (KBAR.inc && KBAR.inc < 4) { KBAR.inc = 0; fCalm(B); fCalm(V); } return; }
+  if (KBAR.inc === 5 && G.t > KBAR.coolT && B.st === 'idle' && V.st === 'idle') { KBAR.inc = 0; B.hp = B.hpMax; B.ang = 0; }
+  if (KBAR.inc === 0 && G.t > KBAR.coolT && WN.lvl === 0 && d < 24 && B.st === 'idle' && V.st === 'idle' && !PLY.veh) { KBAR.inc = 1; KBAR.warned = 0; B.st = 'script'; B.t = 0; V.st = 'script'; V.t = 0; }
+  if (KBAR.inc === 2) { KBAR.incT += dt; KBAR.lineT -= dt; if (KBAR.lineT <= 0 && !SAYQ.length && d < 26) { const L = [['Kadın', 'Rahat bırak dedim!'], ['Sarhoş adam', 'Bir içki ısmarlayacağım, ne var bunda?'], ['Kadın', 'İstemiyorum! Çekil yolumdan.'], ['Sarhoş adam', 'Naz yapma, iki dakika oturalım.'], ['Kadın', 'Biri şuna bir şey söylesin!']][KBAR.lineK++ % 5]; say([[L[0], L[1], 2.3]]); KBAR.lineT = 4.6; }
+    if (G.t - KBAR.tipT > 30 && hyp(PLY.x - B.h.x, PLY.z - B.h.z) < 6) { KBAR.tipT = G.t; toast(IS_TOUCH ? 'Müdahale et: Uyar · İtiş · YUMRUK · Yatıştır' : 'Müdahale et: Q uyar · G it · X / sol tık yumruk · R yatıştır', 5); }
+    if (KBAR.incT > 55) barResolve('quit'); } }
+
+/* ---------- kurulum ---------- */
+function streetInit() {
+  for (const n of NPCS) if (!n.sit) n.f = mkF(n.h, 'civ', { n, hpMax: 45 + 30 * Math.random(), dmg: 8, spd: 3.9 });
+  const S = VEN.spots, lo = o => makeHuman(Object.assign({ lo: true, legs: 'long', build: 1, hair: 'short' }, o)), add = (h, kind, home, o) => { const F = mkF(h, kind, Object.assign({ home, st: 'idle' }, o || {})); h.x = home[0]; h.z = home[1]; h.h = home[2]; h.y = home[3] !== undefined ? home[3] : PL; h.g.visible = false; humanPlace(h); F.fx.ph = Math.random(); KBAR.ppl.push(F); return F; };
+  add(lo({ H: 1.79, male: 1, face: 'm1', shirt: '#f1eee6', pants: '#15161a', shoes: '#1c1a18', sleeve: 'roll' }), 'bartender', S.bartender, { name: 'Barmen', brave: 0.2 });
+  add(lo({ H: 1.8, male: 1, face: 'm1', shirt: '#17181c', pants: '#22262b', shoes: '#f0efea', sleeve: 'short', glasses: 'on' }), 'dj', S.dj.concat([PL + 0.45]), { name: 'DJ', brave: 0.2 });
+  [{ H: 1.68, male: 0, face: 'f1', shirt: '#b5507a', pants: '#b5507a', shoes: '#f0efea', sleeve: 'none', legs: 'short', hair: 'pony' }, { H: 1.8, male: 1, face: 'm1', shirt: '#2f62a6', pants: '#e9e6df', shoes: '#3a2e26', sleeve: 'roll' }, { H: 1.64, male: 0, face: 'f2', shirt: '#e8b23a', pants: '#27364a', shoes: '#22262b', sleeve: 'short', hair: 'bob' }].forEach((o, i) => add(lo(o), 'dancer', S.dance[i], { brave: 0.2 }));
+  KBAR.victim = add(lo({ H: 1.69, male: 0, face: 'f2', shirt: '#e9e6df', pants: '#27364a', shoes: '#22262b', sleeve: 'short', hair: 'bob', tuck: 1 }), 'victim', S.victim, { name: 'Kadın', brave: 0.1 });
+  KBAR.bully = add(lo({ H: 1.84, male: 1, face: 'guard', shirt: '#7a1f2b', pants: '#3a3f45', shoes: '#22262b', sleeve: 'roll', build: 1.07 }), 'bully', S.bully, { name: 'Sarhoş adam', hpMax: 92, dmg: 10, spd: 3.7, brave: 1 });
+  add(lo({ H: 1.9, male: 1, face: 'guard', shirt: '#0e0f11', pants: '#0e0f11', shoes: '#101012', sleeve: 'short', build: 1.1, glasses: 'on' }), 'bouncer', S.bouncer, { name: 'Kapıdaki görevli', hpMax: 110, dmg: 12, spd: 4, brave: 1 });
+  { const F = add(lo({ H: 1.66, male: 0, face: 'f1', shirt: '#2a8a7a', pants: '#e9e6df', shoes: '#f0efea', sleeve: 'short', hair: 'pony' }), 'patron', S.sofa.concat([PL + 0.46]), { brave: 0.1 }); F.seat = true; }
+  // ışık hüzmeleri: tavandaki dört spot, vuruşla nefes alan yarı saydam koniler
+  { const geo = new T.ConeGeometry(1.15, 4.1, 14, 1, true); geo.translate(0, -2.05, 0); [[211.5, 54.5, 0xff3fc8], [215.5, 57.5, 0x35d8ff], [212.5, 58.2, 0x8a5cff], [215.8, 53.8, 0xffb43a]].forEach(p => { const m = new T.Mesh(geo, new T.MeshBasicMaterial({ color: p[2], transparent: true, opacity: 0.1, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false })); m.position.set(p[0], PL + 4.05, p[1]); m.visible = false; m.renderOrder = 3; scene.add(m); KBAR.beams.push(m); }); }
+  // polis: iki ekip aracı (karakolun önünde bekler), dört memur
+  for (let k = 0; k < 2; k++) { const c = makeCar('sedan', '#f3f5f7', { kin: true, plate: 'plk' + (2 + k) }), sp = c.sp, g = new Geo('generic'), gs = new Geo('sign'), uv = signCell('polis'), W = sp.W / 2 + 0.012; c.pol = true;
+    box(g, 0, sp.H + 0.035, -0.15, 1.05, 0.05, 0.3, 0, col('#15161a'), { ex: [0.4, 0.3, 0] }); for (const sd of [1, -1]) { quad(g, [sd * W, 0.5, sd > 0 ? 1.9 : -1.9], [sd * W, 0.5, sd > 0 ? -1.9 : 1.9], [sd * W, 0.58, sd > 0 ? -1.9 : 1.9], [sd * W, 0.58, sd > 0 ? 1.9 : -1.9], [0, 0, 0, 0], col('#17337a'), [0.4, 0, 0]);
+      quad(gs, [sd * (W + 0.004), 0.6, sd > 0 ? 0.62 : -0.38], [sd * (W + 0.004), 0.6, sd > 0 ? -0.38 : 0.62], [sd * (W + 0.004), 0.9, sd > 0 ? -0.38 : 0.62], [sd * (W + 0.004), 0.9, sd > 0 ? 0.62 : -0.38], [uv[0] + 0.02, uv[1] + 0.02, uv[2] - 0.02, uv[3] - 0.02]); }
+    const dm = geoMesh(g, MATS.generic), sm = geoMesh(gs, MATS.sign); dm.castShadow = sm.castShadow = false; c.body.add(dm, sm); const lm = (x, cl) => { const m = new T.Mesh(new T.BoxGeometry(0.4, 0.11, 0.22), new T.MeshBasicMaterial({ color: cl })); m.position.set(x, sp.H + 0.115, -0.15); m.visible = false; c.body.add(m); return m; };
+    const K = { k, c, on: false, mode: 'idle', out: false, crew: [], lr: lm(0.28, 0xff2a1e), lb: lm(-0.28, 0x2a6bff), s: 0, dir: 1, tgt: 0, i: 0, t: 0, t2: 0, stuck: 0, path: [], rev: 0, pre: false }; PCARS.push(K); DYN.push(c); vehCol(c);
+    for (let j = 0; j < 2; j++) { const h = makeHuman({ H: 1.8 + 0.04 * j + 0.02 * k, male: 1, build: 1.05, face: j ? 'm1' : 'guard', shirt: '#24355f', pants: '#161d33', shoes: '#101012', sleeve: 'short', legs: 'long', hair: 'short', cap: 1, capc: ['#161d33', '#161d33', '#c9a45c', '#e9dcc0'], lo: true }); setCap(h, true); h.g.visible = false;
+      const C = mkF(h, 'cop', { hpMax: 85, dmg: 13, spd: 5.75, brave: 1, car: k, st: 'in', cp: [0, 0], np: [0, 0], cpT: 0, shootT: 0, los: false }); COPS.push(C); K.crew.push(C);
+      const gg = new Geo('generic'); box(gg, 0, -0.165, 0.045, 0.044, 0.2, 0.066, 0, col('#30343b'), { ex: [0.35, 0.7, 0] }); box(gg, 0, -0.085, -0.035, 0.04, 0.06, 0.12, 0, col('#1b1d21'), { ex: [0.6, 0.2, 0] });      /* sürgü (ileri) + kabza (aşağı) */ C.gun = geoMesh(gg, MATS.generic); C.gun.visible = false; C.gun.position.copy(h.B.handR.position); h.B.foreR.add(C.gun);      /* ön kol kemiğine bağlı: yumruk ölçeği silahı bozmaz */
+      const gb = new Geo('generic'); box(gb, 0, -0.3, 0.02, 0.032, 0.52, 0.032, 0, col('#111214'), { ex: [0.5, 0.1, 0] }); C.bat = geoMesh(gb, MATS.generic); C.bat.visible = false; C.bat.position.copy(h.B.handR.position); h.B.foreR.add(C.bat); }
+    pcarHome(K); }
+  { const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(new Float32Array(36), 3)); const m = new T.LineSegments(geo, new T.LineBasicMaterial({ color: 0xfff0b0, transparent: true, opacity: 0.95, depthWrite: false, fog: false })); m.frustumCulled = false; m.visible = false; scene.add(m); TRC = { geo, m, k: 0, t: [0, 0, 0, 0, 0, 0] }; }
+}
+
+/* ---------- her kare ---------- */
+function streetAvoid() { for (const K of PCARS) if (K.on) AVOID.push({ x: K.c.x, z: K.c.z, r: 2.4 }); }
+function streetStep(dt) {
+  if (PLY.veh || G.cine) { FT.block = false; FT.tgt = null; if (!FT.out) fxEase(FT.fx, FXZ, dt); }
+  wantedStep(dt); for (const K of PCARS) pcarStep(K, dt); for (const C of COPS) if (C.st !== 'in') fStep(C, dt, true);
+  barStep(dt);
+  if (G.step === 10 && !FT.tip10 && !sOff() && !TEST) { if (!FT.t10) FT.t10 = G.t; else if (G.t - FT.t10 > 9 && !SAYQ.length && WN.lvl === 0) { FT.tip10 = true; toast('Kale Meydanı\'ndaki Körfez Bar açık — haritada (M) işaretli. Sokakta birine yaklaşınca etkileşim seçenekleri belirir.', 7.5); } }      /* serbest dolaşımda bir kerelik ipucu */
+  if (G.t < FT.combatT && G.t > FT.distT && !sOff()) { FT.distT = G.t + 0.9; disturb(PLY.x, PLY.z, 2, null); }      /* süren kavga: yaklaşanlar da fark eder */
+  if (PLY.veh && G.playing && !CINE && abs(PLY.veh.v) > 2.5) { const c = PLY.veh, sg = c.v < 0 ? -1 : 1, sh = sin(c.h) * sg, ch = cos(c.h) * sg, reach = 3 + abs(c.v) * 0.75;      /* yayalar yaklaşan araçtan yana kaçar */
+    for (const F of FTR) { if (F.kind !== 'civ' || !F.h.g.visible || (F.st !== 'calm' && F.st !== 'back' && F.st !== 'wary' && F.st !== 'watch')) continue; const dx = F.h.x - c.x, dz = F.h.z - c.z; if (abs(dx) + abs(dz) > reach + 3) continue; const f = dx * sh + dz * ch, l = dx * ch - dz * sh; if (f < -1 || f > reach || abs(l) > 1.7) continue;
+      const sd = l >= 0 ? 1 : -1; F.tx = F.h.x + ch * sd * 2.8 + sh * 0.6; F.tz = F.h.z - sh * sd * 2.8 + ch * 0.6; fSet(F, 'dodge'); if (G.t - FT.dodgeT > 5 && !sOff() && !SAYQ.length) { FT.dodgeT = G.t; bark(F, pick(L_CAR), 1.6); } } }
+  if (TRC && TRC.m.visible) { let any = false; const a = TRC.geo.attributes.position; for (let i = 0; i < 6; i++) { if (TRC.t[i] > G.t) any = true; else if (TRC.t[i]) { TRC.t[i] = 0; a.setXYZ(i * 2, 0, -99, 0); a.setXYZ(i * 2 + 1, 0, -99, 0); a.needsUpdate = true; } } TRC.m.visible = any; }
+  if (FT.out === 1) FT.fx.down = damp(FT.fx.down, 1, 7, dt); else if (FT.out === 2) FT.fx.hands = damp(FT.fx.hands, 1, 9, dt);
+  streetHUD(); streetAudio(dt); }
+function streetHUD() { const H = FT.hud, off = sOff(), set = (id, k, v, f) => { if (H[k] !== v) { H[k] = v; f($(id), v); } };
+  const show = !off && (WN.lvl > 0 || WN.heat > 1.5); set('wn', 'wn', show, (e, v) => e.classList.toggle('on', v));
+  if (show) { set('wn', 'lv', WN.lvl, (e, v) => { const s = $('wst').children; for (let i = 0; i < 4; i++) s[i].classList.toggle('on', i < v); e.classList.toggle('hot', v >= 3); }); set('wn', 'bl', WN.ph === 3, (e, v) => e.classList.toggle('blink', v));
+    const tx = WN.lvl === 0 ? 'TANSİYON' : WN.ph === 3 ? 'GÖZDEN KAYBOLDUN' : WN.ph === 1 || !WN.contact ? 'POLİS YOLDA' : WN.lvl === 1 ? 'POLİS UYARIYOR' : WN.lvl === 2 ? 'KOVALAMACA' : WN.lvl === 3 ? 'TAKVİYE GELDİ' : 'ATEŞ AÇILDI'; set('wtx', 'tx', tx, (e, v) => { e.textContent = v; });
+    const p = WN.lvl === 0 ? WN.heat / LVH[1] : WN.ph === 3 ? 1 - WN.lost / LOSTT[WN.lvl] : WN.lvl >= 4 ? 1 : (WN.heat - LVH[WN.lvl]) / (LVH[WN.lvl + 1] - LVH[WN.lvl]); set('wbar', 'pb', Math.round(clamp(p, 0, 1) * 50), (e, v) => { e.firstElementChild.style.width = v * 2 + '%'; }); }
+  const hp = !off && (FT.hp < 99.5 || G.t < FT.combatT || WN.lvl >= 2); set('hpw', 'hp', hp, (e, v) => e.classList.toggle('on', v)); if (hp) set('hpf', 'hv', Math.round(clamp(FT.hp, 0, 100) / 2), (e, v) => { e.style.width = v * 2 + '%'; $('hpw').classList.toggle('low', v < 18); }); set('wn', 'bd', show || hp, (e, v) => document.body.classList.toggle('wnon', v));
+  set('hurt', 'fl', G.t < FT.flashT, (e, v) => e.classList.toggle('on', v));
+  // eylem çubuğu
+  const F = FT.tgt, cop = WN.lvl >= 1 && !PLY.veh && !off ? nearCop(9) : null, on = !off && !PLY.veh && !PLY.lock && !FT.out && ((F && FT.tgtD < 2.9) || !!cop || (WN.lvl === 0 && WN.heat > 6 && !F));
+  set('act', 'act', on, (e, v) => e.classList.toggle('on', v)); if (!on) return;
+  const k = F && FT.tgtD < 2.9 ? F.kind : cop ? 'cop' : '', near = F && FT.tgtD < 2.9, inc = near && F.kind === 'bully' && KBAR.inc >= 1 && KBAR.inc <= 3;
+  const nm = near ? F.name + (F.st === 'fight' ? ' · saldırgan' : F.st === 'yield' ? ' · pes etti' : F.st === 'wary' || F.ang > 0.3 ? ' · gergin' : '') : cop ? 'Polis' : '';
+  const tT = near && k !== 'cop' ? (inc ? 'Uyar' : 'Laf at') : near ? 'Laf at' : '', tS = near && FT.tgtD < 2.1 ? (inc ? 'İt' : 'İtiş') : '', tP = near ? 'Yumruk' : '';
+  const tC = cop ? (WN.lvl === 1 ? 'Sakinleştir' : 'Teslim ol') : near && (inc || F.st === 'fight' || F.st === 'wary' || F.st === 'yield' || F.ang > 0.05) ? (F.kind === 'civ' && !inc ? 'Özür dile' : 'Yatıştır') : !near ? 'Geri çekil' : '';
+  set('actn', 'an', nm, (e, v) => { e.textContent = v; }); for (const [id, kk, v] of [['aT', 'aT', tT], ['aS', 'aS', tS], ['aP', 'aP', tP], ['aC', 'aC', tC]]) set(id, kk, v, (e, t) => { e.classList.toggle('off', !t); e.lastElementChild.textContent = t; }); }
+function streetAudio(dt) { if (!AC) return; if (!SIR) { const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain(); o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 1700; g.gain.value = 0; o.connect(f); f.connect(g); g.connect(AMST); o.start(); SIR = { o, g }; }
+  let d = 999; for (const K of PCARS) if (K.on && K.mode !== 'leave') d = min(d, hyp(K.c.x - camera.position.x, K.c.z - camera.position.z)); const t = AC.currentTime, on = d < 220 && G.playing && !G.paused;
+  SIR.g.gain.setTargetAtTime(on ? clamp(0.05 * (1.05 - d / 220), 0.004, 0.05) : 0, t, 0.2); if (on) SIR.o.frequency.setTargetAtTime(WN.lvl >= 3 ? (floor(G.t * 2.4) % 2 ? 960 : 720) : 760 + 230 * sin(G.t * 3.9), t, 0.04); }
 
 /* ============================== 80_story.js ============================== */
 /* HİKÂYE — bölümler, ara sahneler, bulmacalar, takip, gizlilik, günlük, final */
@@ -2437,7 +2936,7 @@ function startStep(n, quiet) { const prev = G.step; G.step = n; ST.hintT = G.t +
   if (n >= 9) { SITE.door.open = 1; SITE.door.g.position.y = SITE.door.y0 - 2.32; SITE.door.col.off = true; SITE.mapLight.intensity = 2.4; } else { SITE.door.open = 0; SITE.door.g.position.y = SITE.door.y0; SITE.door.col.off = false; SITE.mapLight.intensity = 0; ST.doorT = -1; }
   if (n === 7) { COMP.mode = 'wait'; COMP.tx = 181.6; COMP.tz = 105.2; COMP.th = 0.4; COMP.crouch = true; } else { COMP.crouch = false; if (COMP.mode === 'wait') COMP.mode = 'follow'; } saveGame(); }
 // kayıt noktası: oyuncuyu, eşi ve araçları adımın başına koy
-function spawnStep(n) { if (PLY.veh) exitVeh(true); PLY.crouch = false; PLY.pose = null; PLY.lock = false; COMP.mode = 'follow'; COMP.pose = null; const zc = x => zr(x) + 8.5; let p, car, sc = [SPOTS.scooter.x, SPOTS.scooter.z, SPOTS.scooter.rot], ride = false;
+function spawnStep(n) { if (PLY.veh) exitVeh(true); streetReset(); PLY.crouch = false; PLY.pose = null; PLY.lock = false; COMP.mode = 'follow'; COMP.pose = null; const zc = x => zr(x) + 8.5; let p, car, sc = [SPOTS.scooter.x, SPOTS.scooter.z, SPOTS.scooter.rot], ride = false;
   if (n <= 1) { p = [POI.start.x, POI.start.z, PI / 2 + 0.5]; car = [SPOTS.car.x, SPOTS.car.z, SPOTS.car.rot]; } else if (n === 2) { p = [POI.stele.x + 2.2, POI.stele.z - 1.5, -1.2]; car = [POI.stele.x + 12, zc(POI.stele.x + 12), PI / 2]; sc = [POI.stele.x + 18, zc(POI.stele.x + 18) - 1, PI / 2]; }
   else if (n === 3) { p = [POI.park.x + 4, POI.park.z - 5, PI]; car = [-29.8, -103.4, 0]; } else if (n === 4) { if (ST.cp) { p = [-268, 49.6, -2.57]; car = [-268, 49.6, -2.57]; } else { p = [-29.8, -103.4, 0]; car = [-29.8, -103.4, 0]; } ride = true; }
   else if (n === 5 || n === 6) { p = [POI.mills.x + 6, POI.mills.z + 4, -1.2]; car = [-410, 47, -2.2]; } else if (n === 7) { p = [184, 105.6, 0]; car = [176, 84, PI / 2]; } else { p = [161, 158, -1.57]; car = [176, 84, PI / 2]; }
@@ -2507,7 +3006,10 @@ function sfx(n, v) { if (!AC) return; v = v === undefined ? 1 : v;
     case 'obj': tone('sine', 660, 660, 0.25, 0.1); tone('sine', 990, 990, 0.4, 0.09, 0.14); break; case 'chap': tone('sine', 73, 55, 1.6, 0.3); for (const [f, w] of [[220, 0.1], [277, 0.2], [330, 0.3]]) tone('triangle', f, f, 2.2, 0.07, w); break; case 'clue': [392, 494, 587, 784].forEach((f, i) => tone('triangle', f, f, 0.7, 0.1, i * 0.11)); break;
     case 'ok': [294, 370, 440, 587, 740].forEach((f, i) => tone('triangle', f, f, 0.9, 0.1, i * 0.09)); break; case 'bad': tone('square', 120, 90, 0.22, 0.1); break; case 'door': burst(180, 1, 0.18, 0.35, 0, 'lowpass'); tone('sine', 130, 70, 0.15, 0.2); break; case 'horn': tone('square', 415, 415, 0.45, 0.08); tone('square', 523, 523, 0.45, 0.08); break;
     case 'crash': burst(700, 0.6, 0.35, 0.5 * v, 0, 'lowpass'); tone('sine', 90, 40, 0.25, 0.3 * v); break; case 'talk': tone('sine', 330, 300, 0.05, 0.035); break; case 'fail': [330, 262, 196, 147].forEach((f, i) => tone('sawtooth', f, f * 0.97, 0.4, 0.07, i * 0.16)); break; case 'alert': tone('square', 880, 880, 0.09, 0.07); tone('square', 880, 880, 0.09, 0.07, 0.16); break;
-    case 'stone': burst(110, 0.7, 2.8, 0.7, 0, 'lowpass'); burst(900, 1, 0.5, 0.1, 0.2); break; case 'siren': for (let i = 0; i < 6; i++) tone('sine', i % 2 ? 660 : 880, i % 2 ? 660 : 880, 0.42, 0.07, i * 0.42); break; case 'rev': tone('sawtooth', 70, 190, 0.9, 0.16); burst(300, 0.6, 0.9, 0.2, 0, 'lowpass'); break; } }
+    case 'stone': burst(110, 0.7, 2.8, 0.7, 0, 'lowpass'); burst(900, 1, 0.5, 0.1, 0.2); break; case 'siren': for (let i = 0; i < 6; i++) tone('sine', i % 2 ? 660 : 880, i % 2 ? 660 : 880, 0.42, 0.07, i * 0.42); break; case 'rev': tone('sawtooth', 70, 190, 0.9, 0.16); burst(300, 0.6, 0.9, 0.2, 0, 'lowpass'); break;
+    case 'swing': burst(650, 0.7, 0.11, 0.07 * v); break; case 'hit': burst(240, 0.8, 0.12, 0.42 * v, 0, 'lowpass'); tone('sine', 150, 62, 0.11, 0.2 * v); burst(1700, 1.2, 0.04, 0.07 * v); break; case 'block': burst(900, 2, 0.06, 0.16); tone('triangle', 260, 180, 0.07, 0.1); break;
+    case 'hurt': tone('square', 140, 70, 0.16, 0.1); burst(300, 0.7, 0.14, 0.3, 0, 'lowpass'); break; case 'ko': burst(120, 0.7, 0.3, 0.5, 0, 'lowpass'); tone('sine', 90, 38, 0.3, 0.3); break;
+    case 'shot': burst(1500, 0.5, 0.11, 0.5 * v); burst(260, 0.7, 0.2, 0.42 * v, 0, 'lowpass'); tone('square', 190, 55, 0.09, 0.14 * v); break; } }
 function engineOn(on, two) { if (!ENG) return; ENG.on = on; ENG.two = !!two; if (!on) { ENG.g.gain.setTargetAtTime(0, AC.currentTime, 0.15); AMB.skid.g.gain.setTargetAtTime(0, AC.currentTime, 0.1); } }
 function engineSet(rpm, gas, slip, v) { if (!ENG || !ENG.on) return; const t = AC.currentTime, f = (ENG.two ? 62 : 44) + rpm * (ENG.two ? 150 : 115); ENG.o1.frequency.setTargetAtTime(f, t, 0.05); ENG.o2.frequency.setTargetAtTime(f * 0.5, t, 0.05); ENG.fl.frequency.setTargetAtTime(380 + rpm * 1500 * (0.4 + 0.6 * gas), t, 0.08); ENG.g.gain.setTargetAtTime(0.045 + 0.06 * gas + 0.03 * rpm, t, 0.08);
   AMB.skid.g.gain.setTargetAtTime(clamp((slip - 1.2) * 0.07, 0, 0.22) + clamp((v - 20) * 0.002, 0, 0.05), t, 0.08); }
@@ -2604,7 +3106,7 @@ function clipsInit() { const C = window.CUSTOM_AUDIO_CLIPS || {}; for (const k o
 function clipShot(k) { const c = MU.clips[k]; if (!c || !c.ok || AC.currentTime - MU.lastMotif < 14) return; MU.lastMotif = AC.currentTime; try { c.el.currentTime = 0; c.el.volume = clamp(c.vol * MU.vol * (G.snd && MU.on ? 1 : 0), 0, 1); const p = c.el.play(); if (p && p.catch) p.catch(() => { }); } catch (_) { } }
 const CLIP_OF = { kordon: 'ambient_groove', gizem: 'mystery_pad', gizlilik: 'mystery_pad', surus: 'action_drive', aksiyon: 'action_drive' };
 /* ---------- her karede: kuple seçimi, enerji, katman sesleri, planlama ---------- */
-function musicWant() { if (MU.pick !== 'auto') return MU.pick; if (!G.playing) return 'kordon'; if (G.step === 4 || MU.hint === 'chase') return 'aksiyon'; if (G.step === 7) return 'gizlilik'; if (PLY.veh) return 'surus';
+function musicWant() { if (MU.pick !== 'auto') return MU.pick; if (!G.playing) return 'kordon'; if (G.step === 4 || MU.hint === 'chase') return 'aksiyon'; if (G.step === 7) return 'gizlilik'; if (WN.lvl >= 2 || G.t < FT.combatT) return 'aksiyon'; if (PLY.veh || KBAR.inside) return 'surus';
   if (PUZ || CINE || G.step === 3 || G.step === 8 || G.step === 9 || hyp(PLY.x - POI.seat.x, PLY.z - POI.seat.z) < 85) return 'gizem'; return 'kordon'; }
 function musicStep(dt) { if (!AC || !MB) return; const t = AC.currentTime, want = musicWant(), act = MU.on && G.snd;
   // enerji: yürüyüş/koşuda dengeli, araçta hıza göre, takipte en yüksek
@@ -2662,7 +3164,7 @@ function openJournal() { renderJournal(); $('pause').classList.remove('on'); $('
 function closeJournal() { $('jour').classList.remove('on'); G.paused = false; }
 function update(dt) {
   G.t += dt; U_TIME.value += dt; readInput(); runTimers(); if (SITE.sails) SITE.sails.hub.rotation.z += dt * 0.55;
-  if (!G.playing) { titleCam(dt); updateTraffic(dt); updateNPCs(dt, POI.start.x, POI.start.z, null); hit.clear(); return; }
+  if (!G.playing) { titleCam(dt); updateTraffic(dt); updateNPCs(dt, POI.start.x, POI.start.z, null); barStep(dt); hit.clear(); return; }
   if (hit.has('pause') && !G.puz && !CINE && G.t - escT > 0.3) { if (mapOpen) toggleMap(); else if ($('jour').classList.contains('on')) closeJournal(); else if (!$('end').classList.contains('on')) setPaused(!G.paused); }
   if (hit.has('map') && !G.puz && !G.cine && (!G.paused || mapOpen)) toggleMap();
   if (hit.has('journal') && !G.puz && !G.cine && !G.paused) openJournal();
@@ -2672,8 +3174,8 @@ function update(dt) {
     if (c) { driveStep(c, dt, 0, 1, 0, false); carPose(c, dt); PLY.x = c.x; PLY.z = c.z; PLY.y = c.y; humanAnim(HERO, dt, { mode: c.sp.two ? 'ride' : 'drive' }); humanAnim(WIFE, dt, { mode: c.sp.two ? 'pillion' : 'pass' }); engineSet(0.1, 0.1, 0, 0); }
     else { humanAnim(HERO, dt, { v: 0, mode: PLY.pose || 'foot', talk: !!CINE && CINE.spk === G.names.him }); updateWife(dt, PLY); } }
   else { if (PLY.veh) vehStep(dt); else footStep(dt); updateWife(dt, PLY); camStep(dt); interactStep(); runSay(); }
-  storyStep(dt);
-  AVOID.length = 0; AVOID.push({ x: PLY.x, z: PLY.z, r: PLY.veh ? 2.3 : 0.6 }); if (!PLY.veh) AVOID.push({ x: WIFE.x, z: WIFE.z, r: 0.5 }); if (CHASER.on) AVOID.push({ x: CHASER.x, z: CHASER.z, r: 2.4 });
+  storyStep(dt); streetStep(dt);
+  AVOID.length = 0; streetAvoid(); AVOID.push({ x: PLY.x, z: PLY.z, r: PLY.veh ? 2.3 : 0.6 }); if (!PLY.veh) AVOID.push({ x: WIFE.x, z: WIFE.z, r: 0.5 }); if (CHASER.on) AVOID.push({ x: CHASER.x, z: CHASER.z, r: 2.4 });
   updateTraffic(dt); updateNPCs(dt, PLY.x, PLY.z, PLY.veh && abs(PLY.veh.v) > 1.5 ? PLY.veh : null); updateHUD(dt); audioStep(dt); hit.clear();
 }
 function loop(now) { requestAnimationFrame(loop); const raw = (now - lastT) / 1000 || 0.016; lastT = now;
@@ -2691,7 +3193,7 @@ function startPlay() { G.playing = true; G.paused = false; G.failing = false; do
 function readNames() { const a = ($('nmHim').value || '').trim().slice(0, 12), b = ($('nmHer').value || '').trim().slice(0, 12); G.names.him = a || 'Yavuz'; G.names.her = b || 'Bircan'; }
 function newGame() { readNames(); G.step = 0; G.clues = []; G.done = false; G.playT = 0; G.fails = 0; ST.cp = 0; startPlay(); spawnStep(0); guardsSet(false, GPATH); chaserStop(); setObjective('', '', null); musicMood('calm'); introScene(); }
 function contGame() { readNames(); const s = loadSave() || {}; G.step = s.step || 1; G.clues = s.clues || []; G.done = !!s.done; G.playT = s.playT || 0; G.fails = s.fails || 0; ST.cp = 0; startPlay(); spawnStep(G.step); startStep(G.step, true); const p = (CHAPS[G.step] || '').split(' · '); if (p[1]) chapterCard(p[0], p[1]); }
-function toMenu() { if (PLY.veh) exitVeh(true); engineOn(false); musicMood(null); G.playing = false; G.paused = false; CINE = null; G.cine = false; unlock(); document.body.classList.remove('cine', 'drive'); document.body.classList.add('menu'); for (const id of ['pause', 'end', 'jour', 'bigmap', 'puz']) $(id).classList.remove('on'); $('title').classList.add('on'); subtitle(null); setMeter(null); const s = loadSave(); $('btnCont').style.display = s && s.step > 0 ? '' : 'none'; HERO.mesh.visible = true; }
+function toMenu() { if (PLY.veh) exitVeh(true); streetReset(); engineOn(false); musicMood(null); G.playing = false; G.paused = false; CINE = null; G.cine = false; unlock(); document.body.classList.remove('cine', 'drive'); document.body.classList.add('menu'); for (const id of ['pause', 'end', 'jour', 'bigmap', 'puz']) $(id).classList.remove('on'); $('title').classList.add('on'); subtitle(null); setMeter(null); const s = loadSave(); $('btnCont').style.display = s && s.step > 0 ? '' : 'none'; HERO.mesh.visible = true; }
 function wireUI() { const on = (id, f) => $(id).addEventListener('click', e => { e.preventDefault(); sfx('use'); f(); });
   on('btnNew', () => { audioInit(); newGame(); }); on('btnCont', () => { audioInit(); contGame(); }); const cq = () => { QI = (QI + 1) % 3; QUSER = true; applyQual(); saveGame(); }; on('btnQual', cq); on('btnQual2', cq);
   on('btnSnd', () => { G.snd = !G.snd; applyOpts(); saveGame(); }); const cc = () => { G.cap = !G.cap; applyOpts(); saveGame(); }; on('btnCap', cc); on('btnCap2', cc); on('btnSens', () => { G.sens = G.sens % 9 + 1; applyOpts(); saveGame(); }); on('btnResume', () => { setPaused(false); tryLock(); }); on('btnJour', openJournal); on('btnJourBack', () => { closeJournal(); tryLock(); });
@@ -2700,7 +3202,7 @@ function wireUI() { const on = (id, f) => $(id).addEventListener('click', e => {
   document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && G.playing && !G.paused && !G.puz && !G.cine && !TEST) { setPaused(true); escT = G.t; hit.delete('pause'); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G.playing && !G.paused && !G.puz && !G.cine) setPaused(true); audioWake(document.hidden); });
   $('nmHim').value = G.names.him; $('nmHer').value = G.names.her; if (!IS_TOUCH && !lockOK) $('hMouse').textContent = 'sol tuş basılı sürükle: omuz kamerası'; }
-async function buildWorld() { defineRoads(); bakeTerrain(); buildTerrain(); for (const r of ROADS) buildRoadMesh(r); buildGround(); buildTown(); parkCars(); buildChunks(); buildMap(); }
+async function buildWorld() { defineRoads(); bakeTerrain(); buildTerrain(); for (const r of ROADS) buildRoadMesh(r); buildGround(); buildTown(); buildVenues(); parkCars(); buildChunks(); buildMap(); }
 /* ---------- test kancaları ---------- */
 window.game = { ready: false, frame(cb) { frameCb = cb; wantFrames = 2; }, cam(x, y, z, lx, ly, lz, fov) { camera.position.set(x, y, z); camera.lookAt(lx, ly, lz); if (fov) { camera.fov = fov; camera.updateProjectionMatrix(); } CAM.px = (x + lx) / 2; CAM.pz = (z + lz) / 2; },
   mus: () => ({ on: MU.on, vol: MU.vol, pick: MU.pick, mode: MU.mode, want: musicWant(), step: MU.step, en: +MU.en.toFixed(2), level: +musicLevel().toFixed(4), err: MU.err, ac: AC ? AC.state : null, clipOn: MU.clipOn, clips: Object.keys(MU.clips).map(k => k + ':' + (MU.clips[k].ok ? 1 : 0) + ':' + (MU.clips[k].el.paused ? 'durdu' : 'çalıyor') + ':' + MU.clips[k].el.volume.toFixed(2)) }), musRender: musicRender, musSet: musicSet,
@@ -2710,9 +3212,10 @@ window.game = { ready: false, frame(cb) { frameCb = cb; wantFrames = 2; }, cam(x
   state: () => ({ step: G.step, x: +PLY.x.toFixed(2), y: +PLY.y.toFixed(2), z: +PLY.z.toFixed(2), h: +PLY.h.toFixed(2), v: +PLY.v.toFixed(2), veh: PLY.veh ? PLY.veh.type : null, cine: !!CINE, puz: !!PUZ, paused: G.paused, det: +ST.det.toFixed(2), danger: ST.chase ? +ST.chase.danger.toFixed(2) : 0, gap: Math.round(G.gap || 0), wife: [+WIFE.x.toFixed(1), +WIFE.z.toFixed(1)], ground: PLY.ground, crouch: PLY.crouch, cover: PLY.cover, prompt: promptOn, obj: objTxt, clues: G.clues.length, fails: G.fails, done: G.done }),
   start(n) { G.clues = []; G.done = false; G.playT = 0; G.fails = 0; ST.cp = 0; startPlay(); G.step = n; spawnStep(n); startStep(n, true); }, newGame, tp(x, z, h) { if (PLY.veh) { vehPut(PLY.veh, x, z, h || 0); PLY.veh.col.off = true; CAM.vyaw = h || 0; } else plyPlace(x, z, h || 0); }, skip() { let n = 0; while (CINE && n++ < 30) nextShot(); }, solve() { if (PUZ) PUZ.solve(); }, yaw(a) { CAM.yaw = a; },
   rng: () => [HR(), PR(), HOUSES.length, HOUSES.reduce((a, h) => a + h.x * 3 + h.z * 7 + h.hw + h.hd, 0)],      // test: ortak rastgele dizilerin konumu (dünya kurulumu aynı mı?)
-  enter(two) { enterVeh(two ? HSCOOT : HCAR, true); }, cap(on) { G.cap = !!on; applyOpts(); }, exit() { exitVeh(true); }, get d() { return { PLY, CAM, COMP, HCAR, HSCOOT, HERO, WIFE, G, ST, CHASER, TRAFFIC, NPCS, GUARDS, POI, SPOTS, scene, camera, renderer, Q }; } };
+  enter(two) { enterVeh(two ? HSCOOT : HCAR, true); }, cap(on) { G.cap = !!on; applyOpts(); }, exit() { exitVeh(true); }, get d() { return { PLY, CAM, COMP, HCAR, HSCOOT, HERO, WIFE, G, ST, CHASER, TRAFFIC, NPCS, GUARDS, POI, SPOTS, scene, camera, renderer, Q, FT, WN, FTR, COPS, PCARS, KBAR, VEN, LOOP, held, NAV, NAVC }; },
+  street: { crime, wantLevel, wantedClear, reset: streetReset, hurt: plyHurt, fHurt, fSet, off: sOff, disturb, pb: pointBlocked } };
 (async () => { const t0 = performance.now(); await makeTextures(); const t1 = performance.now(); await stage('Gökyüzü ve ışık', 0.36); makeSky(); makeMaterials(); faceAtlas(); await stage('Bodrum kuruluyor', 0.45); await buildWorld(); await stage('Araçlar ve insanlar', 0.86);
-  initVehicles(); HCAR = makeCar('sedan', '#1d4466', { interior: true, plate: 'plk1' }); HSCOOT = makeCar('scooter', '#8fbfae'); vehPut(HCAR, SPOTS.car.x, SPOTS.car.z, SPOTS.car.rot); vehPut(HSCOOT, SPOTS.scooter.x, SPOTS.scooter.z, SPOTS.scooter.rot); makePeople(); setupStory();
+  initVehicles(); HCAR = makeCar('sedan', '#1d4466', { interior: true, plate: 'plk1' }); HSCOOT = makeCar('scooter', '#8fbfae'); vehPut(HCAR, SPOTS.car.x, SPOTS.car.z, SPOTS.car.rot); vehPut(HSCOOT, SPOTS.scooter.x, SPOTS.scooter.z, SPOTS.scooter.rot); makePeople(); streetInit(); setupStory();
   const s = loadSave(); if (s) { if (s.q !== undefined && s.qu) { QI = clamp(s.q | 0, 0, 2); QUSER = true; } G.snd = s.snd !== false; G.cap = !!s.cap; G.sens = clamp(s.sens | 0 || 5, 1, 9); if (Array.isArray(s.mus)) { MU.on = !!s.mus[0]; MU.vol = clamp(+s.mus[1] || 0, 0, 1); if (KUPLE.includes(s.mus[2])) MU.pick = s.mus[2]; } if (s.names) { const a = String(s.names.him || ''), b = String(s.names.her || ''); G.names.him = (!a || a === 'Aras' ? 'Yavuz' : a).slice(0, 12); G.names.her = (!b || b === 'Defne' ? 'Bircan' : b).slice(0, 12); } $('btnCont').style.display = s.step > 0 ? '' : 'none'; }
   wireUI(); applyQual(); applyOpts(); plyPlace(POI.start.x, POI.start.z, 2.2); wifeWarp(POI.start.x - 1.2, POI.start.z - 0.4, 1.2); await stage('Hazır', 1);
   console.log('textures ms', Math.round(t1 - t0), 'world ms', Math.round(performance.now() - t1)); $('load').classList.add('off'); $('title').classList.add('on'); window.game.ready = true; requestAnimationFrame(loop); })().catch(e => { window.__ERR = e; console.error(e); $('loadmsg').textContent = 'Başlatılamadı: ' + e.message; });
