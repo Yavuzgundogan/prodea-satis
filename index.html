@@ -413,14 +413,14 @@ function blockTex(N, o) {
     while (cx < 0.999) { let w = r.r(o.w0, o.w1) / S; if (1 - cx - w < o.w0 / S * 0.7) w = 1 - cx; bl.push({ x0: cx, x1: cx + w, t: r(), k: r(), hh: r() }); cx += w; }
     rows.push({ y0: y, y1: y + h, off: o.stag !== undefined ? (rows.length % 2) * o.stag : r(), bl }); y += h; }
   const rowOf = new Uint8Array(N); for (let i = 0, ri = 0; i < N; i++) { while (ri < rows.length - 1 && i / N >= rows[ri].y1) ri++; rowOf[i] = ri; }
-  const pal = o.pal, gap = o.gap, bev = o.bev;
+  const pal = o.pal, gap = o.gap, bev = o.bev, vr = o.var === undefined ? 1 : o.var;      // var: taş içi ton dalgalanması (1 = tam)
   return pbrSet(N, o.bump, (u, v, q) => {
     const row = rows[rowOf[q.y]]; let uu = u + row.off; uu -= floor(uu); let b = row.bl[0]; for (const c of row.bl) if (uu >= c.x0) b = c;
     const e = (fbm(u * 36, v * 36, 2, 36, 36) - 0.5) * o.irr, ex = min(uu - b.x0, b.x1 - uu) * S - gap + e, ey = min(v - row.y0, row.y1 - v) * S - gap + e;
     const n = fbm(u * 14 + b.t * 9, v * 14, 4, 14, 14), g = ih(q.x * 3 + 1, q.y * 5 + 2);
     if (ex <= 0 || ey <= 0) { const m = o.mortar; q[0] = m[0] * (0.85 + 0.3 * n); q[1] = m[1] * (0.85 + 0.3 * n); q[2] = m[2] * (0.85 + 0.3 * n); q[3] = o.mdepth + g * 0.08; q[4] = 0.96; return; }
     const d = (ex < bev && ey < bev) ? max(0, bev - hyp(bev - ex, bev - ey)) : min(ex, ey), hs = sstep(0, bev, d);
-    const pi = b.t * (pal.length - 1), p0 = pal[floor(pi)], p1 = pal[min(pal.length - 1, floor(pi) + 1)], f = pi - floor(pi); let br = (0.84 + 0.3 * b.k * o.tone) * (0.86 + 0.26 * n) * (0.8 + 0.2 * hs), hv = 0, rv = 0;
+    const pi = b.t * (pal.length - 1), p0 = pal[floor(pi)], p1 = pal[min(pal.length - 1, floor(pi) + 1)], f = pi - floor(pi); let br = (0.84 + 0.3 * b.k * o.tone) * (1 - 0.14 * vr + 0.26 * vr * n) * (0.8 + 0.2 * hs), hv = 0, rv = 0;
     // traverten: taş boyunca uzanan damarlar + küçük gözenekler (koyu, çukur, mat)
     if (o.vein) { const vn = fbm(u * 4 + b.t * 31, v * 52 + b.k * 17, 3, 4, 52) - 0.5, pr = sstep(0.71, 0.79, fbm(u * 96 + b.t * 7, v * 96, 2, 96, 96)); br *= (1 + o.vein * vn) * (1 - 0.3 * pr); hv = -0.14 * pr; rv = 0.14 * pr; }
     q[0] = lerp(p0[0], p1[0], f) * br; q[1] = lerp(p0[1], p1[1], f) * br; q[2] = lerp(p0[2], p1[2], f) * br;
@@ -462,13 +462,13 @@ const TX = {};
 async function makeTextures() {
   const TB = TEXN, TM = TEXN / 2, P = h => { const c = new T.Color(h); return [c.r, c.g, c.b]; };
   await stage('Sıva ve taş dokuları', 0.04);
-  TX.plaster = pbrSet(TB, 0.012, (u, v, o) => { const a = fbm(u * 5, v * 5, 5, 5, 5), b = fbm(u * 30 + 3, v * 9 + 7, 3, 30, 9), g = ih(o.x * 7 + 11, o.y * 13 + 5), st = fbm(u * 3 + 9, v * 3 + 2, 3, 3, 3), rn = fbm(u * 44 + 1, v * 2 + 3, 3, 44, 2), pit = sstep(0.7, 0.78, fbm(u * 60, v * 60, 2, 60, 60));
-    const k = 0.94 + 0.06 * st - 0.05 * (1 - a) - 0.045 * sstep(0.55, 0.8, rn) - pit * 0.05; o[0] = 0.955 * k; o[1] = 0.945 * k; o[2] = 0.912 * k; o[3] = a * 0.5 + b * 0.32 + g * 0.1 - pit * 0.25; o[4] = 0.84 + 0.13 * a; });
+  TX.plaster = pbrSet(TB, 0.009, (u, v, o) => { const a = fbm(u * 5, v * 5, 5, 5, 5), b = fbm(u * 30 + 3, v * 9 + 7, 3, 30, 9), g = ih(o.x * 7 + 11, o.y * 13 + 5), st = fbm(u * 3 + 9, v * 3 + 2, 3, 3, 3), rn = fbm(u * 44 + 1, v * 2 + 3, 3, 44, 2), pit = sstep(0.74, 0.83, fbm(u * 60, v * 60, 2, 60, 60));
+    const k = 0.94 + 0.06 * st - 0.05 * (1 - a) - 0.04 * sstep(0.55, 0.8, rn) - pit * 0.025; o[0] = 0.955 * k; o[1] = 0.945 * k; o[2] = 0.912 * k; o[3] = a * 0.5 + b * 0.3 + g * 0.08 - pit * 0.11; o[4] = 0.84 + 0.13 * a; });      // sıva: gözenek çukurları seyrek ve sığ (yakından 'delikli' görünmesin)
   TX.stone = blockTex(TB, { seed: 11, size: 2.4, h0: 0.14, h1: 0.27, w0: 0.2, w1: 0.52, gap: 0.011, bev: 0.03, irr: 0.02, rgh: 0.35, tone: 1, bump: 0.02, mdepth: 0.12, pal: [P('#b9ae98'), P('#d2c8b2'), P('#a39a8a'), P('#c7b494'), P('#8f8a80')], mortar: [0.62, 0.59, 0.53] });
   await stage('Kale taşı ve kaldırım', 0.1);
   TX.ashlar = blockTex(TB, { seed: 23, size: 4, h0: 0.34, h1: 0.5, w0: 0.5, w1: 1.0, gap: 0.009, bev: 0.022, irr: 0.012, rgh: 0.3, tone: 0.8, bump: 0.011, mdepth: 0.2, pal: [P('#cfc6b0'), P('#bfb59c'), P('#d9d1bd'), P('#b3aa94')], mortar: [0.5, 0.48, 0.43] });
-  TX.paver = blockTex(TB, { seed: 31, size: 2.4, h0: 0.3, h1: 0.3, w0: 0.6, w1: 0.6, stag: 0.125, gap: 0.006, bev: 0.012, irr: 0.004, rgh: 0.2, tone: 0.95, bump: 0.009, mdepth: 0.24, vein: 0.5, pal: [P('#d9d0bd'), P('#cabea7'), P('#e3dccb'), P('#c1b49c'), P('#d6cbb5')], mortar: [0.4, 0.38, 0.35] });
-  TX.flag = flagTex(TB, { seed: 5, size: 3.6, cells: 11, jit: 0.92, gap: 0.0055, bev: 0.02, irr: 0.01, bump: 0.011, pal: [P('#cdc7ba'), P('#d8d2c5'), P('#c3beb4'), P('#d3c9b7'), P('#bbb7ae')], mortar: [0.55, 0.53, 0.49] });
+  TX.paver = blockTex(TB, { seed: 31, size: 2.4, h0: 0.3, h1: 0.3, w0: 0.6, w1: 0.6, stag: 0.125, gap: 0.005, bev: 0.012, irr: 0.004, rgh: 0.2, tone: 0.42, var: 0.55, bump: 0.0072, mdepth: 0.18, vein: 0.2, pal: [P('#d8cfbd'), P('#d1c7b3'), P('#dcd4c3'), P('#cdc2ad'), P('#d6ccb8')], mortar: [0.6, 0.575, 0.53] });      // traverten kaldırım: taşlar arası ton farkı ve derz koyuluğu düşük (göz yormayan, sakin yüzey)
+  TX.flag = flagTex(TB, { seed: 5, size: 3.6, cells: 11, jit: 0.92, gap: 0.0045, bev: 0.02, irr: 0.01, bump: 0.0085, pal: [P('#cfc9bc'), P('#d6d0c3'), P('#c9c4b9'), P('#d2c9b8'), P('#c4c0b6')], mortar: [0.64, 0.62, 0.575] });
   await stage('Asfalt ve toprak', 0.17);
   TX.asphalt = pbrSet(TB, 0.007, (u, v, o) => { const g = ih(o.x, o.y), g2 = ih(o.x >> 1, o.y >> 1), n = fbm(u * 8, v * 8, 4, 8, 8), pat = fbm(u * 3 + 5, v * 3 + 1, 3, 3, 3);
     const cr = sstep(0.011, 0, abs(fbm(u * 4 + 2, v * 4 + 8, 4, 4, 4) - 0.5)) * sstep(0.5, 0.62, fbm(u * 2, v * 2, 2, 2, 2)), dk = pat < 0.4 ? 1 : 0;
@@ -1099,9 +1099,9 @@ function pot(x, z, y, R, big) { const s = big ? 1.5 : 1, g = B('generic'); cyl(g
 function facade(x0, z0, x1, z1, yb, H, ops, o) {
   o = o || {}; const L = hyp(x1 - x0, z1 - z0), tx = (x1 - x0) / L, tz = (z1 - z0) / L, nx = -tz, nz = tx, D = o.depth || 0.2, wr = Math.atan2(nx, nz), wc = o.col || WHITE, R = HR;
   const P = (u, v, dp, c) => { const q = [x0 + tx * u - nx * dp, yb + v, z0 + tz * u - nz * dp]; if (c) q[3] = c; return q; };
-  const us = [0, L], vs = [0, H]; if (H > 2.4) vs.push(1.5); if (o.band) vs.push(o.band); if (o.split) vs.push(o.split); for (const p of ops) { us.push(p.u, p.u + p.w); vs.push(p.v, p.v + p.h); }
+  const us = [0, L], vs = [0, H]; if (H > 2.4) vs.push(1.5, H - 0.5); if (o.band) vs.push(o.band); if (o.split) vs.push(o.split); for (const p of ops) { us.push(p.u, p.u + p.w); vs.push(p.v, p.v + p.h); }
   const uniq = (a, m) => [...new Set(a.map(v => +clamp(v, 0, m).toFixed(3)))].sort((a, b) => a - b), uq = uniq(us, L), vq = uniq(vs, H);
-  const shade = (v, bl) => { const k = o.ao === false ? 1 : 0.78 + 0.22 * sstep(0, 1.5, v), c = bl ? o.bandc : wc; return [c[0] * k, c[1] * k, c[2] * k]; };
+  const shade = (v, bl) => { const k = o.ao === false ? 1 : (0.78 + 0.22 * sstep(0, 1.5, v)) * (H > 2.4 ? 1 - 0.075 * sstep(H - 0.5, H, v) : 1), c = bl ? o.bandc : wc; /* duvar tonu: dipte ve saçak altında hafif koyulaşır */ return [c[0] * k, c[1] * k, c[2] * k]; };
   for (let j = 0; j < vq.length - 1; j++) { const v0 = vq[j], v1 = vq[j + 1], vm = (v0 + v1) / 2, bl = o.band && vm < o.band, c0 = shade(v0, bl), c1 = shade(v1, bl), low = o.split && vm < o.split, g = B(low ? o.matLow : (o.mat || 'plaster')); let run = -1;
     for (let i = 0; i < uq.length; i++) { let solid = false; if (i < uq.length - 1) { const um = (uq[i] + uq[i + 1]) / 2; solid = true; for (const p of ops) if (um > p.u && um < p.u + p.w && vm > p.v && vm < p.v + p.h) { solid = false; break; } }
       if (solid && run < 0) run = i; if (!solid && run >= 0) { quad(g, P(uq[run], v0, 0, c0), P(uq[i], v0, 0, c0), P(uq[i], v1, 0, c1), P(uq[run], v1, 0, c1), low ? 2.4 : (o.uvs || 3)); run = -1; } } }
@@ -1124,6 +1124,7 @@ function facade(x0, z0, x1, z1, yb, H, ops, o) {
           quad(ga, Dq, C, Bq, A, undefined, cc, GX.cloth); quad(ga, A, Bq, C, Dq, undefined, [cc[0] * 0.6, cc[1] * 0.6, cc[2] * 0.6], GX.cloth); quad(ga, F, E, C, Dq, undefined, cc, GX.cloth); quad(ga, E, F, Dq, C, undefined, [cc[0] * 0.6, cc[1] * 0.6, cc[2] * 0.6], GX.cloth); } } }
     else if (p.kind === 'dark') quad(B('generic'), P(u0, v0, 0.5), P(u1, v0, 0.5), P(u1, v1, 0.5), P(u0, v1, 0.5), undefined, [0.012, 0.012, 0.014], [1, 0, 0]);
   }
+  if (o.course) { const m = P(L / 2, o.course, -0.022); box(B('plaster'), m[0], m[1], m[2], L + 0.05, 0.075, 0.07, wr, [wc[0] * 0.955, wc[1] * 0.955, wc[2] * 0.955], { uv: 3, skip: 'N' }); }      // kat silmesi
   if (o.aoStrip !== false) quad(B('ao'), [x1, yb + 0.015, z1], [x0, yb + 0.015, z0], [x0 + nx * 0.6, yb + 0.015, z0 + nz * 0.6], [x1 + nx * 0.6, yb + 0.015, z1 + nz * 0.6], [0, 0, 1, 1]);
 }
 function openings(L, fl, front, o) {
@@ -1147,12 +1148,14 @@ function house(cx, cz, w, d, rot, o) {
   const sides = { S: [-w / 2, d / 2, w / 2, d / 2, w], E: [w / 2, d / 2, w / 2, -d / 2, d], N: [w / 2, -d / 2, -w / 2, -d / 2, w], W: [-w / 2, -d / 2, -w / 2, d / 2, d] };
   for (const sd of 'SENW') { if (hide[sd]) continue; const q = sides[sd], a = Wp(q[0], q[1]), b = Wp(q[2], q[3]), L = q[4], vis = sd === 'S' || lane[sd];
     const ops = vis ? openings(L, fl, sd === 'S', o) : (L > 5 && R.chance(0.6) ? [{ u: L * R.r(0.25, 0.7), v: 1.45 + (fl > 1 ? FH : 0), w: 0.62, h: 0.62, kind: 'win', small: true }] : []);
-    facade(a[0], a[1], b[0], b[1], y0, H, ops, { col: wc, band, bandc, split: stoneLow ? FH - 0.02 : 0, matLow: 'stone', shc, wk, dk: R.i(1, 2), aoStrip: vis && !o.hill, frame: vis && hsh < 0.6 ? (hsh < 0.38 ? [shc[0] * 0.92, shc[1] * 0.92, shc[2] * 0.92] : col('#dcd6c8')) : null }); }
+    const tn = { S: 1, E: 0.985, N: 0.962, W: 0.975 }[sd], fc = [wc[0] * tn, wc[1] * tn, wc[2] * tn];      // cepheler arasında hafif ton farkı (derinlik)
+    facade(a[0], a[1], b[0], b[1], y0, H, ops, { col: fc, band, bandc, split: stoneLow ? FH - 0.02 : 0, matLow: 'stone', shc, wk, dk: R.i(1, 2), aoStrip: vis && !o.hill, course: vis && fl > 1 && !o.hill ? FH : 0,
+      frame: vis ? (hsh < 0.38 ? [shc[0] * 0.92, shc[1] * 0.92, shc[2] * 0.92] : hsh < 0.6 ? col('#dcd6c8') : [fc[0] * 0.9, fc[1] * 0.9, fc[2] * 0.9]) : null }); }
   if (o.sign) { const p = Wp(0, d / 2 + 0.07); signQuad(p[0], y0 + 2.88, p[1], min(w - 1.2, 4.6), 0.5, rot, o.sign); }
   // çatı: düz teras + korkuluk duvarı
   const g = B('plaster'), rc = col('#c9c2b4');
   { const a = Wp(-w / 2 + t, d / 2 - t), b = Wp(w / 2 - t, d / 2 - t), e = Wp(w / 2 - t, -d / 2 + t), f = Wp(-w / 2 + t, -d / 2 + t), y = yr + 0.02; quad(g, [a[0], y, a[1]], [b[0], y, b[1]], [e[0], y, e[1]], [f[0], y, f[1]], 3, rc); }
-  for (const [lx, lz, sx, sz] of [[0, d / 2 - t / 2, w, t], [0, -d / 2 + t / 2, w, t], [w / 2 - t / 2, 0, t, d - 2 * t], [-w / 2 + t / 2, 0, t, d - 2 * t]]) { const p = Wp(lx, lz); box(g, p[0], yr + par / 2, p[1], sx, par, sz, rot, wc, { skip: 'B', uv: 3 }); if (!o.hill) { box(g, p[0], yr + par + 0.03, p[1], sx + 0.1, 0.06, sz + 0.1, rot, [wc[0] * 0.97, wc[1] * 0.97, wc[2] * 0.97], { skip: 'B', uv: 3 }); box(g, p[0], yr - 0.03, p[1], sx + 0.11, 0.1, sz + 0.11, rot, [wc[0] * 0.95, wc[1] * 0.95, wc[2] * 0.95], { uv: 3 }); } }
+  for (const [lx, lz, sx, sz] of [[0, d / 2 - t / 2, w, t], [0, -d / 2 + t / 2, w, t], [w / 2 - t / 2, 0, t, d - 2 * t], [-w / 2 + t / 2, 0, t, d - 2 * t]]) { const p = Wp(lx, lz); box(g, p[0], yr + par / 2, p[1], sx, par, sz, rot, wc, { skip: 'B', uv: 3 }); if (!o.hill) { box(g, p[0], yr + par + 0.03, p[1], sx + 0.1, 0.06, sz + 0.1, rot, [wc[0] * 0.97, wc[1] * 0.97, wc[2] * 0.97], { skip: 'B', uv: 3 }); box(g, p[0], yr - 0.03, p[1], sx + 0.15, 0.11, sz + 0.15, rot, [wc[0] * 0.935, wc[1] * 0.935, wc[2] * 0.935], { uv: 3 }); } }
   colBox(cx, cz, w / 2, d / 2, rot, y0 - 2, yr + par, 'house');
   // çatı eşyaları: baca, güneş enerjili su ısıtıcı, çanak anten
   const gg = B('generic@m');
@@ -1164,7 +1167,7 @@ function house(cx, cz, w, d, rot, o) {
     hcyl(gg, p[0] - sa * 0.42, yr + 1.12, p[1] - ca * 0.42, 0.23, 1.3, a, col('#e8eaec'), GX.metal); }
   if (R.chance(0.35)) { const p = Wp(R.r(-w / 2 + 0.6, w / 2 - 0.6), -d / 2 + 0.5); cyl(gg, p[0], yr + par, p[1], 0.02, 0.02, 0.5, 5, col('#888'), { ex: GX.metal }); cyl(gg, p[0], yr + par + 0.45, p[1], 0.36, 0.02, 0.12, 10, col('#d9dcdf'), { ex: GX.metal, cap: false }); }
   // balkon
-  if (o.balcU) { const p = Wp(-w / 2 + o.balcU, d / 2 + 0.52); box(g, p[0], y0 + FH - 0.08, p[1], 2.3, 0.16, 1.04, rot, wc, { uv: 3 });
+  if (o.balcU) { const p = Wp(-w / 2 + o.balcU, d / 2 + 0.52); box(g, p[0], y0 + FH - 0.08, p[1], 2.3, 0.16, 1.04, rot, wc, { uv: 3 }); box(g, p[0], y0 + FH - 0.2, p[1], 2.2, 0.08, 0.96, rot, [wc[0] * 0.9, wc[1] * 0.9, wc[2] * 0.9], { uv: 3, skip: 'T' });      // döşeme altı silmesi (balkon çizgisi)
     if (R.chance(0.5)) { for (const [lx, lz, sx, sz] of [[0, 0.46, 2.3, 0.12], [-1.09, 0, 0.12, 1.04], [1.09, 0, 0.12, 1.04]]) { const b = Wp(-w / 2 + o.balcU + lx, d / 2 + 0.52 + lz); box(g, b[0], y0 + FH + 0.45, b[1], sx, 0.9, sz, rot, wc, { skip: 'B', uv: 3 }); } }
     else { const rcw = col('#e9e4d8'); for (const [lx, lz, sx, sz] of [[0, 0.48, 2.3, 0.06], [-1.12, 0, 0.06, 1.0], [1.12, 0, 0.06, 1.0]]) { const b = Wp(-w / 2 + o.balcU + lx, d / 2 + 0.52 + lz); box(B('generic'), b[0], y0 + FH + 0.92, b[1], sx, 0.06, sz, rot, shc, { ex: GX.wood }); } for (let e = -1.05; e <= 1.06; e += 0.263) { const b = Wp(-w / 2 + o.balcU + e, d / 2 + 1.0); box(B('generic'), b[0], y0 + FH + 0.45, b[1], 0.04, 0.9, 0.04, rot, shc, { ex: GX.wood, skip: 'TB' }); } }
   }
@@ -1592,7 +1595,7 @@ function wheelSrc(R, w, style, lite) {
 function carParts(type, interior) {
   const key = type + (interior ? 'i' : ''); if (CARCACHE.has(key)) return CARCACHE.get(key);
   const sp = VS[type], P = new Geo('paintV'), GL = new Geo('glassS'), D = new Geo('generic'), BR = new Geo('generic');
-  const zT = -sp.wb / 2 - sp.or, zN = sp.wb / 2 + sp.of, L = zN - zT, zm = (zN + zT) / 2, HW = sp.W / 2, ra = sp.rw + 0.065, R = sp.roof, zrb = R[0][0], zrt = R[1][0], zwt = R[3][0], zc = R[4][0];
+  const zT = -sp.wb / 2 - sp.or, zN = sp.wb / 2 + sp.of, L = zN - zT, zm = (zN + zT) / 2, HW = sp.W / 2, ra = sp.rw + 0.05, R = sp.roof, zrb = R[0][0], zrt = R[1][0], zwt = R[3][0], zc = R[4][0];
   sp.zT = zT; sp.zN = zN; sp.L = L; sp.zm = zm;
   const hw = z => { let k = 1 - 0.03 * sstep(0.5, 1, abs(z - zm) / (L / 2)); if (z > zN - sp.rcF) { const u = min(1, (z - (zN - sp.rcF)) / sp.rcF); k *= sp.kF + (1 - sp.kF) * sqrt(1 - u * u); } else if (z < zT + sp.rcR) { const u = min(1, ((zT + sp.rcR) - z) / sp.rcR); k *= sp.kR + (1 - sp.kR) * sqrt(1 - u * u); } return HW * k; };
   const yTop = z => hermite(sp.top, z), yBot = z => sp.gc + 0.02 + (z > 0 ? 0.06 * sstep(sp.wb / 2 + 0.3, zN, z) : 0.11 * sstep(-sp.wb / 2 - 0.3, zT, z)), QS = [0, 0.085, 0.105, 0.42, 0.72, 1];
@@ -1618,14 +1621,14 @@ function carParts(type, interior) {
   const CHR = col('#d9dcdf'), MX = [0.12, 1, 0], LENS = [0.06, 0.3, 0.09], modern = !sp.chrome, lux = sp.chrome || sp.sport, trimC = lux ? CHR : col('#101113'), trimX = lux ? MX : [0.45, 0.2, 0];
   for (const s of [1, -1]) {
     // ön far grubu: koyu yuva + parlak mercek + gündüz farı şeridi + sinyal (klasikte köşede yalnız sinyal; yuvarlak farlar aşağıda)
-    const zl0 = zN - sp.rcF * 0.92, zl1 = zN - 0.06;
-    if (modern) { patch(D, s, zl0, zl1, 4.4, 6.0, 8, 4, cHous, [0.1, 0.7, 0], 0.01); patch(D, s, lerp(zl0, zl1, 0.42), zl1 - 0.02, 4.72, 5.6, 6, 3, cLamp, LENS, 0.015);
-      patch(D, s, zl0 + 0.02, zl1 - 0.01, 5.72, 5.92, 8, 2, col('#ffffff'), [0.3, 0, 0.45], 0.016); patch(D, s, zl0 + 0.02, lerp(zl0, zl1, 0.36), 4.72, 5.6, 4, 3, cAmb, [0.25, 0.2, 0.04], 0.015); }
+    const zl0 = zN - sp.rcF * 0.92, zl1 = zN - 0.004;
+    if (modern) { patch(D, s, zl0, zl1, 4.38, 6.0, 8, 4, cHous, [0.1, 0.7, 0], 0.01); patch(D, s, zl0 + 0.025, zl1, 4.64, 5.82, 8, 3, cLamp, LENS, 0.015);
+      patch(D, s, zl0 + 0.025, zl1, 4.46, 4.6, 8, 2, col('#ffffff'), [0.3, 0, 0.45], 0.016); patch(D, s, zl0 + 0.025, lerp(zl0, zl1, 0.24), 4.64, 5.2, 3, 2, cAmb, [0.25, 0.2, 0.04], 0.0165); }
     else patch(D, s, zN - sp.rcF * 0.85, zN - sp.rcF * 0.45, 4.55, 5.05, 3, 2, cAmb, [0.25, 0.2, 0.04], 0.011);
     patch(D, s, zN - sp.rcF * 0.78, zN - 0.02, 2.15, 3.15, 6, 3, cDark, [0.6, 0, 0], 0.009);
     // stop grubu: koyu kırmızı yuva + parlak kırmızı iç bölüm (fren ışığı bunun üstünde yanar) + beyaz geri vites lambası
-    const zt0 = zT + 0.03, zt1 = zT + sp.rcR + 0.08; patch(D, s, zt0, zt1, 4.4, 5.85, 6, 4, col('#470808'), [0.15, 0.2, 0.03], 0.01); patch(D, s, zt0 + 0.012, zt1 - 0.02, 4.8, 5.5, 6, 3, col('#b01515'), [0.15, 0, 0.1], 0.014);
-    patch(BR, s, zt0 + 0.012, zt1 - 0.02, 4.8, 5.5, 6, 3, WHITE, null, 0.018); patch(D, s, zt0, lerp(zt0, zt1, 0.32), 4.48, 4.74, 3, 2, col('#e9ecef'), LENS, 0.014);
+    const zt0 = zT + 0.004, zt1 = zT + sp.rcR + 0.08; patch(D, s, zt0, zt1, 4.38, 5.9, 6, 4, col('#470808'), [0.15, 0.2, 0.03], 0.01); patch(D, s, zt0, zt1 - 0.02, 4.62, 5.72, 6, 3, col('#b01515'), [0.15, 0, 0.1], 0.014);
+    patch(BR, s, zt0, zt1 - 0.02, 4.62, 5.72, 6, 3, WHITE, null, 0.018);
     // kapı çizgileri + kapı kolları
     for (const zd of sp.doors) { patch(D, s, zd - 0.007, zd + 0.007, 2.3, 5.5, 2, 6, cDark, [0.7, 0, 0], 0.003);
       if (zd < sp.doors[0]) { const zh = zd + 0.2, x = s * (hw(zh) - 0.022), y = yTop(zh) - 0.2; box(D, x - s * 0.006, y, zh, 0.02, 0.05, 0.2, 0, cDark, { ex: [0.6, 0, 0] }); box(lux ? D : P, x + s * 0.004, y + 0.006, zh, 0.026, 0.026, 0.17, 0, lux ? CHR : WHITE, lux ? { ex: MX } : { uv: [0, 0, 0, 0] }); } }
@@ -1642,8 +1645,14 @@ function carParts(type, interior) {
     // yan krom çıta (klasik) / koyu marşpiyel (spor, arazi)
     const zs0 = -sp.wb / 2 + ra + 0.05, zs1 = sp.wb / 2 - ra - 0.05; if (sp.chrome) patch(D, s, zs0, zs1, 3.38, 3.5, 10, 2, CHR, MX, 0.007); if (sp.sport || sp.flare) patch(D, s, zs0 - 0.02, zs1 + 0.02, 0.9, 2.1, 10, 2, col('#131416'), [0.7, 0, 0], 0.012);
   }
-  const fq = (z, x0, x1, y0, y1, c, ex) => { if (z > 0) quad(D, [x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z], undefined, c, ex); else quad(D, [x1, y0, z], [x0, y0, z], [x0, y1, z], [x1, y1, z], undefined, c, ex); };
+  const fq = (z, x0, x1, y0, y1, c, ex) => { if (x0 > x1) { const t = x0; x0 = x1; x1 = t; } if (z > 0) quad(D, [x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z], undefined, c, ex); else quad(D, [x1, y0, z], [x0, y0, z], [x0, y1, z], [x1, y1, z], undefined, c, ex); };
   const round = (x, y, z, r, c, ex) => { const i0 = D.n, sg = z > 0 ? 1 : -1; D.v(x, y, z, 0, 0, sg, 0, 0, c, ex); for (let q = 0; q <= 12; q++) { const a = q / 12 * TAU * sg; D.v(x + cos(a) * r, y + sin(a) * r, z, 0, 0, sg, 0, 0, c, ex); } for (let q = 0; q < 12; q++) D.tri(i0, i0 + 1 + q, i0 + 2 + q); };
+  // ön ve arka yüzde far / stop parçaları: köşedeki grubun düz yüzdeki devamı (tam karşıdan ve arkadan da net okunur)
+  { const lampY = z => { const h = half(z); return [lerp(h[4][1], h[5][1], 0.64), lerp(h[5][1], h[6][1], 0.8), h[5][0]]; }, yf = lampY(zN), yb = lampY(zT);
+    for (const e of [-1, 1]) { if (modern) { fq(zN + 0.006, e * wN * 0.62, e * (yf[2] - 0.004), yf[0] - 0.012, yf[1] + 0.01, cHous, [0.1, 0.7, 0]); fq(zN + 0.009, e * wN * 0.66, e * (yf[2] - 0.008), yf[0], yf[1], cLamp, LENS); }
+      fq(zT - 0.006, e * wT * 0.52, e * (yb[2] - 0.004), yb[0] - 0.014, yb[1] + 0.012, col('#470808'), [0.15, 0.2, 0.03]); fq(zT - 0.009, e * wT * 0.56, e * (yb[2] - 0.008), yb[0], yb[1], col('#b01515'), [0.15, 0, 0.1]);
+      const q = zT - 0.012, x0 = e * wT * 0.56, x1 = e * (yb[2] - 0.008), xa = min(x0, x1), xb = max(x0, x1); quad(BR, [xb, yb[0], q], [xa, yb[0], q], [xa, yb[1], q], [xb, yb[1], q], [0, 0, 0, 0], WHITE);
+      fq(zT - 0.011, e * wT * 0.56, e * wT * 0.68, yb[0], lerp(yb[0], yb[1], 0.42), col('#e9ecef'), LENS); } }
   // ön yüz: alt hava girişi + sis farları; üstte ızgara (türe göre)
   fq(zN + 0.004, -wN, wN, bN + 0.03, bN + 0.13, cDark, [0.6, 0, 0]); fq(zT - 0.004, -wT, wT, bT + 0.02, bT + 0.11, cDark, [0.6, 0, 0]); for (const e of [-1, 1]) hcyl(D, e * HW * 0.5, bT + 0.02, zT + 0.06, 0.036, 0.16, PI / 2, cChr, [0.25, 1, 0], 8);
   if (modern) { const gh = yN - bN, gy0 = sp.flare ? yN - gh * 0.44 : yN - 0.16, gy1 = yN - 0.04, gw = wN * (sp.flare ? 0.6 : sp.sport ? 0.62 : 0.56), n = sp.flare ? 4 : 2;
@@ -1672,6 +1681,10 @@ function carParts(type, interior) {
     for (let j = 0; j < 9; j++) { const k = j <= 4 ? j : 8 - j; ring.push([(j <= 4 ? 1 : -1) * h[k][0], h[k][1], z]); } return ring; };
   const grows = gz.map(grow), isG = (i, j) => { const zmid = (gz[i] + gz[i + 1]) / 2; if (j === 0 || j === 7) { let k = 'p'; for (const s of sp.side) if (zmid < s[0]) k = s[1]; return k === 'g'; } if (j === 3 || j === 4) return zmid > zwt ? true : zmid > zrt ? false : sp.back === 'g'; return false; };
   loftGrid(P, grows, { skip: isG }); loftGrid(GL, grows, { skip: (i, j) => !isG(i, j) });
+  for (const s of [1, -1]) { const gp = (z, k, t) => { const r = grow(z), a = r[s > 0 ? k : 8 - k], b = r[s > 0 ? k + 1 : 7 - k], q = t || 0; return [a[0] + (b[0] - a[0]) * q + s * 0.003, a[1] + (b[1] - a[1]) * q, z]; }, strip = (pa, pb, pc, pd, c, ex) => { if (s > 0) quad(D, pb, pa, pd, pc, undefined, c, ex); else quad(D, pa, pb, pc, pd, undefined, c, ex); };
+    const gl = sp.side.filter(e => e[1] === 'g'), zg0 = sp.side[sp.side.length - 1][0] > zrb ? sp.side[sp.side.length - 1][0] : zrb + 0.04, zg1 = min(zc - 0.03, sp.side[0][0]), n = 10;
+    if (gl.length) for (let k = 0; k < n; k++) { const za = lerp(zg0, zg1, k / n), zb = lerp(zg0, zg1, (k + 1) / n); strip(gp(za, 1, -0.04), gp(zb, 1, -0.04), gp(zb, 1, 0.2), gp(za, 1, 0.2), trimC, trimX); }
+    if (modern) for (let i = 1; i < sp.side.length - 1; i++) if (sp.side[i][1] === 'p' && sp.side[i - 1][1] === 'g' && sp.side[i + 1][1] === 'g') { const zb = sp.side[i][0], za = sp.side[i + 1][0]; strip(gp(za, 0, 0), gp(zb, 0, 0), gp(zb, 0, 1), gp(za, 0, 1), col('#0c0d0e'), [0.12, 0.4, 0]); } }
   // uzak görünüm (park etmiş araçlar için): seyrek istasyonlu gövde, çamurluk oyuğu yok, camlar koyu boya
   const LO = new Geo('paintV'); { const zl = [zT, zT + sp.rcR * 0.5, zT + sp.rcR], n = 7, za = zT + sp.rcR, zb = zN - sp.rcF; for (let k = 1; k < n; k++) zl.push(lerp(za, zb, k / n)); zl.push(zb, zN - sp.rcF * 0.5, zN);
     const lr = zl.map(z => { const h = half(z, 1), ring = []; for (let j = 0; j <= 20; j++) { const k = j <= 10 ? j : 20 - j; ring.push([(j <= 10 ? 1 : -1) * h[k][0], h[k][1], z, h[k][2] ? DARKP : WHITE]); } return ring; }); loftGrid(LO, lr, {});
@@ -1730,7 +1743,7 @@ function scooterParts() { if (SCOOTG) return SCOOTG;
   loftGrid(D, SS.map(([z, yc, rx, ry]) => { const o = []; for (let j = 0; j <= 14; j++) { const th = j / 14 * TAU; o.push([rx * sg(cos(th), 0.7), yc + ry * sg(sin(th), 0.7), z]); } return o; }), { wrap: true, col: col('#6e4a2c'), ex: [0.55, 0, 0] });
   for (const e of [-1, 1]) { hcylDir(D, e * 0.15, 0.83, -0.86, e * 0.13, 0.875, -1.08, 0.009, CHR); } hcylDir(D, -0.13, 0.875, -1.08, 0.13, 0.875, -1.08, 0.009, CHR);
   // stop lambası, plaka askısı, motor bloğu, egzoz, ayak
-  box(D, 0, 0.665, -1.1, 0.12, 0.07, 0.03, 0, col('#8a0f0f'), { ex: [0.2, 0, 0.06] }); box(BR, 0, 0.665, -1.117, 0.1, 0.05, 0.01, 0, WHITE); box(D, 0, 0.665, -1.092, 0.14, 0.09, 0.02, 0, CHR, { ex: MX });
+  box(D, 0, 0.665, -1.1, 0.135, 0.085, 0.03, 0, col('#9a1010'), { ex: [0.2, 0, 0.08] }); box(BR, 0, 0.665, -1.117, 0.115, 0.065, 0.01, 0, WHITE); box(D, 0, 0.665, -1.092, 0.155, 0.105, 0.02, 0, CHR, { ex: MX });
   box(D, 0, 0.44, -1.045, 0.22, 0.15, 0.02, 0, cK, { ex: DK }); box(D, 0, 0.23, -0.42, 0.17, 0.13, 0.4, 0, cK, { ex: DK });
   hcyl(D, -0.15, 0.19, -0.6, 0.045, 0.4, PI / 2, col('#8f9398'), [0.35, 0.9, 0], 10); hcylDir(D, -0.15, 0.19, -0.4, -0.07, 0.24, -0.22, 0.015, col('#8f9398'));
   // kaportalardaki yatay krom çıtalar
@@ -1907,9 +1920,9 @@ const BONES = ['hips', 'spine', 'chest', 'neck', 'head', 'armL', 'foreL', 'handL
 const PARENT = [-1, 0, 1, 2, 3, 2, 5, 6, 2, 8, 9, 0, 11, 12, 0, 14, 15];
 const TORSO = {
   m: { pel: [[0.80, 0.03, 0.03, 0], [0.835, 0.11, 0.095, 0], [0.90, 0.170, 0.118, -0.006], [0.96, 0.176, 0.122, -0.008], [1.02, 0.166, 0.112, -0.002], [1.075, 0.158, 0.105, 0.004]],
-    sh: [[0.955, 0.187, 0.133, -0.005], [0.985, 0.185, 0.131, -0.004], [1.07, 0.171, 0.117, 0.004], [1.14, 0.166, 0.113, 0.006], [1.22, 0.178, 0.122, 0.008], [1.30, 0.196, 0.132, 0.012], [1.38, 0.205, 0.130, 0.008], [1.445, 0.200, 0.110, 0], [1.49, 0.168, 0.09, -0.006], [1.525, 0.094, 0.075, -0.008], [1.548, 0.072, 0.068, -0.005]], xs: 0.186, xh: 0.092, arm: 1, neck: 1.08 },
+    sh: [[0.955, 0.187, 0.133, -0.005], [0.985, 0.185, 0.131, -0.004], [1.07, 0.171, 0.117, 0.004], [1.14, 0.166, 0.113, 0.006], [1.22, 0.178, 0.122, 0.008], [1.30, 0.196, 0.132, 0.012], [1.38, 0.203, 0.130, 0.008], [1.445, 0.197, 0.110, 0], [1.482, 0.168, 0.094, -0.005], [1.508, 0.118, 0.081, -0.008], [1.528, 0.086, 0.072, -0.008], [1.548, 0.069, 0.066, -0.005]], xs: 0.186, xh: 0.092, arm: 1, neck: 1.0 },
   f: { pel: [[0.80, 0.03, 0.03, 0], [0.835, 0.10, 0.09, 0], [0.90, 0.172, 0.118, -0.008], [0.955, 0.180, 0.124, -0.012], [1.02, 0.162, 0.108, -0.004], [1.08, 0.140, 0.097, 0.002], [1.115, 0.137, 0.099, 0.004]],
-    sh: [[1.09, 0.136, 0.096, 0.003], [1.14, 0.133, 0.095, 0.004], [1.22, 0.146, 0.106, 0.010], [1.30, 0.160, 0.128, 0.022], [1.345, 0.164, 0.126, 0.018], [1.40, 0.166, 0.108, 0.004], [1.445, 0.166, 0.094, -0.002], [1.49, 0.134, 0.08, -0.006], [1.525, 0.076, 0.065, -0.008], [1.548, 0.059, 0.058, -0.005]], xs: 0.156, xh: 0.095, arm: 0.8, neck: 0.86 } };
+    sh: [[1.09, 0.136, 0.096, 0.003], [1.14, 0.133, 0.095, 0.004], [1.22, 0.146, 0.106, 0.010], [1.30, 0.160, 0.128, 0.022], [1.345, 0.164, 0.126, 0.018], [1.40, 0.166, 0.108, 0.004], [1.445, 0.164, 0.094, -0.002], [1.478, 0.138, 0.083, -0.005], [1.502, 0.098, 0.071, -0.008], [1.524, 0.068, 0.062, -0.008], [1.548, 0.054, 0.056, -0.005]], xs: 0.156, xh: 0.095, arm: 0.8, neck: 0.86 } };
 const ARMP = [[0.885, 0.027], [0.96, 0.033], [1.04, 0.040], [1.10, 0.042], [1.14, 0.040], [1.165, 0.041], [1.24, 0.046], [1.34, 0.052], [1.41, 0.059], [1.45, 0.058], [1.478, 0.042], [1.49, 0.014]];
 const LEGP = [[0.10, 0.036, 0.040, 0], [0.14, 0.036, 0.040, -0.004], [0.24, 0.042, 0.048, -0.008], [0.36, 0.054, 0.062, -0.012], [0.44, 0.052, 0.058, -0.006], [0.50, 0.054, 0.058, 0], [0.57, 0.058, 0.062, 0], [0.68, 0.070, 0.076, 0], [0.80, 0.082, 0.088, 0], [0.90, 0.088, 0.092, 0], [0.95, 0.075, 0.08, 0], [0.968, 0.02, 0.02, 0]];
 const pl3 = (P, y, k) => { const n = P.length; if (y <= P[0][0]) return P[0][k]; if (y >= P[n - 1][0]) return P[n - 1][k]; let i = 0; while (y > P[i + 1][0]) i++; return lerp(P[i][k], P[i + 1][k], (y - P[i][0]) / (P[i + 1][0] - P[i][0])); };
@@ -1942,25 +1955,31 @@ function humanGeo(o) {
   // --- pantolonun leğen kısmı ve gömlek ---
   const tk = !!o.tuck, sh = tk ? TB.sh : (male ? TB.sh : [[0.975, 0.176, 0.122, -0.008], [1.0, 0.172, 0.118, -0.006], [1.08, 0.144, 0.101, 0.002]].concat(TB.sh.slice(1))), pel = TB.pel;
   const torsoZ = (x, y, sg) => { const q = min(1, abs(x) / (pl3(sh, y, 1) * kRX(y))); return pl3(sh, y, 3) + kZO(y) + sg * pl3(sh, y, 2) * kRZ(y) * Math.pow(max(0, 1 - Math.pow(q, 2 / 0.88)), 0.44); };
+  // gövdenin üst halkaları öne eğik: boyun dibi önde (köprücük çukuru) alçak, ensede yüksek — boyun önden daha uzun ve doğal görünür
+  const slant = (y, z, zc) => y > 1.445 ? 0.026 * bl(y, 1.445, 1.548) * clamp((z - zc) / (pl3(sh, y, 2) * kRZ(y)), 0, 1) : 0, TS = (x, y, off) => { const z = torsoZ(x, y, 1); return [x, y - slant(y, z, pl3(sh, y, 3) + kZO(y)), z + (off || 0)]; };
   const NS = o.lo ? N : 24;      // ayrıntılı gövdede dilim sayısı (pantolon beli ile üst aynı sayıda olmalı, yoksa iç içe geçer)
   part(wT, () => loftGrid(g, pel.map(r => ering(0, r[0], r[3], r[1] * kP(r[0]), r[2] * kP(r[0]), NS, cP, CL, 0.9)), { wrap: true, flip: true, uv: tubeUV(NS, 0.15) }));
   const ys = []; for (let i = 0; i < sh.length; i++) { ys.push(sh[i][0]); if (i < sh.length - 1 && sh[i + 1][0] - sh[i][0] > 0.06) ys.push((sh[i][0] + sh[i + 1][0]) / 2); }
-  if (o.scoop) { ys.push(1.416, 1.428); ys.sort((a, b) => a - b); }
-  const neckSkin = o.scoop ? (x, y) => y > 1.42 && abs(x) < 0.045 + (y - 1.42) * 0.8 : (x, y) => y > 1.43 && abs(x) < (y - 1.42) * 0.42;
+  if (o.scoop) { ys.push(1.492); ys.sort((a, b) => a - b); }
+  const neckSkin = o.scoop ? (x, y, z) => y > 1.497 || (z < 0 && y > 1.43) : (x, y, z) => z > 0.02 && y > 1.5 && abs(x) < 0.04;      // köşeli köşe rengi yalnız en üstte; yaka açıklığının temiz kenarı aşağıdaki 'göğüs paneli' ile çizilir
   // ayrıntılı gövde: 24 dilim, belde kumaş kıvrımları (çukurlar biraz koyu), içe sokulmamış gömlekte hafif açılan dalgalı etek ucu
   if (!o.lo) { for (let y = 0.99; y < 1.3; y += 0.03) if (!ys.some(q => abs(q - y) < 0.012)) ys.push(+y.toFixed(3)); ys.sort((a, b) => a - b); }
+  const armhole = o.sleeve === 'none';      // kolsuz üst: kol oyuğu çevresi ten (askı, yaka açıklığı ile kol oyuğu arasında kalır)
   const wrk = (a, y, x, fr) => o.lo ? 0 : ((0.0052 * sin(y * 92 + 1.6 * sin(a * 2 + 0.7)) + 0.003 * sin(a * 5 + y * 41)) * (o.tuck ? 0.7 * sstep(1.08, 1.14, y) : sstep(0.97, 1.05, y)) * (1 - sstep(1.2, 1.3, y)) + (o.tuck ? 0 : 0.0035 * sin(a * 7 + 1) * (1 - sstep(0.96, 1.08, y)))) * (1 - (fr ? 0.9 * GS(x / 0.04) : 0)) + (o.tuck ? 0 : 0.015 * (1 - sstep(0.96, 1.05, y)));
   part(wT, () => loftGrid(g, ys.map(y => { const zc = pl3(sh, y, 3) + kZO(y); return ering(0, y, zc, pl3(sh, y, 1) * kRX(y), pl3(sh, y, 2) * kRZ(y), NS, cSh, CL, 0.88).map(p => { const w = wrk(Math.atan2(p[2] - zc, p[0]), y, p[0], p[2] > zc);
     if (w) { const k = 1 + w / max(0.04, hyp(p[0], p[2] - zc)), q = 0.9 + 0.1 * clamp(0.5 + w * 80, 0.1, 1.1); p[0] *= k; p[2] = zc + (p[2] - zc) * k; p[3] = [cSh[0] * q, cSh[1] * q, cSh[2] * q]; }
-    if (p[2] > 0.02 && neckSkin(p[0], y)) { p[3] = cS; p[4] = SK; p[2] -= 0.006; } return p; }); }), { wrap: true, flip: true, uv: tubeUV(NS, 0.16) }));
+    if (neckSkin(p[0], y, p[2]) || (armhole && y > 1.37 && abs(p[0]) > TB.xs - 0.03)) { p[3] = cS; p[4] = SK; } p[1] -= slant(y, p[2], zc); return p; }); }), { wrap: true, flip: true, uv: tubeUV(NS, 0.16) }));
+  // yaka açıklığı: kumaşın hemen üstünde, kenarı düzgün bir ten paneli (kadında U yaka, erkekte V) — köşe renginin basamaklı kenarı yerine temiz çizgi
+  part(wT, () => { if (o.scoop) gridSurf(g, 13, 6, (i, j) => { const u = i / 6 - 1, x = 0.073 * u, yb = 1.41 + 0.068 * Math.pow(abs(u), 2.4); return TS(x, lerp(yb, 1.506, j / 5), 0.0028); }, { col: cS, ex: SK, uv: () => [0, 0], flip: true });
+    else gridSurf(g, 5, 5, (i, j) => { const v = j / 4; return TS((i / 2 - 1) * (0.004 + 0.034 * v), lerp(1.434, 1.514, v), 0.0026); }, { col: cS, ex: SK, uv: () => [0, 0], flip: true }); });
   // altın kolye: iki sıra zincir + uç
-  if (o.necklace) part(wT, () => { const n0 = g.n; for (const [drop, hwd, pend] of [[0.052, 0.05, 0], [0.108, 0.058, 1]]) { let pv = null; for (let k = 0; k <= 10; k++) { const u = k / 10 * 2 - 1, x = u * hwd, y = 1.497 - drop * (1 - u * u), p = [x, y, torsoZ(x, y, 1) + 0.0045]; if (pv) hcylDir(g, pv[0], pv[1], pv[2], p[0], p[1], p[2], 0.0018, cGold); pv = p; }
-      if (pend) { const y = 1.497 - drop - 0.011; box(g, 0, y, torsoZ(0, y, 1) + 0.0065, 0.013, 0.02, 0.005, 0, cGold); } } metal(n0, GOLD); });
+  if (o.necklace) part(wT, () => { const n0 = g.n; for (const [drop, hwd, pend] of [[0.052, 0.05, 0], [0.108, 0.058, 1]]) { let pv = null; for (let k = 0; k <= 10; k++) { const u = k / 10 * 2 - 1, x = u * hwd, y = 1.497 - drop * (1 - u * u), p = TS(x, y, 0.0052); if (pv) hcylDir(g, pv[0], pv[1], pv[2], p[0], p[1], p[2], 0.0018, cGold); pv = p; }
+      if (pend) { const q = TS(0, 1.497 - drop - 0.011, 0.0072); box(g, 0, q[1], q[2], 0.013, 0.02, 0.005, 0, cGold); } } metal(n0, GOLD); });
   // --- boyun ve kafa ---
   const nk = TB.neck * (0.92 + 0.08 * bw) * (1 + 0.07 * fu), hc = [0, 1.61 + 0.085 * hs, 0.012];
   part(wT, () => loftGrid(g, [[1.5, 0.058, 0.060, -0.006], [1.56, 0.054, 0.057, -0.002], [1.61, 0.052, 0.056, 0.004], [1.66, 0.05, 0.055, 0.008]].map(r => ering(0, r[0], r[3], r[1] * nk, r[2] * nk, 10, cS, SK)), { wrap: true, flip: true, uv: tubeUV(10, 0.055) }));
   if (o.collar) part(wT, () => { const g0 = 0.44, cD = [cSh[0] * 0.88, cSh[1] * 0.88, cSh[2] * 0.9], r0 = 0.062 * nk;
-    const CP = (a, t, k) => { const fr = Math.pow(max(0, cos(a)), 2.2); return [sin(a) * lerp(r0, 0.098 + 0.014 * fr, t) * k, lerp(1.58, 1.512 - 0.052 * fr, t), -0.004 + cos(a) * lerp(r0, 0.086 + 0.022 * fr, t) * k + 0.012 * t * fr]; };
+    const CP = (a, t, k) => { const fr = Math.pow(max(0, cos(a)), 2.2); return [sin(a) * lerp(r0 * 1.03, 0.09 + 0.014 * fr, t) * k, lerp(1.558 - 0.02 * fr, 1.509 - 0.046 * fr, t), -0.004 + cos(a) * lerp(r0 * 1.03, 0.08 + 0.02 * fr, t) * k + 0.012 * t * fr]; };
     gridSurf(g, 3, 15, (i, j) => CP(lerp(g0, TAU - g0, j / 14), i / 2, 1), { col: cSh, ex: CL, flip: true }); gridSurf(g, 3, 15, (i, j) => CP(lerp(g0, TAU - g0, j / 14), i / 2, 0.975), { col: cD, ex: CL });
     for (let k = 0; k < 8; k++) { const y0 = 0.985 + k * 0.056, y1 = y0 + 0.056, zz = (x, y) => torsoZ(x, y, 1) + 0.0032; quad(g, [-0.015, y0, zz(-0.015, y0)], [0.015, y0, zz(0.015, y0)], [0.015, y1, zz(0.015, y1)], [-0.015, y1, zz(-0.015, y1)], [0, 0, 0, 0], [cSh[0] * 0.95, cSh[1] * 0.95, cSh[2] * 0.96], CL);
       if (k > 0) box(g, 0, y0, zz(0, y0) + 0.002, 0.011, 0.011, 0.004, 0, col('#cfc8b8'), { ex: [0.35, 0, 0] }); } });
@@ -2008,11 +2027,11 @@ function humanGeo(o) {
   const slv = o.sleeve === 'short' ? 1.31 : o.sleeve === 'long' ? 0.9 : o.sleeve === 'none' ? 9 : 1.115, ak = TB.arm * (0.85 + 0.15 * bw) * (male ? bw : 1);
   for (const sd of [1, -1]) { const xs = sd * TB.xs * (1 + 0.62 * (bw - 1)), B0 = sd > 0 ? 5 : 8, wA = (x, y) => y > 1.37 ? [2, B0, 0.6 * bl(y, 1.37, 1.49)] : y > 1.21 ? [B0, B0, 1] : y > 1.07 ? [B0, B0 + 1, bl(y, 1.07, 1.21)] : y > 0.905 ? [B0 + 1, B0 + 1, 1] : y > 0.865 ? [B0 + 1, B0 + 2, bl(y, 0.865, 0.905)] : [B0 + 2, B0 + 2, 1];
     const ya = [0.885, 0.93, 0.98, 1.04, 1.085, 1.115, 1.14, 1.165, 1.195, 1.24, 1.3, 1.36, 1.41, 1.45, 1.478, 1.49], rows = [];
-    for (const y of ya) { const r = pl3(ARMP, y, 1) * ak, cloth = y >= slv - 1e-6; if (cloth && rows.length && !rows.cl) { rows.push(ering(xs, y, 0, r + 0.013, r + 0.013, NL, cSh, CL)); rows.cl = 1; } rows.push(ering(xs, y + (cloth && rows.cl === 1 ? 0.016 : 0), 0, r + (cloth ? 0.007 : 0), r + (cloth ? 0.007 : 0), NL, cloth ? cSh : cS, cloth ? CL : SK)); if (cloth) rows.cl = 2; }
+    for (const y0 of ya) { const r = pl3(ARMP, y0, 1) * ak, y = y0 > 1.41 ? 1.41 + (y0 - 1.41) * 0.7 : y0, cloth = y0 >= slv - 1e-6; if (cloth && rows.length && !rows.cl) { rows.push(ering(xs, y, 0, r + 0.013, r + 0.013, NL, cSh, CL)); rows.cl = 1; } rows.push(ering(xs, y + (cloth && rows.cl === 1 ? 0.016 : 0), 0, r + (cloth ? 0.007 : 0), r + (cloth ? 0.007 : 0), NL, cloth ? cSh : cS, cloth ? CL : SK)); if (cloth) rows.cl = 2; }
     part(wA, () => loftGrid(g, rows, { wrap: true, flip: true, uv: tubeUV(NL, 0.05) }));
-    if (!o.lo) part((x, y) => [B0, 2, clamp(0.25 + (sd * x - abs(xs) + 0.03) / 0.07, 0.15, 0.85)], () => { const cl = slv <= 1.42, cx = xs - sd * 0.004, rx = 0.058 * ak + (cl ? 0.008 : 0), rz = 0.064 * ak + (cl ? 0.008 : 0);
-      gridSurf(g, 8, 13, (i, j) => { const v = (0.04 + 0.92 * i / 7) * PI, u = j / 12 * TAU; return [cx + sin(v) * cos(u) * rx, 1.43 + cos(v) * 0.082, sin(v) * sin(u) * rz]; }, { col: cl ? cSh : cS, ex: cl ? CL : SK }); });
-    part(() => [B0 + 2, B0 + 2, 1], () => { loftGrid(g, [[0.70, 0.004, 0.012], [0.715, 0.011, 0.03], [0.75, 0.014, 0.040], [0.80, 0.019, 0.046], [0.85, 0.02, 0.043], [0.89, 0.026, 0.028]].map(r => ering(xs, r[0], 0.008, r[1] * ak, r[2] * (0.9 + 0.1 * ak), 8, cS, SK)), { wrap: true, flip: true, uv: tubeUV(8, 0.03) }); hcylDir(g, xs, 0.852, 0.036, xs - sd * 0.006, 0.782, 0.064, 0.0115 * ak, cS); });
+    if (!o.lo) part((x, y) => [B0, 2, clamp(0.25 + (sd * x - abs(xs) + 0.03) / 0.07, 0.15, 0.85)], () => { const cl = slv <= 1.42, cx = xs - sd * 0.006, rx = 0.054 * ak + (cl ? 0.0075 : 0), rz = 0.06 * ak + (cl ? 0.0075 : 0);
+      gridSurf(g, 8, 13, (i, j) => { const v = (0.04 + 0.92 * i / 7) * PI, u = j / 12 * TAU; return [cx + sin(v) * cos(u) * rx, 1.402 + cos(v) * 0.076, sin(v) * sin(u) * rz]; }, { col: cl ? cSh : cS, ex: cl ? CL : SK }); });
+    part(() => [B0 + 2, B0 + 2, 1], () => { loftGrid(g, [[0.705, 0.005, 0.012, 0.024], [0.718, 0.011, 0.03, 0.019], [0.75, 0.014, 0.040, 0.01], [0.80, 0.019, 0.046, 0.003], [0.85, 0.02, 0.043, 0], [0.89, 0.026, 0.028, 0]].map(r => ering(xs - sd * r[3], r[0], 0.008 + r[3] * 0.35, r[1] * ak, r[2] * (0.9 + 0.1 * ak), 8, cS, SK)), { wrap: true, flip: true, uv: tubeUV(8, 0.03) }); hcylDir(g, xs, 0.852, 0.036, xs - sd * 0.006, 0.782, 0.064, 0.0115 * ak, cS); });
     // çelik kol saati: kordon + kasa + lacivert kadran (bileğin dış yüzünde)
     if (o.watch && sd > 0) part(() => [B0 + 1, B0 + 1, 1], () => { const cSt = col('#c9ccd1'), ST = [0.28, 1, 0], xw = xs + 0.034 * ak, yw = 0.9165, rd = 0.0185, RO = rd + 0.0045;
       loftGrid(g, [0.902, 0.931].map(y => ering(xs, y, 0, 0.033 * ak, 0.034 * ak, 8, cSt, ST)), { wrap: true, flip: true, uv: tubeUV(8, 0.03) });
@@ -2054,7 +2073,7 @@ function capGeo(male, fu, hs, s) {
   return g;
 }
 /* ---------- iskelet ve duruşlar ---------- */
-const PK = ['hx', 'hy', 'hz', 'hp', 'hw', 'hr', 'sp', 'sy', 'cp', 'cy', 'np', 'dp', 'dy', 'aLx', 'aLz', 'eL', 'aRx', 'aRz', 'eR', 'lLx', 'lLz', 'kL', 'fL', 'lRx', 'lRz', 'kR', 'fR', 'aLy', 'aRy'];
+const PK = ['hx', 'hy', 'hz', 'hp', 'hw', 'hr', 'sp', 'sy', 'cp', 'cy', 'np', 'dp', 'dy', 'aLx', 'aLz', 'eL', 'aRx', 'aRz', 'eR', 'lLx', 'lLz', 'kL', 'fL', 'lRx', 'lRz', 'kR', 'fR', 'aLy', 'aRy', 'cz', 'dz', 'wL', 'wR'];
 const pose0 = () => { const p = {}; for (const k of PK) p[k] = 0; return p; };
 function makeHuman(o) {
   const hg = humanGeo(o), s = hg.s, mesh = new T.SkinnedMesh(hg.geo, humanMat()), bones = BONES.map(n => { const b = new T.Bone(); b.name = n; return b; }), B = {};
@@ -2091,19 +2110,24 @@ function humanAnim(h, dt, st) {
     const d = lerp(clamp(0.64 - 0.03 * v, 0.5, 0.66), clamp(lerp(0.265, 0.15, rr) * fq, 0.2, 0.42), r), S = v * d / fq, ztd = lerp(0.42 * S, min(0.27 * S, 0.27 * s), r);
     if (v > 0.03) h.ph = (h.ph + fq * TAU * dt) % TAU; const ph = h.ph / TAU, pL = ph % 1, pR = (ph + 0.5) % 1;
     gaitFoot(pL, d, S, ztd, r, rr, s, _gL); gaitFoot(pR, d, S, ztd, r, rr, s, _gR);
-    const zL = lerp(0.02 * s, _gL[0], amp), zR = lerp(-0.02 * s, _gR[0], amp), yL = _gL[1] * amp, yR = _gR[1] * amp, aB = 0.085 * s, Lm = (h.Lt + h.Ls) * 0.992;
-    let hH = lerp(h.hipY - 0.008 * s, h.hipY - 0.03 * s - (0.028 + 0.012 * rr) * s * cos(2 * TAU * (ph - d / 2)), r * amp) - 0.27 * s * cr;
-    if (pL < d || amp < 0.999) hH = min(hH, aB + yL + sqrt(max(0.01, Lm * Lm - zL * zL))); if (pR < d || amp < 0.999) hH = min(hH, aB + yR + sqrt(max(0.01, Lm * Lm - zR * zR)));
-    const c0 = cos(TAU * ph), cm = cos(TAU * (ph - d / 2)), sw = cos(TAU * (ph + 0.035)), ay = lerp(0.07, 0.11, r) * amp, ra = r * amp;
-    T_.hp = lerp(0.02, 0.075 + 0.05 * rr, r) * amp + 0.42 * cr; T_.sp = 0.02 + 0.07 * ra + 0.08 * cr; T_.cp = 0.03 * ra + 0.012 * sin(t * 1.5) * idle; T_.dp = -(0.02 + 0.14 * r) * amp - 0.34 * cr;
-    T_.hw = -ay * c0; T_.sy = 0.55 * ay * c0; T_.cy = 0.95 * ay * c0; T_.hr = lerp(0.03, 0.045, r) * amp * cm + 0.016 * sin(t * 0.6) * idle + (st.lean || 0);
-    T_.hx = (lerp(0.014, 0.007, r) * amp * cm + 0.006 * sin(t * 0.6) * idle) * s; T_.hy = hH - h.hipY; T_.hz = -0.09 * cr * s;
-    legIK(h, zL, aB + yL, hH, _ik); T_.lLx = _ik[0] + T_.hp; T_.kL = _ik[1]; T_.fL = _ik[0] - _ik[1] - _gL[2] * amp;
-    legIK(h, zR, aB + yR, hH, _ik); T_.lRx = _ik[0] + T_.hp; T_.kR = _ik[1]; T_.fR = _ik[0] - _ik[1] - _gR[2] * amp;
-    T_.lLz = T_.lRz = 0.025 + 0.05 * cr;
-    const Aa = lerp(0.3, 0.6, r) * amp, ab = lerp(0.03, -0.1, r) * amp + 0.35 * cr;
-    T_.aLx = -Aa * sw + ab; T_.aRx = Aa * sw + ab; T_.eL = lerp(0.14 + 0.24 * max(0, -sw) * amp, 1.42 - 0.3 * sw, ra) + 0.7 * cr; T_.eR = lerp(0.14 + 0.24 * max(0, sw) * amp, 1.42 + 0.3 * sw, ra) + 0.7 * cr;
-    T_.aLz = T_.aRz = aw + 0.05 * ra; T_.aLy = -0.26 * ra; T_.aRy = 0.26 * ra;
+    const zL = lerp(0.02 * s, _gL[0], amp), zR = lerp(-0.02 * s, _gR[0], amp), yL = _gL[1] * amp, yR = _gR[1] * amp, aB = 0.085 * s, Lm = (h.Lt + h.Ls) * 0.996, xh = h.B.legL.position.x;
+    const c0 = cos(TAU * ph), cm = cos(TAU * (ph - d / 2)), sw = cos(TAU * (ph + 0.035)), sw2 = cos(TAU * (ph - 0.03)), ay = lerp(0.07, 0.11, r) * amp, ra = r * amp;
+    // bekleme: nefes (≈14/dk) + ağırlığı bir bacaktan ötekine yavaşça aktarma (uçlarda bekler) + hafif baş hareketi; her kişide ayrı faz
+    const q0 = h.H * 7.3 + (h.o.male ? 0 : 2.1), br = sin(t * 1.5 + q0) * idle, wsr = sin(t * 0.37 + q0 * 1.7), wsh = Math.sign(wsr) * sstep(0.08, 0.7, abs(wsr)) * idle * (1 - cr);
+    T_.hr = lerp(0.03, 0.045, r) * amp * cm + 0.034 * wsh + (st.lean || 0); const dh = xh * sin(T_.hr), dx = 0.018 * s * wsh;
+    let hH = lerp(h.hipY - 0.004 * s, h.hipY - 0.03 * s - (0.028 + 0.012 * rr) * s * cos(2 * TAU * (ph - d / 2)), r * amp) - 0.27 * s * cr + 0.0035 * s * br;
+    if (pL < d || amp < 0.999) hH = min(hH, aB + yL + sqrt(max(0.01, Lm * Lm - zL * zL)) - dh); if (pR < d || amp < 0.999) hH = min(hH, aB + yR + sqrt(max(0.01, Lm * Lm - zR * zR)) + dh);
+    T_.hp = lerp(0.02, lerp(0.05, 0.125, rr), r) * amp + 0.42 * cr; T_.sp = 0.02 + lerp(0.045, 0.07, rr) * ra + 0.08 * cr + 0.011 * br; T_.cp = lerp(0.015, 0.03, rr) * ra - 0.03 * br; T_.dp = -(0.02 + lerp(0.09, 0.14, rr) * r) * amp - 0.34 * cr + 0.016 * br;
+    T_.hw = -ay * c0; T_.sy = 0.55 * ay * c0; T_.cy = 0.95 * ay * c0; T_.cz = -0.7 * T_.hr + (st.lean || 0) * 0.5; T_.dy = -0.4 * ay * c0 + (0.09 * sin(t * 0.21 + q0) + 0.04 * sin(t * 0.53 + q0 * 2)) * idle; T_.dz = -0.3 * 0.034 * wsh + 0.014 * sin(t * 0.29 + q0) * idle;
+    T_.hx = lerp(0.014, 0.007, r) * amp * cm * s + dx; T_.hy = hH - h.hipY; T_.hz = -0.09 * cr * s;
+    // bacaklar: ayak yere kilitli; leğen eğimi ve yana kayma her bacağın kalça yüksekliğine ve açısına yansır (boştaki diz kendiliğinden hafif bükülür)
+    legIK(h, zL, aB + yL, hH + dh, _ik); T_.lLx = _ik[0] + T_.hp; T_.kL = _ik[1]; T_.fL = _ik[0] - _ik[1] - _gL[2] * amp;
+    legIK(h, zR, aB + yR, hH - dh, _ik); T_.lRx = _ik[0] + T_.hp; T_.kR = _ik[1]; T_.fR = _ik[0] - _ik[1] - _gR[2] * amp;
+    const lc = dx / (h.Lt + h.Ls); T_.lLz = 0.025 + 0.05 * cr - lc - T_.hr; T_.lRz = 0.025 + 0.05 * cr + lc + T_.hr;
+    // kollar: yürüyüşte omuzdan sarkaç gibi (ön salınımda dirsek hafif bükülür, ön kol biraz geriden gelir); koşuda dirsek bükük, gövdeye yakın; beklemede gevşek ve hafif bükük
+    const Aa = lerp(0.34, 0.6, r) * amp, ab = lerp(0.03, -0.1, r) * amp + 0.35 * cr + 0.03 * idle, eRun = lerp(1.22, 1.45, rr), eI = 0.3 * idle;
+    T_.aLx = -Aa * sw + ab; T_.aRx = Aa * sw + ab; T_.eL = lerp(0.2 * amp + eI + 0.32 * max(0, -sw2) * amp, eRun - 0.32 * sw2, ra) + 0.7 * cr; T_.eR = lerp(0.2 * amp + eI * 1.2 + 0.32 * max(0, sw2) * amp, eRun + 0.32 * sw2, ra) + 0.7 * cr;
+    T_.aLz = T_.aRz = aw * (1 - 0.3 * ra) + 0.03 * ra + 0.016 * br; T_.aLy = -0.26 * ra - 0.12 * idle; T_.aRy = 0.26 * ra + 0.12 * idle; T_.wL = 0.16 + 0.1 * ra - 0.12 * sw2 * amp; T_.wR = 0.16 + 0.1 * ra + 0.12 * sw2 * amp;
     if (h.air > 0.01) { const a = h.air, L = (k, v) => { T_[k] = lerp(T_[k], v, a); }; L('lLx', 0.6); L('kL', 1.05); L('lRx', 0.12); L('kR', 0.5); L('fL', 0.2); L('fR', 0.35); L('aLx', 0.6); L('aRx', -0.35); L('eL', 0.9); L('eR', 0.7); L('hp', 0.1); }
     if (mode === 'inspect') { T_.sp += 0.3; T_.aRx = 1.0 + 0.08 * sin(t * 2.2); T_.eR = 0.35; T_.dp = 0.25; }
     if (mode === 'phone') { T_.aRx = 0.35; T_.aRz = 0.3; T_.eR = 2.45; T_.aRy = -0.5; T_.dy = -0.12; T_.dp = 0.05; }
@@ -2117,7 +2141,7 @@ function humanAnim(h, dt, st) {
   if (st.look && !seated) T_.dy += clamp(st.look, -1, 1);
   const P = h.P, w = h.bt * h.bt * (3 - 2 * h.bt); for (const k of PK) P[k] = w >= 1 ? T_[k] : lerp(h.P0[k], T_[k], w);
   const B = h.B;
-  B.hips.position.set(P.hx, h.hipY + P.hy, P.hz); B.hips.rotation.set(P.hp, P.hw, P.hr); B.spine.rotation.set(P.sp, P.sy, 0); B.chest.rotation.set(P.cp, P.cy, 0); B.neck.rotation.x = P.np; B.head.rotation.set(P.dp, P.dy, 0);
+  B.hips.position.set(P.hx, h.hipY + P.hy, P.hz); B.hips.rotation.set(P.hp, P.hw, P.hr); B.spine.rotation.set(P.sp, P.sy, 0); B.chest.rotation.set(P.cp, P.cy, P.cz); B.neck.rotation.x = P.np; B.head.rotation.set(P.dp, P.dy, P.dz); B.handL.rotation.set(-P.wL, 0, -0.08); B.handR.rotation.set(-P.wR, 0, 0.08);
   B.armL.rotation.set(-P.aLx, P.aLy, P.aLz); B.armR.rotation.set(-P.aRx, P.aRy, -P.aRz); B.foreL.rotation.x = -P.eL; B.foreR.rotation.x = -P.eR;
   B.legL.rotation.set(-P.lLx, 0, P.lLz); B.legR.rotation.set(-P.lRx, 0, -P.lRz); B.shinL.rotation.x = P.kL; B.shinR.rotation.x = P.kR; B.footL.rotation.x = P.fL; B.footR.rotation.x = P.fR;
 }
@@ -2133,9 +2157,9 @@ let HERO = null, WIFE = null, BOSS = null; const NPCS = [], GUARDS = [], COMP = 
 const footY = (x, z, y) => max(groundH(x, z), supportY(x, z, y, 0.5));
 function makePeople() {
   // Yavuz: iri yapılı, koyu kahve dalgalı saç, kır sakal, siyah dikdörtgen güneş gözlüğü, çelik saat, beyaz keten gömlek (+ isteğe bağlı siyah şapka)
-  HERO = makeHuman({ H: 2.01, male: 1, build: 1.13, waist: 1.04, collar: 1, face: 'hero', shirt: '#efeae0', pants: '#27364a', shoes: '#4d3523', boots: 1, sleeve: 'roll', hair: 'wavy', glasses: 'on', gstyle: 'rect', gframe: '#0e0e10', watch: 1, cap: 1, headK: 1.05, legK: 1.1 });
+  HERO = makeHuman({ H: 2.01, male: 1, build: 1.13, waist: 1.04, collar: 1, face: 'hero', shirt: '#efeae0', pants: '#27364a', shoes: '#4d3523', boots: 1, sleeve: 'roll', hair: 'wavy', glasses: 'on', gstyle: 'rect', gframe: '#0e0e10', watch: 1, cap: 1, headK: 1.0, legK: 1.1 });
   // Bircan: ince uzun, ortadan ayrık uzun düz kumral–bal rengi saç, siyah üst + beyaz keten pantolon, yeşil çerçeveli gözlük (başta), altın halka küpe ve kolyeler
-  WIFE = makeHuman({ H: 1.76, male: 0, face: 'wife', shirt: '#17171a', pants: '#eeece6', shoes: '#f0efea', sleeve: 'none', scoop: 1, legs: 'wide', tuck: 1, hair: 'long', glasses: 'up', gstyle: 'rect', gframe: '#8ea58a', necklace: 1, earrings: 1 });
+  WIFE = makeHuman({ H: 1.76, male: 0, face: 'wife', shirt: '#17171a', pants: '#eeece6', shoes: '#f0efea', sleeve: 'none', scoop: 1, legs: 'wide', tuck: 1, hair: 'long', glasses: 'up', gstyle: 'rect', gframe: '#8ea58a', necklace: 1, earrings: 1, headK: 0.97 });
   const R = RNG(909), SH = ['#d9534f', '#2f62a6', '#f1eee6', '#2a8a7a', '#e8b23a', '#3a3f45', '#c98a5a', '#7a8f5a', '#f4f0e6', '#b5507a'], PA = ['#27364a', '#3a3f45', '#c9bfa6', '#5a4a3a', '#e9e6df', '#40526b'];
   for (let k = 0; k < QUAL[2].npc; k++) { const male = k % 2 === 0, face = male ? R.pick(['m1', 'm2', 'm1', 'guard']) : R.pick(['f1', 'f2']), old = face === 'm2';
     const h = makeHuman({ H: male ? R.r(1.7, 1.86) : R.r(1.58, 1.72), male, build: R.r(0.96, 1.06), face, shirt: R.pick(SH), pants: R.pick(PA), shoes: R.pick(['#f0efea', '#3a2e26', '#22262b']), sleeve: R.chance(0.7) ? 'short' : 'roll', legs: !old && R.chance(0.45) ? 'short' : 'long', tuck: !male && R.chance(0.5), hair: male ? 'short' : R.pick(['pony', 'bob', 'bob']), glasses: R.chance(0.35) ? (R.chance(0.6) ? 'on' : 'up') : null, lo: true });
@@ -2245,7 +2269,7 @@ function plyPlace(x, z, h) { PLY.x = x; PLY.z = z; PLY.h = h; PLY.y = footY(x, z
 function footStep(dt) {
   const P = PLY; let tv = 0, dx = 0, dz = 0;
   if (I.an > 0.05 && !P.lock) { dx = sin(CAM.yaw) * I.mz - cos(CAM.yaw) * I.mx; dz = cos(CAM.yaw) * I.mz + sin(CAM.yaw) * I.mx; const l = hyp(dx, dz) || 1; dx /= l; dz /= l; const tr = lerp(11, 7.5, clamp((P.v - 3.4) / 3, 0, 1)), dh = clamp(angD(P.h, Math.atan2(dx, dz)), -tr * dt, tr * dt); P.h += dh; P.turn = dh / max(dt, 1e-4);
-    tv = P.crouch ? 1.7 : I.run ? 6.6 : IS_TOUCH && joy.id !== null ? lerp(1.5, 3.9, clamp((I.an - 0.25) / 0.6, 0, 1)) : 3.8; }
+    tv = P.crouch ? 1.7 : I.run ? 6.6 : IS_TOUCH && joy.id !== null ? lerp(1.5, 3.9, clamp((I.an - 0.25) / 0.6, 0, 1)) : (TEST && window.__tv) || 3.8; }
   P.v = damp(P.v, tv, tv > P.v ? 7 : 11, dt);
   if (hit.has('cover') && P.ground && !P.lock) { P.crouch = !P.crouch; sfx('step'); }
   if (hit.has('jump') && P.ground && !P.lock) { if (P.crouch) P.crouch = false; else { P.vy = 5.2; P.ground = false; sfx('jump'); } }
